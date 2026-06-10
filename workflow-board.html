@@ -216,7 +216,7 @@
       <span class="chip" data-f="prog">진행</span>
       <span class="chip" data-f="done">완료</span>
       <span class="chip" data-f="ship">납품</span>
-      <input class="search" id="search" placeholder="업체·내용 검색">
+      <input class="search" id="search" placeholder="건명·내용 검색">
     </div>
   </div>
 
@@ -233,8 +233,8 @@
     </div>
     <div class="modal-body">
       <div class="field">
-        <label>업체명</label>
-        <input id="f_cust" placeholder="예: 조율산업">
+        <label>건명</label>
+        <input id="f_cust" placeholder="예: SS400 브라켓 절단">
       </div>
       <div class="row2">
         <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
@@ -358,7 +358,7 @@ function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
   area.innerHTML = `<div class="panel"><table>
     <thead><tr>
-      <th>업체명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
+      <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
     </tr></thead>
     <tbody>${rows.map(r=>{
       const dl = daysLeft(r.due);
