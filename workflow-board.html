@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Flow Sheet · 작업 진행 현황판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1116;
+    --panel:#161b22;
+    --panel-2:#1c232d;
+    --line:#2a323d;
+    --line-soft:#222a34;
+    --ink:#e7edf3;
+    --ink-soft:#9aa7b4;
+    --ink-faint:#5f6b78;
+    --accent:#4ea1d3;
+    --accent-soft:#2b5566;
+    /* status palette */
+    --st-wait:#7c8794;     --st-wait-bg:#262d36;
+    --st-prog:#4ea1d3;     --st-prog-bg:#163243;
+    --st-done:#5cb98a;     --st-done-bg:#143028;
+    --st-ship:#c9a14a;     --st-ship-bg:#2e2716;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    --mono:'DM Mono',monospace;
+    --serif:'DM Serif Display',serif;
+    --sans:'Noto Sans KR',sans-serif;
+  }
+  [data-theme="light"]{
+    --bg:#f3f1ea;
+    --panel:#fbfaf6;
+    --panel-2:#f1efe7;
+    --line:#ddd8cc;
+    --line-soft:#e7e3d8;
+    --ink:#22262b;
+    --ink-soft:#5f6b78;
+    --ink-faint:#9aa3ad;
+    --accent:#2f7ca8;
+    --accent-soft:#cfe3ee;
+    --st-wait:#6b7682;     --st-wait-bg:#e8e6dd;
+    --st-prog:#2f7ca8;     --st-prog-bg:#dcebf3;
+    --st-done:#3a8c62;     --st-done-bg:#dcefe1;
+    --st-ship:#9a7b22;     --st-ship-bg:#f3ecd2;
+    --shadow:0 10px 30px rgba(90,80,55,.15);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;-webkit-font-smoothing:antialiased}
+  body{padding:0;min-height:100vh;transition:background .3s}
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 22px 80px}
+
+  /* ── header ── */
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .title-block{display:flex;flex-direction:column;gap:4px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-faint)}
+  h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,42px);line-height:1.05;font-weight:400;letter-spacing:.01em}
+  h1 .mon{color:var(--accent);font-style:italic}
+  .head-actions{display:flex;gap:8px;align-items:center}
+  .btn{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+       padding:9px 14px;border-radius:10px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(1.08);color:#fff}
+  .btn.ghost{background:transparent}
+  .icon-btn{width:38px;height:38px;justify-content:center;padding:0}
+
+  /* ── summary strip ── */
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+  .sum-card{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden}
+  .sum-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+  .sum-card .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .sum-card .v{font-family:var(--serif);font-size:34px;line-height:1;margin-top:8px;color:var(--c)}
+  .sum-card .sub{font-size:11px;color:var(--ink-faint);margin-top:6px}
+
+  /* ── toolbar ── */
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .views{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line-soft);padding:4px;border-radius:11px}
+  .view-tab{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-soft);background:transparent;border:none;padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s}
+  .view-tab.active{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+  .view-tab:hover:not(.active){color:var(--ink)}
+  .filters{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .chip{font-size:12px;font-family:var(--mono);color:var(--ink-soft);background:var(--panel);border:1px solid var(--line-soft);padding:6px 11px;border-radius:20px;cursor:pointer;transition:.15s}
+  .chip.on{color:var(--ink);border-color:var(--accent)}
+  .search{background:var(--panel);border:1px solid var(--line-soft);border-radius:9px;padding:7px 11px;color:var(--ink);font-family:var(--sans);font-size:13px;width:160px}
+  .search::placeholder{color:var(--ink-faint)}
+  .search:focus{outline:none;border-color:var(--accent)}
+
+  /* ── TABLE view ── */
+  .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-align:left;
+           padding:13px 14px;border-bottom:1px solid var(--line);font-weight:500;background:var(--panel-2)}
+  tbody td{padding:13px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tbody tr{transition:background .12s;cursor:pointer}
+  tbody tr:hover{background:var(--panel-2)}
+  tbody tr:last-child td{border-bottom:none}
+  .cust{font-weight:500;color:var(--ink)}
+  .due{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .due .arr{color:var(--ink-faint);margin:0 4px}
+  .due.urgent{color:var(--st-ship)}
+  .docs{display:flex;flex-wrap:wrap;gap:4px}
+  .doc{font-family:var(--mono);font-size:10.5px;background:var(--panel-2);border:1px solid var(--line-soft);color:var(--ink-soft);padding:2px 7px;border-radius:5px;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  a.doc{cursor:pointer;transition:.14s}
+  a.doc:hover{border-color:var(--accent);color:var(--accent)}
+  a.doc::after{content:"↗";font-size:8px;opacity:.6}
+  .work{color:var(--ink-soft);font-size:12.5px;max-width:260px}
+  .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+
+  /* status badge */
+  .st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;font-weight:500;padding:4px 10px;border-radius:20px;white-space:nowrap;border:1px solid transparent}
+  .st .dot{width:7px;height:7px;border-radius:50%}
+  .st[data-s="wait"]{color:var(--st-wait);background:var(--st-wait-bg)} .st[data-s="wait"] .dot{background:var(--st-wait)}
+  .st[data-s="prog"]{color:var(--st-prog);background:var(--st-prog-bg)} .st[data-s="prog"] .dot{background:var(--st-prog)}
+  .st[data-s="done"]{color:var(--st-done);background:var(--st-done-bg)} .st[data-s="done"] .dot{background:var(--st-done)}
+  .st[data-s="ship"]{color:var(--st-ship);background:var(--st-ship-bg)} .st[data-s="ship"] .dot{background:var(--st-ship)}
+
+  /* ── BOARD (kanban) view ── */
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+  .col{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);min-height:120px}
+  .col-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line-soft)}
+  .col-head .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;font-weight:500;display:flex;align-items:center;gap:7px}
+  .col-head .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);background:var(--panel-2);padding:2px 8px;border-radius:10px}
+  .col-body{padding:11px;display:flex;flex-direction:column;gap:9px}
+  .card{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:10px;padding:12px 13px;cursor:pointer;transition:.14s}
+  .card:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .card .c-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .c-cust{font-weight:500;font-size:13.5px}
+  .card .c-due{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);white-space:nowrap}
+  .card .c-work{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.45}
+  .card .c-docs{display:flex;flex-wrap:wrap;gap:3px;margin-top:9px}
+
+  /* ── TIMELINE view ── */
+  .timeline{padding:6px 4px}
+  .tl-row{display:grid;grid-template-columns:148px 1fr;gap:16px;padding:10px 6px;border-bottom:1px solid var(--line-soft);align-items:center}
+  .tl-row:last-child{border-bottom:none}
+  .tl-date{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-align:right}
+  .tl-bar-wrap{position:relative;height:30px;background:var(--panel-2);border-radius:7px;overflow:hidden}
+  .tl-bar{position:absolute;top:4px;bottom:4px;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;font-family:var(--mono)}
+
+  .empty{padding:60px 20px;text-align:center;color:var(--ink-faint);font-family:var(--mono);font-size:13px}
+
+  /* ── modal ── */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:100%;max-width:520px;box-shadow:var(--shadow);animation:pop .2s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line-soft)}
+  .modal-head h3{font-family:var(--serif);font-size:21px;font-weight:400}
+  .modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:15px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .field input,.field textarea,.field select{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--ink);font-family:var(--sans);font-size:14px}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+  .field textarea{resize:vertical;min-height:60px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal-foot{display:flex;justify-content:space-between;gap:10px;padding:16px 22px;border-top:1px solid var(--line-soft)}
+  .x{cursor:pointer;color:var(--ink-faint);font-size:22px;line-height:1;background:none;border:none}
+  .x:hover{color:var(--ink)}
+  .del{color:#d36a6a;background:none;border:1px solid transparent;cursor:pointer;font-size:13px;font-family:var(--sans)}
+  .del:hover{border-color:#d36a6a;border-radius:8px;padding:6px 10px;margin:-6px -10px}
+
+  .stagebar{display:flex;gap:6px;margin-top:2px}
+  .stage-pick{flex:1;font-family:var(--mono);font-size:11px;padding:8px 4px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink-soft);cursor:pointer;transition:.14s;text-align:center}
+  .stage-pick.sel[data-s="wait"]{background:var(--st-wait-bg);color:var(--st-wait);border-color:var(--st-wait)}
+  .stage-pick.sel[data-s="prog"]{background:var(--st-prog-bg);color:var(--st-prog);border-color:var(--st-prog)}
+  .stage-pick.sel[data-s="done"]{background:var(--st-done-bg);color:var(--st-done);border-color:var(--st-done)}
+  .stage-pick.sel[data-s="ship"]{background:var(--st-ship-bg);color:var(--st-ship);border-color:var(--st-ship)}
+
+  .stage-note{font-size:11px;color:var(--ink-faint);font-family:var(--mono);text-align:center;padding:14px;border:1px dashed var(--line);border-radius:10px;margin-top:8px}
+
+  @media(max-width:900px){
+    .summary{grid-template-columns:repeat(2,1fr)}
+    .board{grid-template-columns:1fr 1fr}
+    .work{max-width:160px}
+    thead th:nth-child(4),tbody td:nth-child(4){display:none} /* hide docs col */
+  }
+  @media(max-width:620px){
+    .wrap{padding:18px 12px 60px}
+    .board{grid-template-columns:1fr}
+    .tl-row{grid-template-columns:96px 1fr;gap:8px}
+    thead th:nth-child(5),tbody td:nth-child(5){display:none} /* hide work col */
+    thead th:nth-child(6),tbody td:nth-child(6){display:none} /* hide cost col */
+    .views{width:100%;overflow:auto}
+  }
+</style>
+</head>
+<body data-theme="dark">
+<div class="wrap">
+
+  <header class="top">
+    <div class="title-block">
+      <span class="eyebrow">Work Flow Sheet</span>
+      <h1>작업 진행 <span class="mon">현황판</span></h1>
+    </div>
+    <div class="head-actions">
+      <button class="btn icon-btn ghost" id="themeBtn" title="테마 전환">◐</button>
+      <button class="btn ghost" id="exportBtn" title="현재 현황 내보내기">↗ 공유</button>
+      <button class="btn primary" id="addBtn">+ 작업 추가</button>
+    </div>
+  </header>
+
+  <section class="summary" id="summary"></section>
+
+  <div class="toolbar">
+    <div class="views" id="views">
+      <button class="view-tab active" data-v="table">표</button>
+      <button class="view-tab" data-v="board">보드</button>
+      <button class="view-tab" data-v="timeline">타임라인</button>
+    </div>
+    <div class="filters">
+      <span class="chip on" data-f="all">전체</span>
+      <span class="chip" data-f="wait">대기</span>
+      <span class="chip" data-f="prog">진행</span>
+      <span class="chip" data-f="done">완료</span>
+      <span class="chip" data-f="ship">납품</span>
+      <input class="search" id="search" placeholder="업체·내용 검색">
+    </div>
+  </div>
+
+  <div id="viewArea"></div>
+
+</div>
+
+<!-- modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">작업 추가</h3>
+      <button class="x" id="closeX">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>업체명</label>
+        <input id="f_cust" placeholder="예: 조율산업">
+      </div>
+      <div class="row2">
+        <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
+        <div class="field"><label>납기일</label><input id="f_due" type="date"></div>
+      </div>
+      <div class="field">
+        <label>작업내용</label>
+        <textarea id="f_work" placeholder="예: SV FRT RR DR OTR, DN8 PE"></textarea>
+      </div>
+      <div class="field">
+        <label>작업지시서 (한 줄에 하나 · 파일명 | 링크)</label>
+        <textarea id="f_docs" placeholder="jo-5030.pdf | https://drive.google.com/...&#10;jo-5050.pdf"></textarea>
+        <span style="font-size:10.5px;color:var(--ink-faint);font-family:var(--mono)">링크는 선택입니다. 적으면 클릭해 열리고, 없으면 이름만 표시됩니다.</span>
+      </div>
+      <div class="row2">
+        <div class="field"><label>자재비</label><input id="f_mat" type="number" placeholder="0"></div>
+        <div class="field"><label>가공비</label><input id="f_fee" type="number" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label>진행 단계</label>
+        <div class="stagebar" id="stagebar">
+          <div class="stage-pick" data-s="wait">대기</div>
+          <div class="stage-pick" data-s="prog">진행</div>
+          <div class="stage-pick" data-s="done">완료</div>
+          <div class="stage-pick" data-s="ship">납품</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="del" id="delBtn" style="visibility:hidden">삭제</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" id="cancelBtn">취소</button>
+        <button class="btn primary" id="saveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────── 1단계 프로토타입: 데이터는 화면 안 샘플 (브라우저 메모리) ─────────
+   2단계에서 이 SAMPLE 배열 대신 구글시트 Apps Script 연동으로 교체합니다. */
+const STAGES = {
+  wait:{label:'대기', color:'var(--st-wait)'},
+  prog:{label:'진행', color:'var(--st-prog)'},
+  done:{label:'완료', color:'var(--st-done)'},
+  ship:{label:'납품', color:'var(--st-ship)'}
+};
+const STAGE_ORDER = ['wait','prog','done','ship'];
+
+let DATA = [
+  {id:1, cust:'청우에스티에스', start:'2024-02-20', due:'2024-02-29', work:'4950, 4951', docs:[{name:'4950.pdf',url:''},{name:'4951.pdf',url:''}], mat:0, fee:0, stage:'ship'},
+  {id:2, cust:'조율산업', start:'2024-03-01', due:'2024-03-07', work:'ME SIDE OTR, SV FRT RR DR OTR, SV T GATE ASSY', docs:[{name:'1638-14e.pdf',url:'https://drive.google.com/'},{name:'1638-48e.pdf',url:''},{name:'1740-86E.pdf',url:''},{name:'1900-4E.pdf',url:''}], mat:0, fee:0, stage:'done'},
+  {id:3, cust:'강진산기', start:'2024-03-06', due:'2024-03-11', work:'', docs:[{name:'42_2---.pdf',url:''},{name:'42_2------.pdf',url:''}], mat:0, fee:0, stage:'done'},
+  {id:4, cust:'하이와이드', start:'2024-03-13', due:'2024-03-14', work:'', docs:[{name:'34-3M.pdf',url:''},{name:'427-3M.pdf',url:''}], mat:0, fee:0, stage:'done'},
+  {id:5, cust:'조율산업', start:'2024-03-15', due:'2024-03-20', work:'SV FRT RR DR OTR (공정용), DN8 PE, SV HOOD', docs:[{name:'jo-5030.pdf',url:'https://drive.google.com/'},{name:'jo-5050.pdf',url:''},{name:'jo-10050.pdf',url:''}], mat:0, fee:0, stage:'done'},
+  {id:6, cust:'삼성아이앤디', start:'2024-03-26', due:'2024-03-29', work:'재원산업기계-240325', docs:[{name:'SS-10050.pdf',url:''},{name:'SS-32A.pdf',url:''},{name:'SS-5030-3T.pdf',url:''},{name:'SS-50A.pdf',url:''}], mat:0, fee:0, stage:'done'},
+  {id:7, cust:'조율산업', start:'2024-03-29', due:'2024-04-03', work:'SV FENDER, SV FRT RR DR OTR', docs:[{name:'JO-50.pdf',url:''},{name:'JO-5030.pdf',url:''},{name:'JO-7545.pdf',url:''}], mat:0, fee:0, stage:'wait'},
+  {id:8, cust:'대성테크', start:'2024-03-30', due:'2024-04-05', work:'1845, 1831 외', docs:[{name:'1845-2e.pdf',url:''},{name:'1831-300e.pdf',url:''},{name:'1607-1670e.pdf',url:''}], mat:0, fee:0, stage:'prog'}
+];
+let nextId = 9;
+
+let view = 'table';
+let filter = 'all';
+let query = '';
+let editId = null;
+let pickStage = 'wait';
+
+const $ = s=>document.querySelector(s);
+const area = $('#viewArea');
+
+function fmt(n){ return '₩' + (Number(n)||0).toLocaleString('ko-KR'); }
+function shortDate(d){ return d ? d.slice(2).replace(/-/g,'/') : '—'; }
+function daysLeft(due){
+  if(!due) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(due+'T00:00:00');
+  return Math.round((d-today)/86400000);
+}
+
+function visible(){
+  return DATA.filter(r=>{
+    if(filter!=='all' && r.stage!==filter) return false;
+    if(query){
+      const q=query.toLowerCase();
+      if(!(r.cust.toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
+    }
+    return true;
+  });
+}
+
+function renderSummary(){
+  const counts = {wait:0,prog:0,done:0,ship:0};
+  DATA.forEach(r=>counts[r.stage]++);
+  const cards = [
+    {k:'대기', v:counts.wait, c:'var(--st-wait)', sub:'착수 전'},
+    {k:'진행', v:counts.prog, c:'var(--st-prog)', sub:'작업 중'},
+    {k:'완료', v:counts.done, c:'var(--st-done)', sub:'가공 완료'},
+    {k:'납품', v:counts.ship, c:'var(--st-ship)', sub:'출하 완료'}
+  ];
+  $('#summary').innerHTML = cards.map(c=>`
+    <div class="sum-card" style="--c:${c.c}">
+      <div class="k">${c.k}</div>
+      <div class="v">${c.v}</div>
+      <div class="sub">${c.sub}</div>
+    </div>`).join('');
+}
+
+function stBadge(s){
+  return `<span class="st" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</span>`;
+}
+function docChips(docs){
+  return (docs||[]).map(d=>{
+    if(d.url){
+      return `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`;
+    }
+    return `<span class="doc">${d.name}</span>`;
+  }).join('');
+}
+
+function renderTable(rows){
+  if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
+  area.innerHTML = `<div class="panel"><table>
+    <thead><tr>
+      <th>업체명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
+    </tr></thead>
+    <tbody>${rows.map(r=>{
+      const dl = daysLeft(r.due);
+      const urgent = (r.stage==='wait'||r.stage==='prog') && dl!==null && dl<=2;
+      const total = (Number(r.mat)||0)+(Number(r.fee)||0);
+      return `<tr data-id="${r.id}">
+        <td class="cust">${r.cust||'—'}</td>
+        <td class="due ${urgent?'urgent':''}">${shortDate(r.start)}<span class="arr">→</span>${shortDate(r.due)}${urgent?` · D${dl<=0?'':'-'+dl}`:''}</td>
+        <td>${stBadge(r.stage)}</td>
+        <td><div class="docs">${docChips(r.docs)}</div></td>
+        <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
+        <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
+  area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(+tr.dataset.id));
+}
+
+function renderBoard(rows){
+  area.innerHTML = `<div class="board">${STAGE_ORDER.map(s=>{
+    const items = rows.filter(r=>r.stage===s);
+    return `<div class="col">
+      <div class="col-head">
+        <span class="lbl"><span class="st" data-s="${s}" style="padding:2px 8px"><span class="dot"></span>${STAGES[s].label}</span></span>
+        <span class="cnt">${items.length}</span>
+      </div>
+      <div class="col-body">${items.map(r=>`
+        <div class="card" data-id="${r.id}">
+          <div class="c-top"><span class="c-cust">${r.cust||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          ${r.work?`<div class="c-work">${r.work}</div>`:''}
+          <div class="c-docs">${docChips(r.docs)}</div>
+        </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  area.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>openEdit(+c.dataset.id));
+}
+
+function renderTimeline(rows){
+  const dated = rows.filter(r=>r.start&&r.due).slice().sort((a,b)=>a.start.localeCompare(b.start));
+  if(!dated.length){ area.innerHTML='<div class="panel"><div class="empty">날짜가 있는 작업이 없습니다.</div></div>'; return; }
+  const min = dated.reduce((m,r)=>r.start<m?r.start:m, dated[0].start);
+  const max = dated.reduce((m,r)=>r.due>m?r.due:m, dated[0].due);
+  const span = Math.max(1,(new Date(max)-new Date(min))/86400000);
+  area.innerHTML = `<div class="panel timeline">${dated.map(r=>{
+    const off = (new Date(r.start)-new Date(min))/86400000/span*100;
+    const w = Math.max(6,((new Date(r.due)-new Date(r.start))/86400000)/span*100);
+    return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
+      <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
+      <div class="tl-bar-wrap">
+        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.cust}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  area.querySelectorAll('.tl-row[data-id]').forEach(row=>row.onclick=()=>openEdit(+row.dataset.id));
+}
+
+function render(){
+  renderSummary();
+  const rows = visible();
+  if(view==='table') renderTable(rows);
+  else if(view==='board') renderBoard(rows);
+  else renderTimeline(rows);
+}
+
+/* ── modal logic ── */
+function setStagePicker(s){
+  pickStage = s;
+  document.querySelectorAll('.stage-pick').forEach(p=>p.classList.toggle('sel',p.dataset.s===s));
+}
+function openAdd(){
+  editId=null;
+  $('#modalTitle').textContent='작업 추가';
+  $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
+  $('#f_work').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
+  setStagePicker('wait');
+  $('#delBtn').style.visibility='hidden';
+  $('#overlay').classList.add('show');
+}
+function openEdit(id){
+  const r=DATA.find(x=>x.id===id); if(!r)return;
+  editId=id;
+  $('#modalTitle').textContent='작업 수정';
+  $('#f_cust').value=r.cust;$('#f_start').value=r.start;$('#f_due').value=r.due;
+  $('#f_work').value=r.work||'';
+  $('#f_docs').value=(r.docs||[]).map(d=>d.url?`${d.name} | ${d.url}`:d.name).join('\n');
+  $('#f_mat').value=r.mat||'';$('#f_fee').value=r.fee||'';
+  setStagePicker(r.stage);
+  $('#delBtn').style.visibility='visible';
+  $('#overlay').classList.add('show');
+}
+function closeModal(){ $('#overlay').classList.remove('show'); }
+function save(){
+  const obj={
+    cust:$('#f_cust').value.trim(),
+    start:$('#f_start').value,
+    due:$('#f_due').value,
+    work:$('#f_work').value.trim(),
+    docs:$('#f_docs').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+      const [name,url] = line.split('|').map(p=>p.trim());
+      return {name:name||line.trim(), url:url||''};
+    }),
+    mat:+$('#f_mat').value||0,
+    fee:+$('#f_fee').value||0,
+    stage:pickStage
+  };
+  if(!obj.cust){ $('#f_cust').focus(); return; }
+  if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
+  else { obj.id=nextId++; DATA.push(obj); }
+  closeModal(); render();
+}
+function del(){
+  if(editId && confirm('이 작업을 삭제할까요?')){
+    DATA=DATA.filter(x=>x.id!==editId); closeModal(); render();
+  }
+}
+
+/* ── export (gentle path: snapshot to clipboard/JSON) ── */
+function exportSnapshot(){
+  const blob = new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='workflow-snapshot-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ── wiring ── */
+$('#views').querySelectorAll('.view-tab').forEach(t=>t.onclick=()=>{
+  view=t.dataset.v;
+  $('#views').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x===t));
+  render();
+});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+  render();
+});
+$('#search').oninput=e=>{query=e.target.value;render();};
+$('#addBtn').onclick=openAdd;
+$('#closeX').onclick=closeModal;
+$('#cancelBtn').onclick=closeModal;
+$('#saveBtn').onclick=save;
+$('#delBtn').onclick=del;
+$('#exportBtn').onclick=exportSnapshot;
+$('#overlay').onclick=e=>{ if(e.target===$('#overlay')) closeModal(); };
+document.querySelectorAll('.stage-pick').forEach(p=>p.onclick=()=>setStagePicker(p.dataset.s));
+$('#themeBtn').onclick=()=>{
+  const b=document.body;
+  b.dataset.theme = b.dataset.theme==='dark'?'light':'dark';
+};
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+render();
+</script>
+</body>
+</html>

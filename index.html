@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CADDIS 레이저 — 허브</title>
+<style>
+:root {
+  --bg:      #0f1117;
+  --bg2:     #181c27;
+  --bg3:     #1e2333;
+  --border:  rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text:    #e8eaf0;
+  --muted:   #7c8299;
+  --accent:  #3d7fff;
+  --accent2: #5b9aff;
+  --green:   #22c55e;
+  --amber:   #f59e0b;
+  --red:     #ef4444;
+  --purple:  #a78bfa;
+  --teal:    #2dd4bf;
+  --font:    'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --mono:    'JetBrains Mono', 'Fira Code', monospace;
+  --r:       8px;
+  --r2:      12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── 헤더 ── */
+.header {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-tag {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+
+/* ── 메인 ── */
+.main {
+  padding: 48px 24px 64px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ── 히어로 ── */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.hero-eyebrow {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--accent2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hero-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.hero-title span {
+  color: var(--accent2);
+}
+.hero-sub {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ── 모듈 그리드 ── */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+@media (max-width: 700px) {
+  .module-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 24px; }
+}
+
+.module-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.module-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--card-color, var(--accent));
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.module-card:hover::before { opacity: 1; }
+
+.module-card.active:hover {
+  border-color: var(--card-color, var(--accent));
+  background: var(--bg3);
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+.module-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.module-card.locked:hover {
+  border-color: var(--border);
+  background: var(--bg2);
+  transform: none;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.card-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: var(--card-color, var(--accent));
+  opacity: 0.15;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  position: relative;
+}
+.card-icon-wrap {
+  position: relative;
+  width: 44px; height: 44px;
+}
+.card-icon-wrap .icon-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: var(--card-color, var(--accent));
+  opacity: 0.13;
+}
+.card-icon-wrap .icon-fg {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+
+.card-badge {
+  font-size: 10px;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.badge-live {
+  background: rgba(34,197,94,0.15);
+  color: var(--green);
+  border: 1px solid rgba(34,197,94,0.25);
+}
+.badge-locked {
+  background: rgba(124,130,153,0.12);
+  color: var(--muted);
+  border: 1px solid rgba(124,130,153,0.2);
+}
+.badge-dev {
+  background: rgba(245,158,11,0.12);
+  color: var(--amber);
+  border: 1px solid rgba(245,158,11,0.22);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.card-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-meta {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+.card-arrow {
+  font-size: 16px;
+  color: var(--muted);
+  transition: transform 0.15s, color 0.15s;
+}
+.module-card.active:hover .card-arrow {
+  transform: translateX(4px);
+  color: var(--card-color, var(--accent));
+}
+
+/* ── 잠금 오버레이 텍스트 ── */
+.lock-reason {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-top: 4px;
+}
+
+/* ── 시스템 상태 바 ── */
+.status-bar {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+.dot-amber { background: var(--amber); }
+.dot-gray  { background: var(--muted); }
+
+.status-label { color: var(--text); font-weight: 500; }
+.status-divider {
+  width: 1px; height: 16px;
+  background: var(--border);
+}
+.status-bar-title {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+
+/* ── 버전 footer ── */
+.foot {
+  text-align: center;
+  margin-top: 48px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+.foot a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot a:hover { color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="header">
+  <a class="logo" href="index.html">
+    <div class="logo-mark">C</div>
+    CADDIS 레이저
+  </a>
+  <div class="header-right">
+    <span class="header-tag">ByCut Nova 3015 · 6kW</span>
+  </div>
+</header>
+
+<!-- 메인 -->
+<main class="main">
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="hero-eyebrow">CADDIS Laser Management Hub</div>
+    <h1 class="hero-title">레이저 절단 <span>통합 관리 허브</span></h1>
+    <p class="hero-sub">외주관리 · 자재관리 · 견적 자동화 · 리포트</p>
+  </section>
+
+  <!-- 모듈 카드 -->
+  <div class="module-grid">
+
+    <!-- 외주관리 — LIVE -->
+    <a class="module-card active" href="outsource.html"
+       style="--card-color: #3d7fff;">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <div class="icon-bg"></div>
+          <div class="icon-fg">📋</div>
+        </div>
+        <span class="card-badge badge-live">● LIVE</span>
+      </div>
+      <div class="card-title">외주관리</div>
+      <div class="card-desc">건명 등록 · 발주 추적 · 납품 현황 · Drive 파일 연동. 장비 설치 전 임가공 운영 전용.</div>
+      <div class="card-footer">
+        <span class="card-meta">outsource.html</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 자재관리 — LOCKED -->
+    <div class="module-card locked"
+         style="--card-color: #22c55e;">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <div class="icon-bg"></div>
+          <div class="icon-fg">📦</div>
+        </div>
+        <span class="card-badge badge-locked">🔒 LOCKED</span>
+      </div>
+      <div class="card-title">자재관리</div>
+      <div class="card-desc">입고 · 재고 · 잔재 · 스크랩 통합 관리. OCR 자동 입고 포함.</div>
+      <div class="card-footer">
+        <span class="card-meta lock-reason">장비 가동 후 활성화</span>
+        <span class="card-arrow">—</span>
+      </div>
+    </div>
+
+    <!-- 견적 — DEV -->
+    <div class="module-card locked"
+         style="--card-color: #f59e0b;">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <div class="icon-bg"></div>
+          <div class="icon-fg">📐</div>
+        </div>
+        <span class="card-badge badge-dev">⚙ DEV</span>
+      </div>
+      <div class="card-title">견적 자동화</div>
+      <div class="card-desc">DXF 도면 → 절단길이 · 피어싱 자동 계산 → 견적서 PDF 생성.</div>
+      <div class="card-footer">
+        <span class="card-meta lock-reason">quote_dxf.py 연동 후</span>
+        <span class="card-arrow">—</span>
+      </div>
+    </div>
+
+    <!-- 리포트 — LOCKED -->
+    <div class="module-card locked"
+         style="--card-color: #a78bfa;">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <div class="icon-bg"></div>
+          <div class="icon-fg">📊</div>
+        </div>
+        <span class="card-badge badge-locked">🔒 LOCKED</span>
+      </div>
+      <div class="card-title">리포트</div>
+      <div class="card-desc">주·월간 매출 / 자재 소진 / 스크랩 리포트 자동 이메일 발송.</div>
+      <div class="card-footer">
+        <span class="card-meta lock-reason">GitHub Actions 연동 후</span>
+        <span class="card-arrow">—</span>
+      </div>
+    </div>
+
+    <!-- 작업 현황판 — DEV -->
+    <a class="module-card active" href="workflow-board.html"
+       style="--card-color: #2dd4bf;">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <div class="icon-bg"></div>
+          <div class="icon-fg">🗂️</div>
+        </div>
+        <span class="card-badge badge-dev">⚙ Stage 1</span>
+      </div>
+      <div class="card-title">작업 현황판</div>
+      <div class="card-desc">대기 · 진행 · 완료 · 납품 4단계 칸반 보드. 표 / 보드 / 타임라인 3가지 뷰 전환. Google Sheets 연동 예정.</div>
+      <div class="card-footer">
+        <span class="card-meta">workflow-board.html</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div><!-- /.module-grid -->
+
+  <!-- 시스템 상태 바 -->
+  <div class="status-bar">
+    <span class="status-bar-title">SYSTEM</span>
+    <div class="status-item">
+      <div class="status-dot dot-green"></div>
+      <span class="status-label">외주관리</span>
+      <span>운영중</span>
+    </div>
+    <div class="status-divider"></div>
+    <div class="status-item">
+      <div class="status-dot dot-amber"></div>
+      <span class="status-label">작업 현황판</span>
+      <span>Stage 1 (Sheets 연동 전)</span>
+    </div>
+    <div class="status-divider"></div>
+    <div class="status-item">
+      <div class="status-dot dot-amber"></div>
+      <span class="status-label">ByCut Nova 3015</span>
+      <span>설치 준비중</span>
+    </div>
+    <div class="status-divider"></div>
+    <div class="status-item">
+      <div class="status-dot dot-gray"></div>
+      <span class="status-label">자재관리 · 견적 · 리포트</span>
+      <span>대기</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>CADDIS 레이저 허브 v1.0 &nbsp;·&nbsp; </span>
+    <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a>
+    &nbsp;·&nbsp; 2026
+  </div>
+
+</main>
+
+</body>
+</html>
