@@ -197,7 +197,7 @@ a.doc::after{content:"↗";font-size:8px;opacity:.6}
         <th>상태</th>
         <th>납기일</th>
         <th style="text-align:right">발주금액</th>
-        <th>명세표</th>
+        <th>첨부파일</th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
@@ -235,8 +235,8 @@ a.doc::after{content:"↗";font-size:8px;opacity:.6}
         <input id="f_amount" type="number" placeholder="0">
       </div>
       <div class="field">
-        <label>명세표 (파일명 | 드라이브링크)</label>
-        <textarea id="f_invoice" placeholder="명세표_20260611.pdf | https://drive.google.com/..."></textarea>
+        <label>첨부파일 (파일명 | 드라이브링크)</label>
+        <textarea id="f_invoice" placeholder="도면_파이프.dxf | https://drive.google.com/...&#10;명세표_20260611.pdf | https://drive.google.com/..."></textarea>
         <span style="font-size:10.5px;color:var(--ink-faint);font-family:var(--mono)">링크 없으면 이름만 표시됩니다.</span>
       </div>
       <div class="field">
