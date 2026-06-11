@@ -5,478 +5,370 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CADDIS 레이저 — 허브</title>
 <style>
-:root {
-  --bg:      #0f1117;
-  --bg2:     #181c27;
-  --bg3:     #1e2333;
-  --border:  rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text:    #e8eaf0;
-  --muted:   #7c8299;
-  --accent:  #3d7fff;
-  --accent2: #5b9aff;
-  --green:   #22c55e;
-  --amber:   #f59e0b;
-  --red:     #ef4444;
-  --purple:  #a78bfa;
-  --teal:    #2dd4bf;
-  --font:    'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --mono:    'JetBrains Mono', 'Fira Code', monospace;
-  --r:       8px;
-  --r2:      12px;
-}
+  :root {
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --surface2:#1c2330;
+    --border:  #30363d;
+    --border2: #21262d;
+    --text:    #e6edf3;
+    --muted:   #8b949e;
+    --accent:  #e84545;
+    --green:   #3fb950;
+    --yellow:  #d29922;
+    --blue:    #58a6ff;
+    --purple:  #bc8cff;
+    --r:       6px;
+    --r2:      12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+  /* NAV */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo {
+    font-weight: 700; font-size: 15px;
+    color: var(--text); text-decoration: none;
+    margin-right: 28px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo span {
+    background: var(--accent); color: #fff;
+    border-radius: 4px; padding: 2px 7px;
+    font-size: 12px; font-weight: 800; letter-spacing: .5px;
+  }
+  .nav-links { display: flex; gap: 2px; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    padding: 6px 12px; border-radius: var(--r);
+    font-size: 13px; transition: color .15s, background .15s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface2); }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 64px 24px 48px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .hero-eyebrow {
+    font-size: 12px; font-weight: 600;
+    color: var(--muted); letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 32px; font-weight: 800;
+    line-height: 1.2; margin-bottom: 12px;
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero p {
+    color: var(--muted); font-size: 15px; max-width: 480px;
+    margin: 0 auto 24px;
+  }
+  .hero-meta {
+    display: inline-flex; gap: 20px; align-items: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 30px; padding: 8px 20px; font-size: 12px; color: var(--muted);
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-red    { background: var(--accent); }
 
-/* ── 헤더 ── */
-.header {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
-.logo-mark {
-  width: 28px; height: 28px;
-  background: var(--accent);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff;
-}
-.header-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.header-tag {
-  font-size: 11px;
-  color: var(--muted);
-  font-family: var(--mono);
-  letter-spacing: 0.05em;
-}
+  /* GRID */
+  .page { max-width: 1060px; margin: 0 auto; padding: 48px 24px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
 
-/* ── 메인 ── */
-.main {
-  padding: 48px 24px 64px;
-  max-width: 960px;
-  margin: 0 auto;
-}
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 12px;
+    text-decoration: none; color: var(--text);
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    opacity: 0; transition: opacity .2s;
+  }
+  .card:hover {
+    border-color: #484f58;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  }
+  .card:hover::before { opacity: 1; }
 
-/* ── 히어로 ── */
-.hero {
-  text-align: center;
-  margin-bottom: 56px;
-}
-.hero-eyebrow {
-  font-size: 11px;
-  font-family: var(--mono);
-  color: var(--accent2);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-.hero-title {
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: 10px;
-  line-height: 1.2;
-}
-.hero-title span {
-  color: var(--accent2);
-}
-.hero-sub {
-  font-size: 14px;
-  color: var(--muted);
-}
+  .card.live   { border-color: rgba(63,185,80,.25); }
+  .card.live::before { background: var(--green); opacity: 1; }
+  .card.locked { opacity: .55; pointer-events: none; }
+  .card.dev    {}
+  .card.dev::before { background: var(--yellow); }
 
-/* ── 모듈 그리드 ── */
-.module-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 40px;
-}
-@media (max-width: 700px) {
-  .module-grid { grid-template-columns: 1fr; }
-  .hero-title { font-size: 24px; }
-}
+  /* accent colors per card */
+  .card-outsource::before  { background: var(--blue); opacity:1; }
+  .card-service::before    { background: var(--accent); opacity:1; }
+  .card-workflow::before   { background: var(--yellow); }
 
-.module-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 28px;
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: border-color 0.18s, background 0.18s, transform 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.module-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--card-color, var(--accent));
-  opacity: 0;
-  transition: opacity 0.18s;
-}
-.module-card:hover::before { opacity: 1; }
+  .card-icon { font-size: 28px; line-height: 1; }
+  .card-head {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 8px;
+  }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .card-desc  { font-size: 13px; color: var(--muted); line-height: 1.55; flex: 1; }
+  .card-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-top: auto; padding-top: 12px;
+    border-top: 1px solid var(--border2);
+    font-size: 12px; color: var(--muted);
+  }
+  .card-link { color: var(--blue); font-size: 12px; text-decoration: none; }
+  .card-link:hover { text-decoration: underline; }
 
-.module-card.active:hover {
-  border-color: var(--card-color, var(--accent));
-  background: var(--bg3);
-  transform: translateY(-2px);
-  cursor: pointer;
-}
-.module-card.locked {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.module-card.locked:hover {
-  border-color: var(--border);
-  background: var(--bg2);
-  transform: none;
-}
+  /* badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .badge-live   { background: rgba(63,185,80,.15);  color: var(--green);  border: 1px solid rgba(63,185,80,.3); }
+  .badge-locked { background: rgba(139,148,158,.1); color: var(--muted);  border: 1px solid var(--border); }
+  .badge-dev    { background: rgba(210,153,34,.15); color: var(--yellow); border: 1px solid rgba(210,153,34,.3); }
+  .badge-new    { background: rgba(232,69,69,.15);  color: #ff6b6b;       border: 1px solid rgba(232,69,69,.3); }
 
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-.card-icon {
-  width: 44px; height: 44px;
-  border-radius: 10px;
-  background: var(--card-color, var(--accent));
-  opacity: 0.15;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-  position: relative;
-}
-.card-icon-wrap {
-  position: relative;
-  width: 44px; height: 44px;
-}
-.card-icon-wrap .icon-bg {
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  background: var(--card-color, var(--accent));
-  opacity: 0.13;
-}
-.card-icon-wrap .icon-fg {
-  position: absolute;
-  inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-}
+  /* STATUS BAR */
+  .status-bar {
+    max-width: 1060px; margin: 0 auto 0;
+    padding: 0 24px 48px;
+  }
+  .status-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 20px 24px;
+    display: flex; gap: 32px; align-items: center; flex-wrap: wrap;
+  }
+  .status-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .status-item .label { color: var(--muted); }
+  .status-sep { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; }
 
-.card-badge {
-  font-size: 10px;
-  font-family: var(--mono);
-  letter-spacing: 0.06em;
-  padding: 3px 8px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-.badge-live {
-  background: rgba(34,197,94,0.15);
-  color: var(--green);
-  border: 1px solid rgba(34,197,94,0.25);
-}
-.badge-locked {
-  background: rgba(124,130,153,0.12);
-  color: var(--muted);
-  border: 1px solid rgba(124,130,153,0.2);
-}
-.badge-dev {
-  background: rgba(245,158,11,0.12);
-  color: var(--amber);
-  border: 1px solid rgba(245,158,11,0.22);
-}
+  /* FOOTER */
+  footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border2);
+    text-align: center; font-size: 12px; color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
 
-.card-title {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.card-desc {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.card-footer {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.card-meta {
-  font-size: 11px;
-  font-family: var(--mono);
-  color: var(--muted);
-}
-.card-arrow {
-  font-size: 16px;
-  color: var(--muted);
-  transition: transform 0.15s, color 0.15s;
-}
-.module-card.active:hover .card-arrow {
-  transform: translateX(4px);
-  color: var(--card-color, var(--accent));
-}
-
-/* ── 잠금 오버레이 텍스트 ── */
-.lock-reason {
-  font-size: 11px;
-  color: var(--muted);
-  font-family: var(--mono);
-  margin-top: 4px;
-}
-
-/* ── 시스템 상태 바 ── */
-.status-bar {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.status-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.dot-green { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-.dot-amber { background: var(--amber); }
-.dot-gray  { background: var(--muted); }
-
-.status-label { color: var(--text); font-weight: 500; }
-.status-divider {
-  width: 1px; height: 16px;
-  background: var(--border);
-}
-.status-bar-title {
-  font-size: 11px;
-  font-family: var(--mono);
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  margin-right: 4px;
-}
-
-/* ── 버전 footer ── */
-.foot {
-  text-align: center;
-  margin-top: 48px;
-  font-size: 11px;
-  color: var(--muted);
-  font-family: var(--mono);
-  letter-spacing: 0.05em;
-}
-.foot a {
-  color: var(--muted);
-  text-decoration: none;
-}
-.foot a:hover { color: var(--accent2); }
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 24px; }
+    .hero-meta { flex-direction: column; gap: 8px; }
+    .status-panel { gap: 16px; }
+    .status-sep { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<!-- 헤더 -->
-<header class="header">
-  <a class="logo" href="index.html">
-    <div class="logo-mark">C</div>
-    CADDIS 레이저
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span>C</span> CADDIS 레이저
   </a>
-  <div class="header-right">
-    <span class="header-tag">ByCut Nova 3015 · 6kW</span>
+  <div class="nav-links">
+    <a href="outsource.html">외주관리</a>
+    <a href="#">자재관리</a>
+    <a href="#">견적</a>
+    <a href="service.html">서비스</a>
+    <a href="#">리포트</a>
   </div>
-</header>
+</nav>
 
-<!-- 메인 -->
-<main class="main">
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">CADDIS Laser Management Hub</div>
+  <h1>레이저 절단 <em>통합 관리</em> 허브</h1>
+  <p>외주관리 · 자재관리 · 견적 자동화 · 서비스 · 리포트</p>
+  <div class="hero-meta">
+    <span><span class="dot dot-green"></span> 외주관리 운영중</span>
+    <span><span class="dot dot-green"></span> 서비스 관리 운영중</span>
+    <span><span class="dot dot-yellow"></span> ByCut Nova 3015 설치 준비중</span>
+  </div>
+</div>
 
-  <!-- 히어로 -->
-  <section class="hero">
-    <div class="hero-eyebrow">CADDIS Laser Management Hub</div>
-    <h1 class="hero-title">레이저 절단 <span>통합 관리 허브</span></h1>
-    <p class="hero-sub">외주관리 · 자재관리 · 견적 자동화 · 리포트</p>
-  </section>
+<!-- CARDS -->
+<div class="page">
+  <div class="grid">
 
-  <!-- 모듈 카드 -->
-  <div class="module-grid">
-
-    <!-- 외주관리 — LIVE -->
-    <a class="module-card active" href="outsource.html"
-       style="--card-color: #3d7fff;">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <div class="icon-bg"></div>
-          <div class="icon-fg">📋</div>
-        </div>
-        <span class="card-badge badge-live">● LIVE</span>
+    <!-- 외주관리 -->
+    <a class="card live card-outsource" href="outsource.html">
+      <div class="card-head">
+        <div class="card-icon">📋</div>
+        <span class="badge badge-live">● LIVE</span>
       </div>
-      <div class="card-title">외주관리</div>
-      <div class="card-desc">건명 등록 · 발주 추적 · 납품 현황 · Drive 파일 연동. 장비 설치 전 임가공 운영 전용.</div>
+      <div>
+        <div class="card-title">외주관리</div>
+        <div class="card-desc">건명 등록 · 발주 추적 · 납품 현황 · Drive 파일 연동. 장비 설치 전 임가공 운영 전용.</div>
+      </div>
       <div class="card-footer">
-        <span class="card-meta">outsource.html</span>
-        <span class="card-arrow">→</span>
+        <span>outsource.html</span>
+        <span class="card-link">열기 →</span>
       </div>
     </a>
 
-    <!-- 자재관리 — LOCKED -->
-    <div class="module-card locked"
-         style="--card-color: #22c55e;">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <div class="icon-bg"></div>
-          <div class="icon-fg">📦</div>
+    <!-- 서비스 관리 — 신규 -->
+    <a class="card live card-service" href="service.html">
+      <div class="card-head">
+        <div class="card-icon">⚙</div>
+        <div style="display:flex;gap:6px;">
+          <span class="badge badge-live">● LIVE</span>
+          <span class="badge badge-new">NEW</span>
         </div>
-        <span class="card-badge badge-locked">🔒 LOCKED</span>
       </div>
-      <div class="card-title">자재관리</div>
-      <div class="card-desc">입고 · 재고 · 잔재 · 스크랩 통합 관리. OCR 자동 입고 포함.</div>
+      <div>
+        <div class="card-title">서비스 관리</div>
+        <div class="card-desc">장비 고장 접수 · 조치 이력 · Drive 증빙 연동. 증상 패턴 분석으로 재발 방지.</div>
+      </div>
       <div class="card-footer">
-        <span class="card-meta lock-reason">장비 가동 후 활성화</span>
-        <span class="card-arrow">—</span>
-      </div>
-    </div>
-
-    <!-- 견적 — DEV -->
-    <div class="module-card locked"
-         style="--card-color: #f59e0b;">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <div class="icon-bg"></div>
-          <div class="icon-fg">📐</div>
-        </div>
-        <span class="card-badge badge-dev">⚙ DEV</span>
-      </div>
-      <div class="card-title">견적 자동화</div>
-      <div class="card-desc">DXF 도면 → 절단길이 · 피어싱 자동 계산 → 견적서 PDF 생성.</div>
-      <div class="card-footer">
-        <span class="card-meta lock-reason">quote_dxf.py 연동 후</span>
-        <span class="card-arrow">—</span>
-      </div>
-    </div>
-
-    <!-- 리포트 — LOCKED -->
-    <div class="module-card locked"
-         style="--card-color: #a78bfa;">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <div class="icon-bg"></div>
-          <div class="icon-fg">📊</div>
-        </div>
-        <span class="card-badge badge-locked">🔒 LOCKED</span>
-      </div>
-      <div class="card-title">리포트</div>
-      <div class="card-desc">주·월간 매출 / 자재 소진 / 스크랩 리포트 자동 이메일 발송.</div>
-      <div class="card-footer">
-        <span class="card-meta lock-reason">GitHub Actions 연동 후</span>
-        <span class="card-arrow">—</span>
-      </div>
-    </div>
-
-    <!-- 작업 현황판 — DEV -->
-    <a class="module-card active" href="workflow-board.html"
-       style="--card-color: #2dd4bf;">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <div class="icon-bg"></div>
-          <div class="icon-fg">🗂️</div>
-        </div>
-        <span class="card-badge badge-dev">⚙ Stage 1</span>
-      </div>
-      <div class="card-title">작업 현황판</div>
-      <div class="card-desc">대기 · 진행 · 완료 · 납품 4단계 칸반 보드. 표 / 보드 / 타임라인 3가지 뷰 전환. Google Sheets 연동 예정.</div>
-      <div class="card-footer">
-        <span class="card-meta">workflow-board.html</span>
-        <span class="card-arrow">→</span>
+        <span>service.html</span>
+        <span class="card-link">열기 →</span>
       </div>
     </a>
 
-  </div><!-- /.module-grid -->
+    <!-- 작업 현황판 -->
+    <a class="card dev card-workflow" href="workflow-board.html">
+      <div class="card-head">
+        <div class="card-icon">🗂️</div>
+        <span class="badge badge-dev">⚙ Stage 1</span>
+      </div>
+      <div>
+        <div class="card-title">작업 현황판</div>
+        <div class="card-desc">대기 · 진행 · 완료 · 납품 4단계 칸반 보드. 표 / 보드 / 타임라인 3가지 뷰 전환. Google Sheets 연동 예정.</div>
+      </div>
+      <div class="card-footer">
+        <span>workflow-board.html</span>
+        <span class="card-link">열기 →</span>
+      </div>
+    </a>
 
-  <!-- 시스템 상태 바 -->
-  <div class="status-bar">
-    <span class="status-bar-title">SYSTEM</span>
-    <div class="status-item">
-      <div class="status-dot dot-green"></div>
-      <span class="status-label">외주관리</span>
-      <span>운영중</span>
+    <!-- 자재관리 -->
+    <div class="card locked">
+      <div class="card-head">
+        <div class="card-icon">📦</div>
+        <span class="badge badge-locked">🔒 LOCKED</span>
+      </div>
+      <div>
+        <div class="card-title">자재관리</div>
+        <div class="card-desc">입고 · 재고 · 잔재 · 스크랩 통합 관리. OCR 자동 입고 포함.</div>
+      </div>
+      <div class="card-footer">
+        <span>장비 가동 후 활성화</span>
+      </div>
     </div>
-    <div class="status-divider"></div>
-    <div class="status-item">
-      <div class="status-dot dot-amber"></div>
-      <span class="status-label">작업 현황판</span>
-      <span>Stage 1 (Sheets 연동 전)</span>
+
+    <!-- 견적 자동화 -->
+    <div class="card dev">
+      <div class="card-head">
+        <div class="card-icon">📐</div>
+        <span class="badge badge-dev">⚙ DEV</span>
+      </div>
+      <div>
+        <div class="card-title">견적 자동화</div>
+        <div class="card-desc">DXF 도면 → 절단길이 · 피어싱 자동 계산 → 견적서 PDF 생성.</div>
+      </div>
+      <div class="card-footer">
+        <span>quote_dxf.py 연동 후</span>
+      </div>
     </div>
-    <div class="status-divider"></div>
-    <div class="status-item">
-      <div class="status-dot dot-amber"></div>
-      <span class="status-label">ByCut Nova 3015</span>
-      <span>설치 준비중</span>
+
+    <!-- 리포트 -->
+    <div class="card locked">
+      <div class="card-head">
+        <div class="card-icon">📊</div>
+        <span class="badge badge-locked">🔒 LOCKED</span>
+      </div>
+      <div>
+        <div class="card-title">리포트</div>
+        <div class="card-desc">주·월간 매출 / 자재 소진 / 스크랩 리포트 자동 이메일 발송.</div>
+      </div>
+      <div class="card-footer">
+        <span>GitHub Actions 연동 후</span>
+      </div>
     </div>
-    <div class="status-divider"></div>
+
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-panel">
     <div class="status-item">
-      <div class="status-dot dot-gray"></div>
-      <span class="status-label">자재관리 · 견적 · 리포트</span>
-      <span>대기</span>
+      <span class="dot dot-green"></span>
+      <span class="label">외주관리</span>
+      <strong>운영중</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
+      <span class="dot dot-green"></span>
+      <span class="label">서비스 관리</span>
+      <strong>운영중</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
+      <span class="dot dot-yellow"></span>
+      <span class="label">작업 현황판</span>
+      <strong>Stage 1 (Sheets 연동 전)</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
+      <span class="dot dot-yellow"></span>
+      <span class="label">ByCut Nova 3015</span>
+      <strong>설치 준비중</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
+      <span class="dot dot-red"></span>
+      <span class="label">자재관리 · 견적 · 리포트</span>
+      <strong>대기</strong>
     </div>
   </div>
+</div>
 
-  <div class="foot">
-    <span>CADDIS 레이저 허브 v1.0 &nbsp;·&nbsp; </span>
-    <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a>
-    &nbsp;·&nbsp; 2026
-  </div>
-
-</main>
+<!-- FOOTER -->
+<footer>
+  CADDIS 레이저 허브 v1.1 ·
+  <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a> · 2026
+</footer>
 
 </body>
 </html>
