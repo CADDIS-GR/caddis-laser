@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>설치 준비 일지 — CADDIS 레이저</title>
+<style>
+  :root {
+    --bg:        #0d1117;
+    --bg2:       #161b22;
+    --bg3:       #1c2333;
+    --border:    #30363d;
+    --border2:   #21262d;
+    --accent:    #e05a2b;
+    --accent2:   #ff7a50;
+    --blue:      #2e75b6;
+    --blue2:     #58a6ff;
+    --green:     #3fb950;
+    --yellow:    #d29922;
+    --muted:     #8b949e;
+    --text:      #c9d1d9;
+    --text2:     #e6edf3;
+    --red:       #f85149;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --font-body: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── 헤더 ──────────────────────────────────────────── */
+  .site-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .site-logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .06em;
+    text-decoration: none;
+  }
+  .site-logo span { color: var(--text2); }
+  .site-header-sep { color: var(--border); margin: 0 4px; }
+  .site-header-sub { font-size: 12px; color: var(--muted); }
+
+  /* ── 히어로 ────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(224,90,43,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(224,90,43,.15);
+    border: 1px solid rgba(224,90,43,.35);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: .08em;
+    margin-bottom: 20px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .4; transform: scale(.7); }
+  }
+  .hero-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text2);
+    letter-spacing: -.02em;
+    margin-bottom: 8px;
+  }
+  .hero-title em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── D-Day 카운터 ──────────────────────────────────── */
+  .dday-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 32px;
+    margin-bottom: 8px;
+  }
+  .dday-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .dday-num {
+    font-family: var(--font-mono);
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -.04em;
+  }
+  .dday-unit { font-size: 18px; color: var(--muted); font-weight: 600; }
+  .dday-date { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .progress-bar-wrap {
+    max-width: 360px;
+    margin: 16px auto 0;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width .6s ease;
+  }
+
+  /* ── 메인 레이아웃 ─────────────────────────────────── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── 섹션 타이틀 ───────────────────────────────────── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── 오늘 일지 카드 ─────────────────────────────────── */
+  .today-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .today-card-header {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .today-date-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .today-dday-badge {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(224,90,43,.15);
+    border: 1px solid rgba(224,90,43,.3);
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+  .today-date-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text2);
+  }
+  .today-date-sub { font-size: 12px; color: var(--muted); }
+  .save-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: background .15s;
+  }
+  .save-btn:hover { background: var(--accent2); }
+
+  .today-body { padding: 20px; display: grid; gap: 20px; }
+
+  /* ── 입력 공통 ─────────────────────────────────────── */
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  textarea, input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px 12px;
+    resize: vertical;
+    transition: border-color .15s;
+    outline: none;
+  }
+  textarea:focus, input[type="text"]:focus {
+    border-color: var(--blue);
+  }
+  textarea { min-height: 90px; }
+
+  /* ── 체크리스트 ────────────────────────────────────── */
+  .checklist-wrap { display: grid; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .check-item:hover { border-color: var(--border); background: var(--bg3); }
+  .check-item.done { background: rgba(63,185,80,.06); border-color: rgba(63,185,80,.3); }
+  .check-item input[type="checkbox"] { display: none; }
+  .check-icon {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    font-size: 11px;
+  }
+  .check-item.done .check-icon {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .check-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+    transition: color .15s;
+  }
+  .check-item.done .check-text {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--muted);
+  }
+  .check-add {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .check-add input {
+    flex: 1;
+    min-height: unset;
+    padding: 8px 12px;
+  }
+  .check-add-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .check-add-btn:hover { background: var(--border); }
+
+  /* ── 상태 태그 ─────────────────────────────────────── */
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .status-tag {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .15s;
+    opacity: .5;
+  }
+  .status-tag.active { opacity: 1; }
+  .status-tag.s-normal  { background: rgba(88,166,255,.15);  border-color: rgba(88,166,255,.4);  color: var(--blue2); }
+  .status-tag.s-good    { background: rgba(63,185,80,.15);   border-color: rgba(63,185,80,.4);   color: var(--green); }
+  .status-tag.s-issue   { background: rgba(248,81,73,.15);   border-color: rgba(248,81,73,.4);   color: var(--red); }
+  .status-tag.s-pending { background: rgba(210,153,34,.15);  border-color: rgba(210,153,34,.4);  color: var(--yellow); }
+
+  /* ── 과거 일지 목록 ─────────────────────────────────── */
+  .log-list { display: grid; gap: 10px; }
+  .log-item {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+    transition: border-color .15s;
+  }
+  .log-item:hover { border-color: var(--border); }
+  .log-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    gap: 12px;
+  }
+  .log-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .log-dday {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(224,90,43,.12);
+    border: 1px solid rgba(224,90,43,.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    min-width: 56px;
+    text-align: center;
+  }
+  .log-date { font-size: 13px; font-weight: 600; color: var(--text2); }
+  .log-preview { font-size: 12px; color: var(--muted); }
+  .log-right { display: flex; align-items: center; gap: 8px; }
+  .log-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .log-chevron {
+    color: var(--muted);
+    font-size: 11px;
+    transition: transform .2s;
+  }
+  .log-item.open .log-chevron { transform: rotate(90deg); }
+
+  .log-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border2);
+  }
+  .log-item.open .log-body { display: block; }
+  .log-section { margin-top: 14px; }
+  .log-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .log-text {
+    font-size: 13px;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.65;
+  }
+  .log-checks { display: grid; gap: 4px; margin-top: 4px; }
+  .log-check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .log-check-item.done { color: var(--muted); text-decoration: line-through; }
+  .log-check-item::before {
+    content: '○';
+    color: var(--border);
+    font-size: 11px;
+  }
+  .log-check-item.done::before { content: '●'; color: var(--green); }
+
+  /* ── 빈 상태 ───────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .empty-state-icon { font-size: 32px; margin-bottom: 10px; opacity: .5; }
+
+  /* ── 저장 토스트 ────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg3);
+    border: 1px solid var(--green);
+    color: var(--green);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all .3s ease;
+    z-index: 100;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── 반응형 ────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .hero-title { font-size: 22px; }
+    .dday-num { font-size: 44px; }
+    .container { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 사이트 헤더 -->
+<header class="site-header">
+  <a class="site-logo" href="https://caddis-gr.github.io/caddis-laser/">C <span>CADDIS 레이저</span></a>
+  <span class="site-header-sep">›</span>
+  <span class="site-header-sub">설치 준비 일지</span>
+</header>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    ByCut Nova 3015 6kW · 설치 카운트다운
+  </div>
+  <h1 class="hero-title">장비 설치까지 <em id="hero-dday">D-??</em></h1>
+  <p class="hero-sub">매일의 구상·진행·점검을 기록합니다 &nbsp;·&nbsp; 설치일 2026.06.23</p>
+
+  <div class="dday-wrap">
+    <span class="dday-label">D</span>
+    <span class="dday-num" id="dday-num">—</span>
+    <span class="dday-unit">일</span>
+  </div>
+  <div class="dday-date" id="dday-date"></div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="prog-start"></span>
+      <span id="prog-pct"></span>
+      <span>D-Day 06.23</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 메인 -->
+<main class="container">
+
+  <!-- 오늘 일지 -->
+  <div class="section-title">오늘 일지 작성</div>
+
+  <div class="today-card">
+    <div class="today-card-header">
+      <div class="today-date-info">
+        <span class="today-dday-badge" id="card-dday">D-??</span>
+        <div>
+          <div class="today-date-text" id="card-date">—</div>
+          <div class="today-date-sub">ByCut Nova 3015 설치 준비</div>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveToday()">💾 저장</button>
+    </div>
+
+    <div class="today-body">
+
+      <!-- 오늘의 구상 -->
+      <div>
+        <div class="field-label">📝 오늘의 구상 / 메모</div>
+        <textarea id="memo" placeholder="오늘 떠오른 아이디어, 준비 사항, 고민 등을 자유롭게 기록하세요…"></textarea>
+      </div>
+
+      <!-- 진행 사항 -->
+      <div>
+        <div class="field-label">🔧 진행 / 완료 사항</div>
+        <textarea id="progress" placeholder="오늘 실제로 진행하거나 완료한 작업을 기록하세요…"></textarea>
+      </div>
+
+      <!-- 체크리스트 -->
+      <div>
+        <div class="field-label">✅ 점검 / 할 일</div>
+        <div class="checklist-wrap" id="checklist"></div>
+        <div class="check-add">
+          <input type="text" id="check-input" placeholder="항목 추가…" onkeydown="if(event.key==='Enter')addCheck()">
+          <button class="check-add-btn" onclick="addCheck()">+ 추가</button>
+        </div>
+      </div>
+
+      <!-- 전체 상태 -->
+      <div>
+        <div class="field-label">📊 오늘 전체 상태</div>
+        <div class="status-row" id="status-row">
+          <span class="status-tag s-normal active" onclick="setStatus('normal', this)">순조로움</span>
+          <span class="status-tag s-good"           onclick="setStatus('good',   this)">진척 있음</span>
+          <span class="status-tag s-issue"          onclick="setStatus('issue',  this)">이슈 발생</span>
+          <span class="status-tag s-pending"        onclick="setStatus('pending',this)">대기 중</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 과거 일지 -->
+  <div class="section-title">기록된 일지</div>
+  <div id="log-list" class="log-list">
+    <div class="empty-state">
+      <div class="empty-state-icon">📋</div>
+      아직 저장된 일지가 없습니다.<br>오늘 첫 일지를 작성해 보세요.
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast">✓ 저장되었습니다</div>
+
+<script>
+// ── 날짜 계산 ──────────────────────────────────────────────
+const INSTALL_DATE = new Date('2026-06-23T00:00:00');
+const START_DATE   = new Date('2026-06-11T00:00:00'); // 오늘 기준 시작일
+
+function getToday() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+function diffDays(a, b) {
+  return Math.round((b - a) / 86400000);
+}
+function fmt(d) {
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function dayName(d) {
+  return ['일','월','화','수','목','금','토'][d.getDay()] + '요일';
+}
+
+function initHeader() {
+  const today = getToday();
+  const diff  = diffDays(today, INSTALL_DATE);
+  const total = diffDays(START_DATE, INSTALL_DATE);
+  const elapsed = diffDays(START_DATE, today);
+  const pct = Math.min(100, Math.max(0, Math.round(elapsed / total * 100)));
+
+  const ddayStr = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-Day' : `D+${Math.abs(diff)}`;
+
+  document.getElementById('hero-dday').textContent = ddayStr;
+  document.getElementById('dday-num').textContent  = diff > 0 ? diff : (diff === 0 ? '0' : Math.abs(diff));
+  document.getElementById('dday-date').textContent = `오늘 ${fmt(today)} (${dayName(today)}) · 설치 예정 ${fmt(INSTALL_DATE)}`;
+  document.getElementById('card-dday').textContent  = ddayStr;
+  document.getElementById('card-date').textContent  = `${fmt(today)} (${dayName(today)})`;
+  document.getElementById('prog-start').textContent = fmt(START_DATE);
+  document.getElementById('prog-pct').textContent   = `${pct}%`;
+  document.getElementById('prog-fill').style.width  = pct + '%';
+}
+
+// ── 상태 ──────────────────────────────────────────────────
+let currentStatus = 'normal';
+function setStatus(val, el) {
+  currentStatus = val;
+  document.querySelectorAll('.status-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── 체크리스트 ────────────────────────────────────────────
+let checks = [
+  { text: '전기 분전함 준비 확인', done: false },
+  { text: '1종 단독 접지 공사 일정', done: false },
+  { text: '에어 컴프레셔 (20마력 이상) 점검', done: false },
+  { text: '절단 가스 공급업체 확인 (질소/산소)', done: false },
+  { text: '바닥 평평도 점검 (±5mm/5m)', done: false },
+  { text: '하차 공간 및 크레인 진입 확인', done: false },
+  { text: 'BySoft 7 PC 네트워크 설정', done: false },
+];
+
+function renderChecks() {
+  const wrap = document.getElementById('checklist');
+  wrap.innerHTML = checks.map((c, i) => `
+    <label class="check-item${c.done?' done':''}" onclick="toggleCheck(${i})">
+      <span class="check-icon">${c.done ? '✓' : ''}</span>
+      <span class="check-text">${c.text}</span>
+    </label>
+  `).join('');
+}
+
+function toggleCheck(i) {
+  checks[i].done = !checks[i].done;
+  renderChecks();
+}
+
+function addCheck() {
+  const inp = document.getElementById('check-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  checks.push({ text: val, done: false });
+  inp.value = '';
+  renderChecks();
+}
+
+// ── 저장 ──────────────────────────────────────────────────
+function saveToday() {
+  const today  = getToday();
+  const key    = fmtKey(today);
+  const diff   = diffDays(today, INSTALL_DATE);
+  const ddayStr = diff > 0 ? `D-${diff}` : diff === 0 ? 'D-Day' : `D+${Math.abs(diff)}`;
+
+  const entry = {
+    date:     fmt(today),
+    dayName:  dayName(today),
+    dday:     ddayStr,
+    memo:     document.getElementById('memo').value.trim(),
+    progress: document.getElementById('progress').value.trim(),
+    checks:   checks.map(c => ({ ...c })),
+    status:   currentStatus,
+    savedAt:  new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' })
+  };
+
+  const all = loadLogs();
+  all[key] = entry;
+  localStorage.setItem('caddis_install_log', JSON.stringify(all));
+  renderLogs();
+  showToast();
+}
+
+function loadLogs() {
+  try { return JSON.parse(localStorage.getItem('caddis_install_log') || '{}'); }
+  catch { return {}; }
+}
+
+// ── 로그 렌더링 ───────────────────────────────────────────
+const STATUS_COLOR = { normal:'#58a6ff', good:'#3fb950', issue:'#f85149', pending:'#d29922' };
+const STATUS_LABEL = { normal:'순조로움', good:'진척 있음', issue:'이슈 발생', pending:'대기 중' };
+
+function renderLogs() {
+  const all  = loadLogs();
+  const keys = Object.keys(all).sort().reverse();
+  const wrap = document.getElementById('log-list');
+
+  if (!keys.length) {
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        아직 저장된 일지가 없습니다.<br>오늘 첫 일지를 작성해 보세요.
+      </div>`;
+    return;
+  }
+
+  wrap.innerHTML = keys.map(k => {
+    const e = all[k];
+    const dotColor = STATUS_COLOR[e.status] || '#8b949e';
+    const preview  = e.memo || e.progress || '내용 없음';
+    const prevShort = preview.length > 40 ? preview.slice(0,40)+'…' : preview;
+
+    const doneCount = (e.checks||[]).filter(c=>c.done).length;
+    const totalCount = (e.checks||[]).length;
+    const checkStr = totalCount ? ` · 체크 ${doneCount}/${totalCount}` : '';
+
+    const checksHtml = (e.checks||[]).map(c =>
+      `<div class="log-check-item${c.done?' done':''}">${c.text}</div>`
+    ).join('');
+
+    return `
+    <div class="log-item" id="log-${k}">
+      <div class="log-item-header" onclick="toggleLog('${k}')">
+        <div class="log-item-left">
+          <span class="log-dday">${e.dday}</span>
+          <div>
+            <div class="log-date">${e.date} (${e.dayName})</div>
+            <div class="log-preview">${prevShort}${checkStr}</div>
+          </div>
+        </div>
+        <div class="log-right">
+          <span class="log-status-dot" style="background:${dotColor}"></span>
+          <span style="font-size:11px;color:var(--muted)">${STATUS_LABEL[e.status]||''}</span>
+          <span class="log-chevron">▶</span>
+        </div>
+      </div>
+      <div class="log-body">
+        ${e.memo ? `<div class="log-section"><div class="log-section-title">구상 / 메모</div><div class="log-text">${e.memo}</div></div>` : ''}
+        ${e.progress ? `<div class="log-section"><div class="log-section-title">진행 / 완료</div><div class="log-text">${e.progress}</div></div>` : ''}
+        ${totalCount ? `<div class="log-section"><div class="log-section-title">점검 항목 (${doneCount}/${totalCount})</div><div class="log-checks">${checksHtml}</div></div>` : ''}
+        <div style="margin-top:14px;font-size:11px;color:var(--muted)">저장: ${e.savedAt||''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleLog(k) {
+  document.getElementById(`log-${k}`).classList.toggle('open');
+}
+
+// ── 토스트 ────────────────────────────────────────────────
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── 초기화 ────────────────────────────────────────────────
+initHeader();
+renderChecks();
+renderLogs();
+</script>
+</body>
+</html>
