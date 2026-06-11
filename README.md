@@ -13,6 +13,7 @@
 | 외주관리 | `outsource.html` | ● LIVE | 건명 등록 · 발주 추적 · 납품 현황 |
 | 서비스 관리 | `service.html` | ● LIVE | 장비 고장 접수 · 조치 이력 · 패턴 분석 |
 | 작업 현황판 | `workflow-board.html` | ⚙ Stage 1 | 칸반 보드 (Google Sheets 연동 예정) |
+| 설치 준비 일지 | `install-log.html` | ● LIVE | D-Day 카운트다운 · 매일 구상·진행·점검 기록 |
 | 자재관리 | — | 🔒 LOCKED | 장비 가동 후 활성화 |
 | 견적 자동화 | — | ⚙ DEV | `quote_dxf.py` 연동 후 |
 | 리포트 | — | 🔒 LOCKED | GitHub Actions 연동 후 |
@@ -71,6 +72,23 @@ SVC-YYYY-NNN    예) SVC-2026-001
 
 ---
 
+## 설치 준비 일지 (`install-log.html`)
+
+ByCut Nova 3015 장비 설치일(2026.06.23)까지 매일의 구상·진행·점검을 기록합니다.
+
+### 주요 기능
+
+- **D-Day 카운트다운** — 설치일까지 자동 계산, 진행률 바 표시
+- **오늘 일지** — 구상/메모, 진행/완료 사항, 점검 체크리스트, 전체 상태 태그
+- **체크리스트** — 설치 준비 항목 관리 (전기·접지·가스·바닥·네트워크 등)
+- **일지 아카이브** — 날짜별 아코디언 목록으로 누적 보존
+
+### 데이터 저장
+
+브라우저 `localStorage` 기반 (설치 완료 후 업무일지로 전환 예정)
+
+---
+
 ## 외주관리 (`outsource.html`)
 
 장비 설치 전 임가공 운영 전용. Google Sheets 연동으로 실시간 데이터 관리.
@@ -121,6 +139,7 @@ https://drive.google.com/drive/folders/1gM-LJ32RAoxyLVje9O-umkyf58p-zHcD
 
 | 버전 | 날짜 | 내용 |
 |------|------|------|
+| v1.2 | 2026-06-11 | 설치 준비 일지 추가 (`install-log.html`), 허브 D-Day 카운터 |
 | v1.1 | 2026-06-11 | 서비스 관리 페이지 추가 (`service.html`) |
 | v1.0 | 2026-06-07 | 외주관리 · 작업 현황판 · 허브 초기 구축 |
 

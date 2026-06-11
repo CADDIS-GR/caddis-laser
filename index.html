@@ -132,6 +132,12 @@
   .card-outsource::before  { background: var(--blue); opacity:1; }
   .card-service::before    { background: var(--accent); opacity:1; }
   .card-workflow::before   { background: var(--yellow); }
+  .card-installlog::before { background: #e05a2b; opacity:1; }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:.4; transform:scale(.7); }
+  }
 
   .card-icon { font-size: 28px; line-height: 1; }
   .card-head {
@@ -211,6 +217,7 @@
     <a href="#">견적</a>
     <a href="service.html">서비스</a>
     <a href="#">리포트</a>
+    <a href="install-log.html">설치일지</a>
   </div>
 </nav>
 
@@ -223,6 +230,7 @@
     <span><span class="dot dot-green"></span> 외주관리 운영중</span>
     <span><span class="dot dot-green"></span> 서비스 관리 운영중</span>
     <span><span class="dot dot-yellow"></span> ByCut Nova 3015 설치 준비중</span>
+    <span id="hero-dday-meta"><span class="dot dot-red" style="animation:pulse-dot 1.2s ease-in-out infinite"></span> <span id="hero-dday-text">D-??</span></span>
   </div>
 </div>
 
@@ -277,6 +285,25 @@
       </div>
       <div class="card-footer">
         <span>workflow-board.html</span>
+        <span class="card-link">열기 →</span>
+      </div>
+    </a>
+
+    <!-- 설치 준비 일지 -->
+    <a class="card live card-installlog" href="install-log.html">
+      <div class="card-head">
+        <div class="card-icon">📅</div>
+        <div style="display:flex;gap:6px;">
+          <span class="badge badge-live">● LIVE</span>
+          <span class="badge badge-new" id="card-dday-badge">D-??</span>
+        </div>
+      </div>
+      <div>
+        <div class="card-title">설치 준비 일지</div>
+        <div class="card-desc">장비 설치일(06.23)까지 매일의 구상·진행·점검을 기록. D-Day 카운트다운 + 체크리스트.</div>
+      </div>
+      <div class="card-footer">
+        <span>install-log.html</span>
         <span class="card-link">열기 →</span>
       </div>
     </a>
@@ -357,6 +384,12 @@
     </div>
     <div class="status-sep"></div>
     <div class="status-item">
+      <span class="dot dot-yellow" style="animation:pulse-dot 1.2s ease-in-out infinite"></span>
+      <span class="label">장비 설치</span>
+      <strong id="status-dday">D-??</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
       <span class="dot dot-red"></span>
       <span class="label">자재관리 · 견적 · 리포트</span>
       <strong>대기</strong>
@@ -366,9 +399,19 @@
 
 <!-- FOOTER -->
 <footer>
-  CADDIS 레이저 허브 v1.1 ·
+  CADDIS 레이저 허브 v1.2 ·
   <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a> · 2026
 </footer>
 
+<script>
+(function(){
+  const INSTALL = new Date('2026-06-23T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((INSTALL - today) / 86400000);
+  const str = diff > 0 ? 'D-' + diff : diff === 0 ? 'D-Day' : 'D+' + Math.abs(diff);
+  const els = ['hero-dday-text','card-dday-badge','status-dday'];
+  els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = str; });
+})();
+</script>
 </body>
 </html>
