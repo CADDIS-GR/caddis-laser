@@ -12,7 +12,7 @@
 | 허브 | `index.html` | ● LIVE | 전체 메뉴 허브 |
 | 외주관리 | `outsource.html` | ● LIVE | 건명 등록 · 발주 추적 · 납품 현황 |
 | 서비스 관리 | `service.html` | ● LIVE | 장비 고장 접수 · 조치 이력 · 패턴 분석 |
-| 작업 현황판 | `workflow-board.html` | ⚙ Stage 1 | 칸반 보드 (Google Sheets 연동 예정) |
+| 작업 현황판 | `workflow-board.html` | ● LIVE | 자체 생산품 작업 플로우 관리 · Google Sheets 연동 완료 |
 | 설치 준비 일지 | `install-log.html` | ● LIVE | D-Day 카운트다운 · 매일 구상·진행·점검 기록 |
 | 자재관리 | — | 🔒 LOCKED | 장비 가동 후 활성화 |
 | 견적 자동화 | — | ⚙ DEV | `quote_dxf.py` 연동 후 |
@@ -96,14 +96,12 @@ ByCut Nova 3015 장비 설치일(2026.06.23)까지 매일의 구상·진행·점
 ### 건명번호 체계
 
 ```
-JOB-YYYY-NNN    예) JOB-2026-006
+JOB-YYYY-NNN    예) JOB-2026-006  (수기 입력)
 ```
 
-### 발주번호 체계
-
-```
-PO-YYYYMM-NNN  예) PO-202606-001
-```
+### 구글시트
+- 시트명: `외주관리_CADDIS레이저`
+- 칼럼: id · 건명번호 · 건명 · 외주업체 · 상태 · 납기일 · 발주금액 · 명세표 · 비고
 
 ### Drive 루트 폴더
 
@@ -111,7 +109,20 @@ https://drive.google.com/drive/folders/1gM-LJ32RAoxyLVje9O-umkyf58p-zHcD
 
 ---
 
-## 자재관리 시스템 (장비 가동 후 활성화)
+## 작업 현황판 (`workflow-board.html`)
+
+자체 생산품 레이저 절단 작업 플로우 관리. Google Sheets 연동 완료.
+
+### 진행 단계
+```
+대기(wait) → 진행(prog) → 완료(done) → 납품(ship)
+```
+
+### 구글시트
+- 시트명: `작업진행현황판_CADDIS레이저`
+- 칼럼: id · 건명 · 시작일 · 납기일 · 작업내용 · 사용자재 · 작업지시서 · 자재비 · 가공비 · 단계
+
+---
 
 **파일**: `자재관리시스템_CADDIS레이저.xlsx`
 
@@ -139,6 +150,7 @@ https://drive.google.com/drive/folders/1gM-LJ32RAoxyLVje9O-umkyf58p-zHcD
 
 | 버전 | 날짜 | 내용 |
 |------|------|------|
+| v1.3 | 2026-06-11 | 외주관리 단순화 재설계 (Google Sheets 연동), 작업 현황판 Sheets 연동 완료 |
 | v1.2 | 2026-06-11 | 설치 준비 일지 추가 (`install-log.html`), 허브 D-Day 카운터 |
 | v1.1 | 2026-06-11 | 서비스 관리 페이지 추가 (`service.html`) |
 | v1.0 | 2026-06-07 | 외주관리 · 작업 현황판 · 허브 초기 구축 |
