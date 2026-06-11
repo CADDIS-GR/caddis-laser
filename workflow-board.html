@@ -370,7 +370,7 @@ function renderTable(rows){
         <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
-  area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(+tr.dataset.id));
+  area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
 }
 
 function renderBoard(rows){
@@ -390,7 +390,7 @@ function renderBoard(rows){
       </div>
     </div>`;
   }).join('')}</div>`;
-  area.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>openEdit(+c.dataset.id));
+  area.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>openEdit(c.dataset.id));
 }
 
 function renderTimeline(rows){
@@ -409,7 +409,7 @@ function renderTimeline(rows){
       </div>
     </div>`;
   }).join('')}</div>`;
-  area.querySelectorAll('.tl-row[data-id]').forEach(row=>row.onclick=()=>openEdit(+row.dataset.id));
+  area.querySelectorAll('.tl-row[data-id]').forEach(row=>row.onclick=()=>openEdit(row.dataset.id));
 }
 
 function render(){
@@ -435,7 +435,7 @@ function openAdd(){
   $('#overlay').classList.add('show');
 }
 function openEdit(id){
-  const r=DATA.find(x=>x.id===id); if(!r)return;
+  const r=DATA.find(x=>String(x.id)===String(id)); if(!r)return;
   editId=id;
   $('#modalTitle').textContent='작업 수정';
   $('#f_cust').value=r.cust;$('#f_start').value=r.start;$('#f_due').value=r.due;
@@ -483,7 +483,7 @@ function save(){
 function del(){
   if(editId && confirm('이 작업을 삭제할까요?')){
     if(USE_SHEETS) sheetPost('delete', {id:editId});
-    DATA=DATA.filter(x=>x.id!==editId); closeModal(); render();
+    DATA=DATA.filter(x=>String(x.id)!==String(editId)); closeModal(); render();
   }
 }
 
