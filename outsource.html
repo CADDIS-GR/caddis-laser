@@ -4,1877 +4,512 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CADDIS 레이저 — 외주관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:       #0f1117;
-  --bg2:      #181c27;
-  --bg3:      #1e2333;
-  --border:   rgba(255,255,255,0.08);
-  --border2:  rgba(255,255,255,0.14);
-  --text:     #e8eaf0;
-  --muted:    #7c8299;
-  --accent:   #3d7fff;
-  --accent2:  #5b9aff;
-  --green:    #22c55e;
-  --amber:    #f59e0b;
-  --red:      #ef4444;
-  --purple:   #a78bfa;
-  --teal:     #2dd4bf;
-  --font:     'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --mono:     'JetBrains Mono', 'Fira Code', monospace;
-  --r:        8px;
-  --r2:       12px;
+:root{
+  --bg:#0e1116; --panel:#161b22; --panel-2:#1c232d;
+  --line:#2a323d; --line-soft:#222a34;
+  --ink:#e7edf3; --ink-soft:#9aa7b4; --ink-faint:#5f6b78;
+  --accent:#4ea1d3; --accent-soft:#2b5566;
+  --st-est:#7c8794;   --st-est-bg:#262d36;
+  --st-ord:#4ea1d3;   --st-ord-bg:#163243;
+  --st-prog:#c9a14a;  --st-prog-bg:#2e2716;
+  --st-done:#5cb98a;  --st-done-bg:#143028;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --mono:'DM Mono',monospace;
+  --serif:'DM Serif Display',serif;
+  --sans:'Noto Sans KR',sans-serif;
 }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── header ── */
+.header{background:var(--panel);border-bottom:1px solid var(--line);padding:0 24px;height:54px;
+  display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-size:15px;font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav a{padding:6px 14px;border-radius:8px;border:none;background:transparent;color:var(--ink-soft);
+  font-size:13px;text-decoration:none;transition:.14s;cursor:pointer}
+.nav a:hover,.nav a.active{background:var(--panel-2);color:var(--ink)}
+.nav a.active{font-weight:500}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--st-est);display:inline-block;margin-right:4px}
+.conn-dot.live{background:var(--st-done)}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
+/* ── wrap ── */
+.wrap{max-width:1200px;margin:0 auto;padding:28px 22px 80px}
 
-/* ── 상단 헤더 ── */
-.header {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.logo {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.logo-mark {
-  width: 28px; height: 28px;
-  background: var(--accent);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff;
-}
-.header-nav {
-  display: flex;
-  gap: 2px;
-  margin-left: auto;
-}
-.nav-btn {
-  padding: 6px 14px;
-  border-radius: var(--r);
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: var(--font);
-}
-.nav-btn:hover { background: var(--bg3); color: var(--text); }
-.nav-btn.active { background: var(--bg3); color: var(--text); }
+/* ── banner ── */
+.banner{font-family:var(--mono);font-size:11.5px;padding:9px 14px;border-radius:9px;
+  margin-bottom:20px;border:1px solid var(--line-soft);display:flex;align-items:center;gap:8px}
+.banner.sample{color:var(--st-prog)}
+.banner.live{color:var(--st-done)}
+.banner.loading{color:var(--ink-soft)}
+.banner.error{color:#d36a6a}
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 8px;
-  padding-left: 16px;
-  border-left: 1px solid var(--border);
-}
+/* ── summary ── */
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.sum-card{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);
+  padding:16px 18px;position:relative;overflow:hidden}
+.sum-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.sum-card .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.sum-card .v{font-family:var(--serif);font-size:34px;line-height:1;margin-top:8px;color:var(--c)}
+.sum-card .sub{font-size:11px;color:var(--ink-faint);margin-top:6px}
 
-/* ── 메인 레이아웃 ── */
-.main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+/* ── toolbar ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{font-size:12px;font-family:var(--mono);color:var(--ink-soft);background:var(--panel);
+  border:1px solid var(--line-soft);padding:6px 11px;border-radius:20px;cursor:pointer;transition:.15s}
+.chip.on{color:var(--ink);border-color:var(--accent)}
+.search{background:var(--panel);border:1px solid var(--line-soft);border-radius:9px;
+  padding:7px 11px;color:var(--ink);font-family:var(--sans);font-size:13px;width:180px}
+.search::placeholder{color:var(--ink-faint)}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);background:var(--panel);
+  border:1px solid var(--line);padding:9px 14px;border-radius:10px;cursor:pointer;
+  transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08);color:#fff}
 
-/* ── KPI 카드 ── */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-bottom: 24px;
-}
-.kpi-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 16px 20px;
-  cursor: pointer;
-  transition: border-color 0.15s;
-}
-.kpi-card:hover { border-color: var(--border2); }
-.kpi-card.active { border-color: var(--accent); }
-.kpi-label {
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 8px;
-}
-.kpi-value {
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.kpi-sub { font-size: 12px; color: var(--muted); }
-.kpi-card.c-blue   .kpi-value { color: var(--accent2); }
-.kpi-card.c-amber  .kpi-value { color: var(--amber); }
-.kpi-card.c-green  .kpi-value { color: var(--green); }
-.kpi-card.c-purple .kpi-value { color: var(--purple); }
+/* ── table ── */
+.panel-box{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-soft);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);
+  font-weight:500;background:var(--panel-2)}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr{transition:background .12s;cursor:pointer}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr:last-child td{border-bottom:none}
+.job-no{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.job-name{font-weight:500}
+.vendor{font-size:12.5px;color:var(--ink-soft)}
+.due-cell{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.due-cell.urgent{color:var(--st-prog)}
+.due-cell.ok{color:var(--ink-faint)}
+.amt{font-family:var(--mono);font-size:12.5px;text-align:right;white-space:nowrap}
+.docs{display:flex;flex-wrap:wrap;gap:4px}
+.doc{font-family:var(--mono);font-size:10.5px;background:var(--panel-2);border:1px solid var(--line-soft);
+  color:var(--ink-soft);padding:2px 7px;border-radius:5px;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
+a.doc{cursor:pointer;transition:.14s}
+a.doc:hover{border-color:var(--accent);color:var(--accent)}
+a.doc::after{content:"↗";font-size:8px;opacity:.6}
+.empty{padding:60px 20px;text-align:center;color:var(--ink-faint);font-family:var(--mono);font-size:13px}
 
-/* ── 섹션 헤더 ── */
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-.section-count {
-  font-size: 12px;
-  color: var(--muted);
-  background: var(--bg3);
-  padding: 2px 8px;
-  border-radius: 20px;
-}
-.section-actions { margin-left: auto; display: flex; gap: 8px; }
+/* ── status badge ── */
+.st{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;
+  font-weight:500;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.st .dot{width:6px;height:6px;border-radius:50%}
+.st[data-s="est"]{color:var(--st-est);background:var(--st-est-bg)} .st[data-s="est"] .dot{background:var(--st-est)}
+.st[data-s="ord"]{color:var(--st-ord);background:var(--st-ord-bg)} .st[data-s="ord"] .dot{background:var(--st-ord)}
+.st[data-s="prog"]{color:var(--st-prog);background:var(--st-prog-bg)} .st[data-s="prog"] .dot{background:var(--st-prog)}
+.st[data-s="done"]{color:var(--st-done);background:var(--st-done-bg)} .st[data-s="done"] .dot{background:var(--st-done)}
 
-/* ── 필터 바 ── */
-.filter-bar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.filter-btn {
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: var(--font);
-  transition: all 0.15s;
-}
-.filter-btn:hover { border-color: var(--border2); color: var(--text); }
-.filter-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-.search-wrap {
-  margin-left: auto;
-  position: relative;
-}
-.search-input {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  padding: 5px 12px 5px 32px;
-  width: 200px;
-  outline: none;
-  transition: border-color 0.15s;
-}
-.search-input:focus { border-color: var(--accent); }
-.search-icon {
-  position: absolute; left: 10px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted); font-size: 14px;
-  pointer-events: none;
-}
+/* ── modal ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
+  display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow:auto}
+.overlay.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:100%;
+  max-width:520px;box-shadow:var(--shadow);animation:pop .2s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;
+  padding:18px 22px;border-bottom:1px solid var(--line-soft)}
+.modal-head h3{font-family:var(--serif);font-size:21px;font-weight:400}
+.modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft)}
+.field input,.field textarea,.field select{background:var(--panel-2);border:1px solid var(--line);
+  border-radius:9px;padding:10px 12px;color:var(--ink);font-family:var(--sans);font-size:14px}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:60px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-foot{display:flex;justify-content:space-between;gap:10px;padding:16px 22px;border-top:1px solid var(--line-soft)}
+.x{cursor:pointer;color:var(--ink-faint);font-size:22px;line-height:1;background:none;border:none}
+.x:hover{color:var(--ink)}
+.del-btn{color:#d36a6a;background:none;border:1px solid transparent;cursor:pointer;
+  font-size:13px;font-family:var(--sans);padding:6px 10px;border-radius:8px}
+.del-btn:hover{border-color:#d36a6a}
 
-/* ── 건명 테이블 ── */
-.table-wrap {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  overflow: hidden;
-  margin-bottom: 24px;
-}
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.data-table th {
-  background: var(--bg3);
-  padding: 10px 14px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-.data-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tbody tr { transition: background 0.1s; cursor: pointer; }
-.data-table tbody tr:hover { background: var(--bg3); }
+.stagebar{display:flex;gap:6px;margin-top:2px}
+.stage-pick{flex:1;font-family:var(--mono);font-size:11px;padding:8px 4px;border-radius:8px;
+  border:1px solid var(--line);background:var(--panel-2);color:var(--ink-soft);cursor:pointer;transition:.14s;text-align:center}
+.stage-pick.sel[data-s="est"]{background:var(--st-est-bg);color:var(--st-est);border-color:var(--st-est)}
+.stage-pick.sel[data-s="ord"]{background:var(--st-ord-bg);color:var(--st-ord);border-color:var(--st-ord)}
+.stage-pick.sel[data-s="prog"]{background:var(--st-prog-bg);color:var(--st-prog);border-color:var(--st-prog)}
+.stage-pick.sel[data-s="done"]{background:var(--st-done-bg);color:var(--st-done);border-color:var(--st-done)}
 
-.job-no {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent2);
-  white-space: nowrap;
+@media(max-width:800px){
+  .summary{grid-template-columns:repeat(2,1fr)}
+  thead th:nth-child(5),tbody td:nth-child(5){display:none}
 }
-.job-name { font-weight: 500; color: var(--text); }
-.job-client { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-/* ── 상태 배지 ── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.badge::before {
-  content: '';
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.badge-draft    { background: rgba(124,130,153,0.15); color: var(--muted); }
-.badge-ordered  { background: rgba(61,127,255,0.15);  color: var(--accent2); }
-.badge-progress { background: rgba(245,158,11,0.15);  color: var(--amber); }
-.badge-done     { background: rgba(34,197,94,0.15);   color: var(--green); }
-
-/* ── D-Day ── */
-.dday {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
-}
-.dday.urgent { color: var(--red); }
-.dday.soon   { color: var(--amber); }
-.dday.normal { color: var(--teal); }
-.dday.done   { color: var(--muted); }
-
-/* ── 링크 아이콘 ── */
-.link-icons { display: flex; gap: 6px; }
-.link-icon {
-  width: 26px; height: 26px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  text-decoration: none;
-  color: var(--muted);
-  transition: all 0.15s;
-}
-.link-icon:hover { border-color: var(--border2); color: var(--text); background: var(--bg3); }
-.link-icon.has-file { color: var(--accent2); border-color: rgba(61,127,255,0.3); }
-
-/* ── 금액 ── */
-.amount {
-  font-family: var(--mono);
-  font-size: 12px;
-  text-align: right;
-  white-space: nowrap;
-}
-.amount.has { color: var(--text); }
-.amount.none { color: var(--muted); }
-
-/* ── 버튼 ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: var(--r);
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text);
-  font-size: 13px;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.btn:hover { background: var(--bg3); border-color: var(--border2); }
-.btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-  font-weight: 600;
-}
-.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
-.btn-sm { padding: 4px 10px; font-size: 12px; }
-
-/* ── 하단 2열 ── */
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-@media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
-
-.panel {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  padding: 18px 20px;
-}
-.panel-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 14px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ── 업체 리스트 ── */
-.vendor-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.vendor-item:last-child { border-bottom: none; }
-.vendor-avatar {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: var(--bg3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-  color: var(--accent2);
-  flex-shrink: 0;
-}
-.vendor-name { font-size: 13px; font-weight: 500; }
-.vendor-meta { font-size: 11px; color: var(--muted); }
-.vendor-count {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* ── PO 리스트 ── */
-.po-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border);
-}
-.po-item:last-child { border-bottom: none; }
-.po-no {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--purple);
-}
-.po-vendor { font-size: 12px; color: var(--muted); }
-.po-amount {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text);
-}
-
-/* ── 모달 ── */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.65);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  padding: 20px;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.modal-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.modal-title { font-size: 15px; font-weight: 600; }
-.modal-close {
-  width: 28px; height: 28px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--muted);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font);
-  transition: all 0.15s;
-}
-.modal-close:hover { background: var(--bg3); color: var(--text); }
-.modal-body { padding: 20px 24px; }
-.modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-/* ── 폼 ── */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group.full { grid-column: 1/-1; }
-.form-label { font-size: 12px; color: var(--muted); font-weight: 500; }
-.form-input, .form-select {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  padding: 8px 12px;
-  outline: none;
-  transition: border-color 0.15s;
-  width: 100%;
-}
-.form-input:focus, .form-select:focus { border-color: var(--accent); }
-.form-select option { background: var(--bg2); }
-.form-divider {
-  grid-column: 1/-1;
-  height: 1px;
-  background: var(--border);
-  margin: 4px 0;
-}
-.form-section-label {
-  grid-column: 1/-1;
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 4px;
-}
-
-/* ── 상세 모달 ── */
-.detail-row {
-  display: flex;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  align-items: flex-start;
-}
-.detail-row:last-child { border-bottom: none; }
-.detail-key {
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  width: 100px;
-  flex-shrink: 0;
-  padding-top: 2px;
-}
-.detail-val { font-size: 13px; color: var(--text); flex: 1; }
-
-/* ── 토스트 ── */
-.toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--r2);
-  padding: 12px 18px;
-  font-size: 13px;
-  color: var(--text);
-  z-index: 300;
-  transform: translateY(80px);
-  opacity: 0;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.success { border-color: rgba(34,197,94,0.4); }
-.toast.error   { border-color: rgba(239,68,68,0.4); }
-
-/* ── 구글 시트 연결 안내 배너 ── */
-.setup-banner {
-  background: rgba(61,127,255,0.08);
-  border: 1px solid rgba(61,127,255,0.25);
-  border-radius: var(--r2);
-  padding: 14px 18px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.setup-banner-icon { font-size: 18px; flex-shrink: 0; }
-.setup-banner-text { flex: 1; font-size: 13px; color: var(--text); }
-.setup-banner-text strong { color: var(--accent2); }
-.setup-banner-close {
-  background: none; border: none; color: var(--muted);
-  cursor: pointer; font-size: 16px; padding: 0;
-  font-family: var(--font);
-}
-
-/* ── 상태 변경 드롭다운 ── */
-.status-change-wrap {
-  position: relative;
-}
-.status-menu {
-  display: none;
-  position: absolute;
-  bottom: calc(100% + 6px);
-  right: 0;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  border-radius: var(--r2);
-  padding: 6px;
-  min-width: 130px;
-  z-index: 50;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-.status-menu.open { display: flex; flex-direction: column; gap: 2px; }
-.status-menu button {
-  background: none;
-  border: none;
-  padding: 6px 10px;
-  border-radius: var(--r);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.12s;
-  font-family: var(--font);
-}
-.status-menu button:hover { background: var(--bg3); }
-.status-menu button.current { background: var(--bg3); opacity: 0.4; cursor: default; }
-
-/* ── Drive 링크 토글 버튼 ── */
-.link-toggle-btn {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: var(--r);
-  border: 1px dashed var(--border2);
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  font-family: var(--font);
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s;
-}
-.link-toggle-btn:hover { border-color: var(--accent); color: var(--text); background: rgba(61,127,255,0.04); }
-.link-toggle-btn.open  { border-color: var(--accent); color: var(--accent2); border-style: solid; }
-
-/* ── 인라인 파일 행 ── */
-.file-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: var(--r);
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  transition: border-color 0.15s;
-}
-.file-row:hover { border-color: var(--border2); }
-.file-row-label {
-  font-size: 12px;
-  color: var(--muted);
-  width: 74px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.file-row-link {
-  flex: 1;
-  font-size: 12px;
-  color: var(--accent2);
-  text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.file-row-link:hover { text-decoration: underline; }
-.file-row-empty {
-  flex: 1;
-  font-size: 12px;
-  color: var(--muted);
-}
-.file-row-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-size: 12px;
-  font-family: var(--font);
-  padding: 0;
-}
-.file-row-input::placeholder { color: var(--muted); }
-.file-row-action {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 12px;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: var(--font);
-  transition: all 0.12s;
-  white-space: nowrap;
-}
-.file-row-action:hover { color: var(--text); background: var(--bg2); }
-.file-row-action.save  { color: var(--accent2); }
-.file-row-action.clear { color: var(--red); }
-
-/* ── OCR 업로드 존 ── */
-.ocr-zone {
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--r2);
-  transition: border-color 0.15s, background 0.15s;
-}
-.ocr-zone:hover { border-color: var(--accent); background: rgba(61,127,255,0.04); }
-.ocr-zone-inner {
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-.ocr-icon  { font-size: 24px; }
-.ocr-hint  { font-size: 13px; color: var(--text); font-weight: 500; }
-.ocr-hint2 { font-size: 11px; color: var(--muted); }
-.ocr-loading {
-  padding: 16px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.ocr-spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--border2);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.ocr-result {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--r2);
-  overflow: hidden;
-}
-.ocr-result-header {
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ocr-result-row {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  gap: 12px;
-}
-.ocr-result-row:last-child { border-bottom: none; }
-.ocr-result-key {
-  font-size: 11px;
-  color: var(--muted);
-  width: 80px;
-  flex-shrink: 0;
-}
-.ocr-result-val {
-  font-size: 13px;
-  color: var(--text);
-  flex: 1;
-  font-family: var(--mono);
-}
-.ocr-result-val.highlight { color: var(--green); font-weight: 600; }
-.ocr-apply-btn {
-  margin-left: auto;
-  padding: 4px 12px;
-  border-radius: 6px;
-  border: 1px solid rgba(34,197,94,0.3);
-  background: rgba(34,197,94,0.1);
-  color: var(--green);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: var(--font);
-  white-space: nowrap;
-  transition: all 0.15s;
-}
-.ocr-apply-btn:hover { background: rgba(34,197,94,0.2); }
-.ocr-api-notice {
-  padding: 10px 14px;
-  font-size: 12px;
-  color: var(--muted);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ── 빈 상태 ── */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-}
-.empty-state-icon { font-size: 32px; margin-bottom: 12px; }
-.empty-state-text { font-size: 13px; }
-
-.btn-danger {
-  background: rgba(239,68,68,0.12);
-  border-color: rgba(239,68,68,0.3);
-  color: var(--red);
-}
-.btn-danger:hover {
-  background: rgba(239,68,68,0.22);
-  border-color: rgba(239,68,68,0.5);
-}
-
-/* ── 스크롤바 ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-/* ── 반응형 ── */
-@media (max-width: 768px) {
-  .main { padding: 16px; }
-  .header { padding: 0 16px; }
-  .form-grid { grid-template-columns: 1fr; }
-  .data-table .hide-mobile { display: none; }
+@media(max-width:560px){
+  .wrap{padding:14px 10px 60px}
+  thead th:nth-child(2),tbody td:nth-child(2){display:none}
+  .search{width:120px}
 }
 </style>
 </head>
 <body>
 
-<!-- ── 헤더 ── -->
-<header class="header">
+<div class="header">
   <div class="logo">
     <div class="logo-mark">C</div>
     CADDIS 레이저
   </div>
-  <nav class="header-nav">
-    <button class="nav-btn active">외주관리</button>
-    <button class="nav-btn" onclick="showToast('준비 중입니다', 'info')">자재관리</button>
-    <button class="nav-btn" onclick="showToast('준비 중입니다', 'info')">견적</button>
-    <button class="nav-btn" onclick="showToast('준비 중입니다', 'info')">리포트</button>
+  <nav class="nav">
+    <a href="outsource.html" class="active">외주관리</a>
+    <a href="index.html">자재관리</a>
+    <a href="#">견적</a>
+    <a href="#">리포트</a>
   </nav>
-  <div class="header-actions">
-    <button class="btn btn-sm" id="sheets-config-btn" onclick="openSheetsConfig()">
-      <span id="sheets-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block;"></span>
-      Sheets 연결
-    </button>
-    <button class="btn btn-primary btn-sm" onclick="openNewJobModal()">＋ 새 건 등록</button>
-  </div>
-</header>
+  <button class="btn primary" id="addBtn" style="margin-left:8px">+ 새 건 등록</button>
+</div>
 
-<!-- ── 메인 ── -->
-<main class="main">
+<div class="wrap">
+  <div class="banner loading" id="banner">● 불러오는 중…</div>
+  <section class="summary" id="summary"></section>
 
-  <!-- Sheets 연결 안내 배너 -->
-  <div class="setup-banner" id="setup-banner">
-    <div class="setup-banner-icon">🔗</div>
-    <div class="setup-banner-text">
-      <strong>Google Sheets 연결 필요</strong> — 우측 상단 "Sheets 연결" 버튼에서 스프레드시트 ID를 입력하면 실시간 데이터를 불러옵니다.
-      지금은 <strong>샘플 데이터</strong>로 표시 중입니다.
+  <div class="toolbar">
+    <div class="filters">
+      <span class="chip on" data-f="all">전체</span>
+      <span class="chip" data-f="est">견적중</span>
+      <span class="chip" data-f="ord">발주완료</span>
+      <span class="chip" data-f="prog">진행중</span>
+      <span class="chip" data-f="done">납품완료</span>
     </div>
-    <button class="setup-banner-close" onclick="document.getElementById('setup-banner').style.display='none'">✕</button>
-  </div>
-
-  <!-- KPI 카드 -->
-  <div class="kpi-row">
-    <div class="kpi-card c-blue" id="kpi-all" onclick="filterJobs('all')">
-      <div class="kpi-label">전체 건명</div>
-      <div class="kpi-value" id="kpi-total">0</div>
-      <div class="kpi-sub">누적 등록</div>
-    </div>
-    <div class="kpi-card c-amber" onclick="filterJobs('진행중')">
-      <div class="kpi-label">진행중</div>
-      <div class="kpi-value" id="kpi-progress">0</div>
-      <div class="kpi-sub">처리 대기</div>
-    </div>
-    <div class="kpi-card c-green" onclick="filterJobs('납품완료')">
-      <div class="kpi-label">납품완료</div>
-      <div class="kpi-value" id="kpi-done">0</div>
-      <div class="kpi-sub">이번 달</div>
-    </div>
-    <div class="kpi-card c-purple" onclick="filterJobs('발주완료')">
-      <div class="kpi-label">발주완료</div>
-      <div class="kpi-value" id="kpi-ordered">0</div>
-      <div class="kpi-sub">제작 중</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="search" id="search" placeholder="건명·업체 검색">
+      <button class="btn" id="exportBtn">↗ 내보내기</button>
     </div>
   </div>
 
-  <!-- 건명 테이블 -->
-  <div class="section-header">
-    <span class="section-title">건명대장</span>
-    <span class="section-count" id="table-count">0건</span>
-    <div class="section-actions">
-      <button class="btn btn-sm" onclick="refreshData()">↻ 새로고침</button>
-      <button class="btn btn-sm" onclick="exportData()">↓ 내보내기</button>
-    </div>
-  </div>
-
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterJobs('all', this)">전체</button>
-    <button class="filter-btn" onclick="filterJobs('견적중', this)">견적중</button>
-    <button class="filter-btn" onclick="filterJobs('발주완료', this)">발주완료</button>
-    <button class="filter-btn" onclick="filterJobs('진행중', this)">진행중</button>
-    <button class="filter-btn" onclick="filterJobs('납품완료', this)">납품완료</button>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" type="text" placeholder="건명 / 고객사 검색" id="search-input" oninput="searchJobs(this.value)">
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table class="data-table" id="job-table">
-      <thead>
-        <tr>
-          <th>건명번호</th>
-          <th>건명 / 고객사</th>
-          <th class="hide-mobile">발주번호</th>
-          <th>상태</th>
-          <th class="hide-mobile">납기</th>
-          <th class="hide-mobile">D-Day</th>
-          <th class="hide-mobile">발주금액</th>
-          <th>파일</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="job-tbody">
-        <tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">데이터를 불러오는 중...</div></div></td></tr>
-      </tbody>
+  <div class="panel-box">
+    <table id="tbl">
+      <thead><tr>
+        <th>건명번호</th>
+        <th>건명</th>
+        <th>외주업체</th>
+        <th>상태</th>
+        <th>납기일</th>
+        <th style="text-align:right">발주금액</th>
+        <th>명세표</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
     </table>
   </div>
+</div>
 
-  <!-- 하단 2열 패널 -->
-  <div class="bottom-grid">
-    <!-- 외주업체 -->
-    <div class="panel">
-      <div class="panel-title">
-        🏭 외주업체
-        <button class="btn btn-sm" style="margin-left:auto" onclick="openVendorModal()">+ 업체 추가</button>
-      </div>
-      <div id="vendor-list"></div>
-    </div>
-
-    <!-- 최근 발주 -->
-    <div class="panel">
-      <div class="panel-title">📄 최근 발주 (PO)</div>
-      <div id="po-list"></div>
-    </div>
-  </div>
-
-</main>
-
-<!-- ── 새 건 등록 모달 ── -->
-<div class="modal-overlay" id="new-job-modal">
+<!-- 등록/수정 모달 -->
+<div class="overlay" id="overlay">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">새 건 등록</span>
-      <button class="modal-close" onclick="closeModal('new-job-modal')">✕</button>
+    <div class="modal-head">
+      <h3 id="modalTitle">새 건 등록</h3>
+      <button class="x" id="closeX">×</button>
     </div>
     <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">건명번호</label>
-          <input class="form-input" id="f-jobno" placeholder="자동 생성" readonly style="opacity:0.5">
+      <div class="row2">
+        <div class="field">
+          <label>건명번호</label>
+          <input id="f_no" placeholder="예: JOB-2026-008">
         </div>
-        <div class="form-group">
-          <label class="form-label">고객사</label>
-          <input class="form-input" id="f-client" placeholder="고객사명">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">건명</label>
-          <input class="form-input" id="f-jobname" placeholder="예: SS400 브라켓 레이저 절단">
-        </div>
-        <div class="form-group">
-          <label class="form-label">수주일</label>
-          <input class="form-input" type="date" id="f-orderdate">
-        </div>
-        <div class="form-group">
-          <label class="form-label">납기요청일</label>
-          <input class="form-input" type="date" id="f-duedate">
-        </div>
-        <div class="form-divider"></div>
-        <div class="form-section-label">발주 정보</div>
-        <div class="form-group">
-          <label class="form-label">외주업체</label>
-          <select class="form-select" id="f-vendor">
-            <option value="">업체 선택</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">발주금액 (원)</label>
-          <input class="form-input" id="f-amount" type="number" placeholder="0">
-        </div>
-        <div class="form-divider"></div>
-        <div class="form-group full">
-          <label class="form-label">비고</label>
-          <input class="form-input" id="f-note" placeholder="특이사항">
-        </div>
-        <div class="form-group full" style="margin-top:2px">
-          <button type="button" class="link-toggle-btn" id="link-toggle" onclick="toggleLinkSection()">
-            <span id="link-toggle-icon">＋</span> Drive 링크 미리 입력 <span style="color:var(--muted);font-size:11px">(선택 — 등록 후 상세에서도 추가 가능)</span>
-          </button>
-        </div>
-        <div id="link-section" style="display:none;grid-column:1/-1">
-          <div class="form-grid" style="margin-top:2px">
-            <div class="form-group full">
-              <label class="form-label">📂 Drive 폴더 링크</label>
-              <input class="form-input" id="f-folder" placeholder="https://drive.google.com/drive/folders/...">
-            </div>
-            <div class="form-group">
-              <label class="form-label">📄 DXF 도면 링크</label>
-              <input class="form-input" id="f-dxf" placeholder="Drive 파일 공유 링크">
-            </div>
-            <div class="form-group">
-              <label class="form-label">🧾 거래명세표 링크</label>
-              <input class="form-input" id="f-invoice" placeholder="Drive 파일 공유 링크">
-            </div>
-          </div>
+        <div class="field">
+          <label>납기일</label>
+          <input id="f_due" type="date">
         </div>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('new-job-modal')">취소</button>
-      <button class="btn btn-primary" onclick="saveNewJob()">등록</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── 상세/수정 모달 ── -->
-<div class="modal-overlay" id="job-detail-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="detail-title">건명 상세</span>
-      <button class="modal-close" onclick="closeModal('job-detail-modal')">✕</button>
-    </div>
-    <div class="modal-body" id="detail-body"></div>
-    <div class="modal-footer">
-      <button class="btn btn-danger" onclick="confirmDeleteJob()">삭제</button>
-      <div style="flex:1"></div>
-      <button class="btn" onclick="closeModal('job-detail-modal')">닫기</button>
-      <button class="btn" onclick="editCurrentJob()">수정</button>
-      <div class="status-change-wrap" id="status-change-wrap">
-        <button class="btn btn-primary" id="detail-status-btn" onclick="toggleStatusMenu()">
-          상태 변경 <span style="font-size:10px;opacity:0.8">▾</span>
-        </button>
-        <div class="status-menu" id="status-menu">
-          <button onclick="setStatus('견적중')">  <span class="badge badge-draft"   >견적중</span>   </button>
-          <button onclick="setStatus('발주완료')"> <span class="badge badge-ordered" >발주완료</span> </button>
-          <button onclick="setStatus('진행중')">  <span class="badge badge-progress" >진행중</span>  </button>
-          <button onclick="setStatus('납품완료')"> <span class="badge badge-done"    >납품완료</span> </button>
+      <div class="field">
+        <label>건명</label>
+        <input id="f_name" placeholder="예: ON FENDER 파이프 레이저">
+      </div>
+      <div class="field">
+        <label>외주업체</label>
+        <input id="f_vendor" placeholder="예: ○○레이저">
+      </div>
+      <div class="field">
+        <label>발주금액</label>
+        <input id="f_amount" type="number" placeholder="0">
+      </div>
+      <div class="field">
+        <label>명세표 (파일명 | 드라이브링크)</label>
+        <textarea id="f_invoice" placeholder="명세표_20260611.pdf | https://drive.google.com/..."></textarea>
+        <span style="font-size:10.5px;color:var(--ink-faint);font-family:var(--mono)">링크 없으면 이름만 표시됩니다.</span>
+      </div>
+      <div class="field">
+        <label>진행 단계</label>
+        <div class="stagebar" id="stagebar">
+          <div class="stage-pick" data-s="est">견적중</div>
+          <div class="stage-pick" data-s="ord">발주완료</div>
+          <div class="stage-pick" data-s="prog">진행중</div>
+          <div class="stage-pick" data-s="done">납품완료</div>
         </div>
+      </div>
+      <div class="field">
+        <label>비고</label>
+        <input id="f_note" placeholder="특이사항">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="del-btn" id="delBtn" style="visibility:hidden">삭제</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="cancelBtn">취소</button>
+        <button class="btn primary" id="saveBtn">저장</button>
       </div>
     </div>
   </div>
 </div>
-
-<!-- ── 삭제 확인 모달 ── -->
-<div class="modal-overlay" id="delete-confirm-modal">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-header">
-      <span class="modal-title">건명 삭제</span>
-      <button class="modal-close" onclick="closeModal('delete-confirm-modal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0 4px;text-align:center">
-        <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;font-size:22px">🗑</div>
-        <div>
-          <div style="font-weight:600;font-size:15px;margin-bottom:6px" id="delete-job-title"></div>
-          <div style="font-size:13px;color:var(--muted);line-height:1.6">이 건명을 삭제하면 복구할 수 없습니다.<br>정말 삭제하시겠습니까?</div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('delete-confirm-modal')">취소</button>
-      <button class="btn btn-danger" onclick="deleteJob()">삭제 확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── Sheets 설정 모달 ── -->
-<div class="modal-overlay" id="sheets-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Google Sheets 연결</span>
-      <button class="modal-close" onclick="closeModal('sheets-modal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7;">
-        Google Sheets API를 통해 실시간으로 데이터를 읽고 씁니다.<br>
-        스프레드시트 URL에서 <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:12px;">/d/</code> 뒤의 ID를 입력하세요.
-      </div>
-      <div class="form-grid">
-        <div class="form-group full">
-          <label class="form-label">스프레드시트 ID</label>
-          <input class="form-input" id="sheets-id-input" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">API Key</label>
-          <input class="form-input" id="sheets-api-input" type="password" placeholder="AIzaSy...">
-        </div>
-        <div class="form-divider"></div>
-        <div class="form-section-label">거래명세표 OCR</div>
-        <div class="form-group full">
-          <label class="form-label">Anthropic API Key</label>
-          <input class="form-input" id="anthropic-api-input" type="password" placeholder="sk-ant-...">
-        </div>
-      </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6;">
-        💡 Google Cloud Console → API 및 서비스 → 사용자 인증 정보 → API 키 생성<br>
-        Sheets API v4 활성화 필요
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('sheets-modal')">취소</button>
-      <button class="btn btn-primary" onclick="saveSheetConfig()">연결 저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- 토스트 -->
-<div class="toast" id="toast"></div>
 
 <script>
-// ── 상태 관리 ──
-const STATE = {
-  jobs: [],
-  vendors: [],
-  pos: [],
-  filter: 'all',
-  search: '',
-  currentJobIdx: null,
-  sheetsConfig: JSON.parse(localStorage.getItem('caddis_sheets') || 'null'),
+/* ── 구글시트 설정 ──
+   Apps Script 배포 URL을 아래에 넣으면 시트 연동이 켜집니다. */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwgSG7M_ckaY_pBPaquxEdMi4540I6LgSRPQmyF6BCd1Bp4yiUyVSEonI1_6yz9LUKQ/exec';
+const USE_SHEETS = !!SHEETS_URL;
+
+const STAGES = {
+  est:  { label:'견적중',   color:'var(--st-est)'  },
+  ord:  { label:'발주완료', color:'var(--st-ord)'  },
+  prog: { label:'진행중',   color:'var(--st-prog)' },
+  done: { label:'납품완료', color:'var(--st-done)' }
 };
 
-// ── 샘플 데이터 ──
-const SAMPLE_JOBS = [
-  { no:'JOB-2026-001', name:'A사 SS400 브라켓', client:'A사', orderDate:'2026-01-10', dueDate:'2026-01-20', doneDate:'2026-01-19', status:'납품완료', poNo:'PO-202601-001', vendor:'V002', amount:320000, invoiceAmt:320000, folder:'https://drive.google.com/drive/folders/1YzVZMhqiltikOKlegxDEA0c3E9ULENYk', dxf:'', invoice:'', note:'' },
-  { no:'JOB-2026-002', name:'B사 STS304 패널', client:'B사', orderDate:'2026-02-03', dueDate:'2026-02-15', doneDate:'2026-02-14', status:'납품완료', poNo:'PO-202602-001', vendor:'V003', amount:580000, invoiceAmt:580000, folder:'https://drive.google.com/drive/folders/1lFFBEmnOcLDgV1KspCiKiOimklK5daqo', dxf:'', invoice:'', note:'' },
-  { no:'JOB-2026-003', name:'C사 SS400 구조재', client:'C사', orderDate:'2026-03-05', dueDate:'2026-03-18', doneDate:'2026-03-17', status:'납품완료', poNo:'PO-202603-001', vendor:'V002', amount:240000, invoiceAmt:240000, folder:'https://drive.google.com/drive/folders/1ECRRfElaFPfFlK33-6_0tjGim1ZlwzH7', dxf:'', invoice:'', note:'' },
-  { no:'JOB-2026-004', name:'D사 AL5052 외장패널', client:'D사', orderDate:'2026-04-08', dueDate:'2026-04-22', doneDate:'2026-04-21', status:'납품완료', poNo:'PO-202604-001', vendor:'V003', amount:760000, invoiceAmt:760000, folder:'https://drive.google.com/drive/folders/1zYL7IjPKOCK0QEaz5fWLlw0TWwoJADZC', dxf:'', invoice:'', note:'' },
-  { no:'JOB-2026-005', name:'E사 SS400 덮개', client:'E사', orderDate:'2026-05-10', dueDate:'2026-05-22', doneDate:'2026-05-21', status:'납품완료', poNo:'PO-202605-001', vendor:'V002', amount:190000, invoiceAmt:190000, folder:'https://drive.google.com/drive/folders/1yGs6lSw8Std_42dqT18NN1OSxAi1tBTM', dxf:'', invoice:'', note:'' },
-  { no:'JOB-2026-006', name:'26-0607-ON FENDER 파이프 레이저', client:'신영스틸', orderDate:'2026-06-07', dueDate:'2026-06-17', doneDate:'', status:'발주완료', poNo:'PO-202606-001', vendor:'V004', amount:0, invoiceAmt:0, folder:'https://drive.google.com/drive/folders/1vKRh_ZyMvgylQCdPDxSSGuR_YEdGG7rP', dxf:'✅', invoice:'', note:'' },
-  { no:'JOB-2026-007', name:'ZR9 HOOD EMS 파이프 레이저', client:'신영스틸', orderDate:'2026-06-07', dueDate:'2026-06-17', doneDate:'', status:'발주완료', poNo:'PO-202606-002', vendor:'V004', amount:0, invoiceAmt:0, folder:'https://drive.google.com/drive/folders/1WRl7d8NROJYUWcVoqXxvBIxmIQTVNO7C', dxf:'✅', invoice:'', note:'' },
-];
+let DATA = [];
+let filter = 'all';
+let query  = '';
+let editId = null;
+let pickStage = 'est';
 
-const SAMPLE_VENDORS = [
-  { code:'V002', name:'○○레이저', short:'OO', note:'납기 7일', jobs:3 },
-  { code:'V003', name:'△△정밀', short:'ΔΔ', note:'두께 6mm↑ 전문, 납기 10일', jobs:2 },
-  { code:'V004', name:'신영스틸', short:'신영', note:'현재 주거래처', jobs:2 },
-];
+const $ = s => document.querySelector(s);
 
-const SAMPLE_PO = [
-  { no:'PO-202606-002', vendor:'신영스틸', jobNo:'JOB-2026-007', amount:'-', date:'2026-06-07' },
-  { no:'PO-202606-001', vendor:'신영스틸', jobNo:'JOB-2026-006', amount:'-', date:'2026-06-07' },
-  { no:'PO-202605-001', vendor:'○○레이저', jobNo:'JOB-2026-005', amount:'190,000', date:'2026-05-10' },
-  { no:'PO-202604-001', vendor:'△△정밀', jobNo:'JOB-2026-004', amount:'760,000', date:'2026-04-08' },
-];
-
-// ── 초기화 ──
-document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-orderdate').value = today;
-
-  loadData();
-  updateSheetStatusDot();
-});
-
-function loadData() {
-  if (STATE.sheetsConfig?.id && STATE.sheetsConfig?.key) {
-    fetchFromSheets();
-  } else {
-    STATE.jobs    = [...SAMPLE_JOBS];
-    STATE.vendors = [...SAMPLE_VENDORS];
-    STATE.pos     = [...SAMPLE_PO];
-    renderAll();
-  }
+/* ── 유틸 ── */
+function fmt(n){ return '₩' + (Number(n)||0).toLocaleString('ko-KR'); }
+function shortDate(d){ return d ? d.slice(2).replace(/-/g,'/') : '—'; }
+function daysLeft(due){
+  if(!due) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((new Date(due+'T00:00:00') - today) / 86400000);
+}
+function parseInvoice(cell){
+  if(!cell) return [];
+  return String(cell).split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+    const [name, url] = line.split('|').map(p=>p.trim());
+    return { name: name||line, url: url||'' };
+  });
+}
+function serializeInvoice(arr){
+  if(!arr||!arr.length) return '';
+  return arr.map(x => x.url ? x.name+' | '+x.url : x.name).join('\n');
+}
+function invoiceChips(arr){
+  return (arr||[]).map(d => d.url
+    ? `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`
+    : `<span class="doc">${d.name}</span>`
+  ).join('');
 }
 
-async function fetchFromSheets() {
-  const { id, key } = STATE.sheetsConfig;
-  const base = `https://sheets.googleapis.com/v4/spreadsheets/${id}/values`;
-  try {
-    const [jobsRes, vendorRes] = await Promise.all([
-      fetch(`${base}/'📁 건명대장'!A2:N200?key=${key}`),
-      fetch(`${base}/외주업체마스터!A2:F50?key=${key}`),
-    ]);
-    const jobsData   = await jobsRes.json();
-    const vendorData = await vendorRes.json();
+/* ── 요약 카드 ── */
+function renderSummary(){
+  const cnt = { est:0, ord:0, prog:0, done:0 };
+  DATA.forEach(r => cnt[r.stage]++);
+  const cards = [
+    { k:'견적중',   v:cnt.est,  c:'var(--st-est)' },
+    { k:'발주완료', v:cnt.ord,  c:'var(--st-ord)' },
+    { k:'진행중',   v:cnt.prog, c:'var(--st-prog)'},
+    { k:'납품완료', v:cnt.done, c:'var(--st-done)'}
+  ];
+  $('#summary').innerHTML = cards.map(c=>`
+    <div class="sum-card" style="--c:${c.c}">
+      <div class="k">${c.k}</div>
+      <div class="v">${c.v}</div>
+      <div class="sub">${c.k} 건수</div>
+    </div>`).join('');
+}
 
-    if (jobsData.values) {
-      STATE.jobs = jobsData.values.map(r => ({
-        no: r[0]||'', name: r[1]||'', client: r[2]||'',
-        orderDate: r[3]||'', dueDate: r[4]||'', doneDate: r[5]||'',
-        status: r[6]||'견적중', poNo: r[7]||'',
-        amount: parseInt(r[8])||0, invoiceAmt: parseInt(r[9])||0,
-        folder: r[10]||'', dxf: r[11]||'', invoice: r[12]||'', note: r[13]||'',
-      }));
+/* ── 테이블 렌더 ── */
+function visible(){
+  return DATA.filter(r=>{
+    if(filter!=='all' && r.stage!==filter) return false;
+    if(query){
+      const q=query.toLowerCase();
+      if(!((r.no||'').toLowerCase().includes(q) ||
+           (r.name||'').toLowerCase().includes(q) ||
+           (r.vendor||'').toLowerCase().includes(q))) return false;
     }
-    if (vendorData.values) {
-      STATE.vendors = vendorData.values.map(r => ({
-        code: r[0]||'', name: r[1]||'', short: (r[1]||'').slice(0,2),
-        note: r[4]||'', jobs: 0,
-      }));
-    }
-    document.getElementById('setup-banner').style.display = 'none';
-    document.getElementById('sheets-status-dot').style.background = 'var(--green)';
-    renderAll();
-  } catch(e) {
-    showToast('Sheets 연결 실패 — 샘플 데이터로 표시합니다', 'error');
-    STATE.jobs = [...SAMPLE_JOBS];
-    STATE.vendors = [...SAMPLE_VENDORS];
-    STATE.pos = [...SAMPLE_PO];
-    renderAll();
-  }
+    return true;
+  });
 }
 
-// ── 렌더링 ──
-function renderAll() {
-  renderKPI();
-  renderTable();
-  renderVendors();
-  renderPO();
-  updateVendorSelect();
-  updateJobNoPreview();
+function stBadge(s){
+  return `<span class="st" data-s="${s}"><span class="dot"></span>${STAGES[s]?.label||s}</span>`;
 }
 
-function renderKPI() {
-  const jobs = STATE.jobs;
-  document.getElementById('kpi-total').textContent    = jobs.length;
-  document.getElementById('kpi-progress').textContent = jobs.filter(j=>j.status==='진행중').length;
-  document.getElementById('kpi-done').textContent     = jobs.filter(j=>j.status==='납품완료').length;
-  document.getElementById('kpi-ordered').textContent  = jobs.filter(j=>j.status==='발주완료').length;
-}
-
-function renderTable() {
-  let jobs = STATE.jobs;
-
-  if (STATE.filter !== 'all')
-    jobs = jobs.filter(j => j.status === STATE.filter);
-
-  if (STATE.search)
-    jobs = jobs.filter(j =>
-      j.name.includes(STATE.search) ||
-      j.client.includes(STATE.search) ||
-      j.no.includes(STATE.search)
-    );
-
-  document.getElementById('table-count').textContent = jobs.length + '건';
-
-  const tbody = document.getElementById('job-tbody');
-  if (!jobs.length) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">조건에 맞는 건명이 없습니다</div></div></td></tr>`;
+function renderTable(){
+  renderSummary();
+  const rows = visible();
+  if(!rows.length){
+    $('#tbody').innerHTML = `<tr><td colspan="7"><div class="empty">표시할 건이 없습니다.</div></td></tr>`;
     return;
   }
-
-  tbody.innerHTML = jobs.map((j, i) => {
-    const origIdx = STATE.jobs.indexOf(j);
-    const dday = calcDday(j.dueDate, j.status);
-    const ddayHtml = dday.html;
-    const amtHtml = j.amount
-      ? `<div class="amount has">${j.amount.toLocaleString()}</div>`
-      : `<div class="amount none">—</div>`;
-    const folderIcon = j.folder ? `<a class="link-icon has-file" href="${j.folder}" target="_blank" title="Drive 폴더">📂</a>` : `<span class="link-icon" title="폴더 없음">📂</span>`;
-    const dxfIcon    = j.dxf    ? `<a class="link-icon has-file" href="${j.dxf}"    target="_blank" title="DXF 도면">📄</a>`   : `<span class="link-icon" title="DXF 없음">📄</span>`;
-    const invIcon    = j.invoice ? `<a class="link-icon has-file" href="${j.invoice}" target="_blank" title="거래명세표">🧾</a>` : `<span class="link-icon" title="명세표 없음">🧾</span>`;
-
-    return `<tr onclick="openJobDetail(${origIdx})">
-      <td><span class="job-no">${j.no}</span></td>
-      <td>
-        <div class="job-name">${j.name}</div>
-        <div class="job-client">${j.client}</div>
-      </td>
-      <td class="hide-mobile"><span style="font-family:var(--mono);font-size:11px;color:var(--purple)">${j.poNo||'—'}</span></td>
-      <td>${badgeHtml(j.status)}</td>
-      <td class="hide-mobile" style="font-size:12px;color:var(--muted)">${j.dueDate||'—'}</td>
-      <td class="hide-mobile">${ddayHtml}</td>
-      <td class="hide-mobile">${amtHtml}</td>
-      <td><div class="link-icons">${folderIcon}${dxfIcon}${invIcon}</div></td>
-      <td><button class="btn btn-sm" onclick="event.stopPropagation();openJobDetail(${origIdx})">상세</button></td>
+  $('#tbody').innerHTML = rows.map(r=>{
+    const dl = daysLeft(r.due);
+    const urgent = (r.stage==='ord'||r.stage==='prog') && dl!==null && dl<=3;
+    const dueClass = urgent ? 'urgent' : 'ok';
+    const dueText = shortDate(r.due) + (urgent ? ` · D${dl<=0?'':'-'+dl}` : '');
+    return `<tr data-id="${r.id}">
+      <td class="job-no">${r.no||'—'}</td>
+      <td class="job-name">${r.name||'—'}</td>
+      <td class="vendor">${r.vendor||'—'}</td>
+      <td>${stBadge(r.stage)}</td>
+      <td class="due-cell ${dueClass}">${dueText}</td>
+      <td class="amt">${r.amount ? fmt(r.amount) : '<span style="color:var(--ink-faint)">—</span>'}</td>
+      <td><div class="docs">${invoiceChips(r.invoice)}</div></td>
     </tr>`;
   }).join('');
+  $('#tbody').querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
 }
 
-function badgeHtml(status) {
-  const map = {
-    '견적중':  'badge-draft',
-    '발주완료': 'badge-ordered',
-    '진행중':  'badge-progress',
-    '납품완료': 'badge-done',
+/* ── 모달 ── */
+function setStagePicker(s){
+  pickStage = s;
+  document.querySelectorAll('.stage-pick').forEach(p=>p.classList.toggle('sel', p.dataset.s===s));
+}
+function openAdd(){
+  editId = null;
+  $('#modalTitle').textContent = '새 건 등록';
+  $('#f_no').value=''; $('#f_name').value=''; $('#f_vendor').value='';
+  $('#f_due').value=''; $('#f_amount').value=''; $('#f_invoice').value=''; $('#f_note').value='';
+  setStagePicker('est');
+  $('#delBtn').style.visibility='hidden';
+  $('#overlay').classList.add('show');
+}
+function openEdit(id){
+  const r = DATA.find(x=>String(x.id)===String(id)); if(!r) return;
+  editId = id;
+  $('#modalTitle').textContent = '건 수정';
+  $('#f_no').value = r.no||'';
+  $('#f_name').value = r.name||'';
+  $('#f_vendor').value = r.vendor||'';
+  $('#f_due').value = r.due||'';
+  $('#f_amount').value = r.amount||'';
+  $('#f_invoice').value = (r.invoice||[]).map(d=>d.url?`${d.name} | ${d.url}`:d.name).join('\n');
+  $('#f_note').value = r.note||'';
+  setStagePicker(r.stage||'est');
+  $('#delBtn').style.visibility='visible';
+  $('#overlay').classList.add('show');
+}
+function closeModal(){ $('#overlay').classList.remove('show'); }
+
+function save(){
+  const obj = {
+    no:      $('#f_no').value.trim(),
+    name:    $('#f_name').value.trim(),
+    vendor:  $('#f_vendor').value.trim(),
+    due:     $('#f_due').value,
+    amount:  +$('#f_amount').value||0,
+    invoice: $('#f_invoice').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+               const [name,url]=line.split('|').map(p=>p.trim());
+               return {name:name||line,url:url||''};
+             }),
+    note:    $('#f_note').value.trim(),
+    stage:   pickStage
   };
-  return `<span class="badge ${map[status]||'badge-draft'}">${status}</span>`;
-}
+  if(!obj.no){ $('#f_no').focus(); return; }
 
-function calcDday(dueDate, status) {
-  if (!dueDate || status === '납품완료') return { html: `<span class="dday done">완료</span>`, days: null };
-  const diff = Math.ceil((new Date(dueDate) - new Date()) / 86400000);
-  if (diff < 0)  return { html: `<span class="dday urgent">D+${Math.abs(diff)}</span>`, days: diff };
-  if (diff === 0) return { html: `<span class="dday urgent">D-Day</span>`, days: 0 };
-  if (diff <= 3)  return { html: `<span class="dday soon">D-${diff}</span>`, days: diff };
-  return { html: `<span class="dday normal">D-${diff}</span>`, days: diff };
-}
-
-function renderVendors() {
-  const el = document.getElementById('vendor-list');
-  if (!STATE.vendors.length) { el.innerHTML = '<div class="empty-state" style="padding:20px"><div class="empty-state-text">등록된 업체가 없습니다</div></div>'; return; }
-  el.innerHTML = STATE.vendors.map(v => `
-    <div class="vendor-item">
-      <div class="vendor-avatar">${v.short}</div>
-      <div>
-        <div class="vendor-name">${v.name}</div>
-        <div class="vendor-meta">${v.note}</div>
-      </div>
-      <div class="vendor-count">${v.jobs}건</div>
-    </div>`).join('');
-}
-
-function renderPO() {
-  const el = document.getElementById('po-list');
-  const pos = STATE.pos.length ? STATE.pos : [];
-  if (!pos.length) { el.innerHTML = '<div class="empty-state" style="padding:20px"><div class="empty-state-text">발주 내역이 없습니다</div></div>'; return; }
-  el.innerHTML = pos.slice(0, 6).map(p => `
-    <div class="po-item">
-      <div>
-        <div class="po-no">${p.no}</div>
-        <div class="po-vendor">${p.vendor} · ${p.jobNo}</div>
-      </div>
-      <div class="po-amount">${p.amount !== '-' ? p.amount + '원' : '—'}</div>
-    </div>`).join('');
-}
-
-// ── 필터 & 검색 ──
-function filterJobs(status, btnEl) {
-  STATE.filter = status;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
-  renderTable();
-}
-function searchJobs(val) {
-  STATE.search = val.trim();
-  renderTable();
-}
-
-// ── 새 건 등록 ──
-function openNewJobModal() {
-  updateJobNoPreview();
-  document.getElementById('new-job-modal').classList.add('open');
-}
-
-function updateJobNoPreview() {
-  const next = STATE.jobs.length + 1;
-  const year = new Date().getFullYear();
-  document.getElementById('f-jobno').value = `JOB-${year}-${String(next).padStart(3,'0')}`;
-}
-
-function updateVendorSelect() {
-  const sel = document.getElementById('f-vendor');
-  sel.innerHTML = '<option value="">업체 선택</option>' +
-    STATE.vendors.map(v => `<option value="${v.code}">${v.name}</option>`).join('');
-}
-
-function saveNewJob() {
-  const name    = document.getElementById('f-jobname').value.trim();
-  const client  = document.getElementById('f-client').value.trim();
-  if (!name || !client) { showToast('건명과 고객사를 입력해 주세요', 'error'); return; }
-
-  const no = document.getElementById('f-jobno').value;
-  const vendor = document.getElementById('f-vendor').value;
-  const year = no.split('-')[1];
-  const month = String(new Date().getMonth()+1).padStart(2,'0');
-  const poSeq = String(STATE.pos.length + 1).padStart(3,'0');
-  const poNo = vendor ? `PO-${year}${month}-${poSeq}` : '';
-
-  const newJob = {
-    no,
-    name,
-    client,
-    orderDate:  document.getElementById('f-orderdate').value,
-    dueDate:    document.getElementById('f-duedate').value,
-    doneDate:   '',
-    status:     vendor ? '발주완료' : '견적중',
-    poNo,
-    vendor,
-    amount:     parseInt(document.getElementById('f-amount').value)||0,
-    invoiceAmt: 0,
-    folder:     document.getElementById('f-folder').value.trim(),
-    dxf:        document.getElementById('f-dxf').value.trim(),
-    invoice:    document.getElementById('f-invoice').value.trim(),
-    note:       document.getElementById('f-note').value.trim(),
-  };
-
-  STATE.jobs.push(newJob);
-  if (poNo) {
-    const vName = STATE.vendors.find(v=>v.code===vendor)?.name || vendor;
-    STATE.pos.unshift({ no:poNo, vendor:vName, jobNo:no, amount: newJob.amount ? newJob.amount.toLocaleString() : '-', date: newJob.orderDate });
-  }
-
-  closeModal('new-job-modal');
-  resetNewJobForm();
-  renderAll();
-  showToast(`${no} 등록 완료`, 'success');
-
-  if (STATE.sheetsConfig?.id) pushToSheets(newJob);
-}
-
-function resetNewJobForm() {
-  ['f-jobname','f-client','f-duedate','f-folder','f-dxf','f-invoice','f-note','f-amount'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('f-orderdate').value = new Date().toISOString().split('T')[0];
-  document.getElementById('f-vendor').value = '';
-  // Drive 링크 섹션 닫기
-  const sec = document.getElementById('link-section');
-  const btn = document.getElementById('link-toggle');
-  const ico = document.getElementById('link-toggle-icon');
-  if (sec) sec.style.display = 'none';
-  if (ico) ico.textContent = '＋';
-  if (btn) btn.classList.remove('open');
-}
-
-// ── 상세 모달 ──
-function openJobDetail(idx) {
-  STATE.currentJobIdx = idx;
-  const j = STATE.jobs[idx];
-  document.getElementById('detail-title').textContent = j.no;
-
-  const dday = calcDday(j.dueDate, j.status);
-  document.getElementById('detail-body').innerHTML = `
-    <div class="detail-row"><div class="detail-key">건명</div><div class="detail-val" style="font-weight:600">${j.name}</div></div>
-    <div class="detail-row"><div class="detail-key">고객사</div><div class="detail-val">${j.client}</div></div>
-    <div class="detail-row"><div class="detail-key">상태</div><div class="detail-val">${badgeHtml(j.status)}</div></div>
-    <div class="detail-row"><div class="detail-key">발주번호</div><div class="detail-val" style="font-family:var(--mono);font-size:12px;color:var(--purple)">${j.poNo||'—'}</div></div>
-    <div class="detail-row"><div class="detail-key">수주일</div><div class="detail-val">${j.orderDate||'—'}</div></div>
-    <div class="detail-row"><div class="detail-key">납기요청</div><div class="detail-val">${j.dueDate||'—'} ${dday.html}</div></div>
-    ${j.doneDate ? `<div class="detail-row"><div class="detail-key">완료일</div><div class="detail-val">${j.doneDate}</div></div>` : ''}
-    <div class="detail-row"><div class="detail-key">발주금액</div><div class="detail-val" style="font-family:var(--mono)">${j.amount ? j.amount.toLocaleString()+'원' : '—'}</div></div>
-    <div class="detail-row">
-      <div class="detail-key">파일 링크</div>
-      <div class="detail-val">
-        <div style="display:flex;flex-direction:column;gap:8px">
-          ${renderFileRow(idx, 'folder',  '📂', 'Drive 폴더', j.folder)}
-          ${renderFileRow(idx, 'dxf',     '📄', 'DXF 도면',  j.dxf)}
-          ${renderFileRow(idx, 'invoice', '🧾', '거래명세표', j.invoice)}
-        </div>
-      </div>
-    </div>
-    ${j.note ? `<div class="detail-row"><div class="detail-key">비고</div><div class="detail-val" style="color:var(--muted)">${j.note}</div></div>` : ''}
-    <div class="detail-row" style="flex-direction:column;gap:10px;border-bottom:none">
-      <div class="detail-key" style="width:auto">거래명세표 OCR</div>
-      <div class="ocr-zone" id="ocr-zone-wrap" ondragover="event.preventDefault()" ondrop="handleOcrDrop(event)">
-        <input type="file" id="ocr-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleOcrFile(this)">
-        <div class="ocr-zone-inner" onclick="document.getElementById('ocr-file-input').click()">
-          <div class="ocr-icon">🧾</div>
-          <div class="ocr-hint">명세표 PDF / 이미지 업로드</div>
-          <div class="ocr-hint2">클릭 또는 드래그하여 추가</div>
-        </div>
-      </div>
-      <div id="ocr-result-box" class="ocr-result" style="display:none"></div>
-    </div>
-  `;
-
-  document.getElementById('job-detail-modal').classList.add('open');
-}
-
-function toggleStatusMenu() {
-  const menu = document.getElementById('status-menu');
-  const isOpen = menu.classList.contains('open');
-  menu.classList.toggle('open', !isOpen);
-  // 현재 상태 항목 dim 처리
-  const j = STATE.jobs[STATE.currentJobIdx];
-  menu.querySelectorAll('button').forEach(btn => {
-    const badge = btn.querySelector('.badge');
-    btn.classList.toggle('current', badge?.textContent.trim() === j.status);
-  });
-}
-
-function setStatus(newStatus) {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  if (j.status === newStatus) {
-    document.getElementById('status-menu').classList.remove('open');
-    return;
-  }
-  const prev = j.status;
-  j.status = newStatus;
-  if (newStatus === '납품완료' && !j.doneDate)
-    j.doneDate = new Date().toISOString().split('T')[0];
-  if (newStatus !== '납품완료')
-    j.doneDate = '';
-  document.getElementById('status-menu').classList.remove('open');
-  closeModal('job-detail-modal');
-  renderAll();
-  showToast(`${j.no}  ${prev} → ${newStatus}`, 'success');
-  if (STATE.sheetsConfig?.id) updateSheetStatus(j);
-}
-
-// 메뉴 외부 클릭 시 닫기
-document.addEventListener('click', e => {
-  const wrap = document.getElementById('status-change-wrap');
-  if (wrap && !wrap.contains(e.target))
-    document.getElementById('status-menu')?.classList.remove('open');
-});
-
-function editCurrentJob() {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  closeModal('job-detail-modal');
-  // 수정 모달 재활용 (새 건 등록 폼에 기존값 채우기)
-  document.getElementById('f-jobno').value    = j.no;
-  document.getElementById('f-jobname').value  = j.name;
-  document.getElementById('f-client').value   = j.client;
-  document.getElementById('f-orderdate').value = j.orderDate;
-  document.getElementById('f-duedate').value  = j.dueDate;
-  document.getElementById('f-vendor').value   = j.vendor||'';
-  document.getElementById('f-amount').value   = j.amount||'';
-  document.getElementById('f-folder').value   = j.folder||'';
-  document.getElementById('f-dxf').value      = j.dxf||'';
-  document.getElementById('f-invoice').value  = j.invoice||'';
-  document.getElementById('f-note').value     = j.note||'';
-  document.querySelector('#new-job-modal .modal-title').textContent = '건명 수정';
-  const saveBtn = document.querySelector('#new-job-modal .btn-primary');
-  saveBtn.textContent = '저장';
-  saveBtn.onclick = () => updateJob();
-  document.getElementById('new-job-modal').classList.add('open');
-}
-
-function updateJob() {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  j.name     = document.getElementById('f-jobname').value.trim();
-  j.client   = document.getElementById('f-client').value.trim();
-  j.orderDate= document.getElementById('f-orderdate').value;
-  j.dueDate  = document.getElementById('f-duedate').value;
-  j.vendor   = document.getElementById('f-vendor').value;
-  j.amount   = parseInt(document.getElementById('f-amount').value)||0;
-  j.folder   = document.getElementById('f-folder').value.trim();
-  j.dxf      = document.getElementById('f-dxf').value.trim();
-  j.invoice  = document.getElementById('f-invoice').value.trim();
-  j.note     = document.getElementById('f-note').value.trim();
-
-  closeModal('new-job-modal');
-  const saveBtn = document.querySelector('#new-job-modal .btn-primary');
-  saveBtn.textContent = '등록';
-  saveBtn.onclick = saveNewJob;
-  document.querySelector('#new-job-modal .modal-title').textContent = '새 건 등록';
-  resetNewJobForm();
-  renderAll();
-  showToast(`${j.no} 수정 완료`, 'success');
-}
-
-function confirmDeleteJob() {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  document.getElementById('delete-job-title').textContent = `${j.no} · ${j.name}`;
-  closeModal('job-detail-modal');
-  document.getElementById('delete-confirm-modal').classList.add('open');
-}
-
-function deleteJob() {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  const no = j.no;
-  STATE.jobs.splice(STATE.currentJobIdx, 1);
-  // 연결된 PO도 목록에서 제거
-  STATE.pos = STATE.pos.filter(p => p.jobNo !== no);
-  closeModal('delete-confirm-modal');
-  STATE.currentJobIdx = null;
-  renderAll();
-  showToast(`${no} 삭제 완료`, 'success');
-}
-
-// ── 인라인 파일 행 렌더링 ──
-function renderFileRow(idx, field, icon, label, url) {
-  if (url) {
-    // 링크 있음 — 열기 + 수정 + 삭제
-    const displayUrl = url.replace('https://drive.google.com/', '').slice(0, 40) + (url.length > 50 ? '…' : '');
-    return `
-      <div class="file-row" id="file-row-${field}">
-        <span class="file-row-label">${icon} ${label}</span>
-        <a class="file-row-link" href="${url}" target="_blank" title="${url}">${displayUrl}</a>
-        <button class="file-row-action" onclick="editFileLink(${idx},'${field}')" title="링크 수정">수정</button>
-        <button class="file-row-action clear" onclick="clearFileLink(${idx},'${field}')" title="링크 삭제">✕</button>
-      </div>`;
-  } else {
-    // 링크 없음 — 바로 입력창 노출
-    return `
-      <div class="file-row" id="file-row-${field}">
-        <span class="file-row-label">${icon} ${label}</span>
-        <input class="file-row-input" id="finput-${field}" placeholder="Drive 공유 링크 붙여넣기"
-          onkeydown="if(event.key==='Enter') saveFileLink(${idx},'${field}')">
-        <button class="file-row-action save" onclick="saveFileLink(${idx},'${field}')">저장</button>
-      </div>`;
-  }
-}
-
-function editFileLink(idx, field) {
-  const j   = STATE.jobs[idx];
-  const url = j[field] || '';
-  const row = document.getElementById(`file-row-${field}`);
-  const icons = { folder:'📂', dxf:'📄', invoice:'🧾' };
-  const labels = { folder:'Drive 폴더', dxf:'DXF 도면', invoice:'거래명세표' };
-  row.innerHTML = `
-    <span class="file-row-label">${icons[field]} ${labels[field]}</span>
-    <input class="file-row-input" id="finput-${field}" value="${url}" placeholder="Drive 공유 링크"
-      onkeydown="if(event.key==='Enter') saveFileLink(${idx},'${field}')">
-    <button class="file-row-action save" onclick="saveFileLink(${idx},'${field}')">저장</button>
-    <button class="file-row-action" onclick="openJobDetail(${idx})">취소</button>`;
-  document.getElementById(`finput-${field}`).focus();
-  document.getElementById(`finput-${field}`).select();
-}
-
-function saveFileLink(idx, field) {
-  const input = document.getElementById(`finput-${field}`);
-  const val   = input?.value.trim() || '';
-  if (!val) { showToast('링크를 입력해 주세요', 'error'); return; }
-  // 간단한 Drive URL 검증
-  if (!val.startsWith('http')) { showToast('올바른 URL을 입력해 주세요', 'error'); return; }
-  STATE.jobs[idx][field] = val;
-  // 상세 모달 파일 행만 재렌더링 (모달 전체 닫지 않음)
-  const j = STATE.jobs[idx];
-  const icons  = { folder:'📂', dxf:'📄', invoice:'🧾' };
-  const labels = { folder:'Drive 폴더', dxf:'DXF 도면', invoice:'거래명세표' };
-  const row = document.getElementById(`file-row-${field}`);
-  const displayUrl = val.replace('https://drive.google.com/', '').slice(0, 40) + (val.length > 50 ? '…' : '');
-  row.innerHTML = `
-    <span class="file-row-label">${icons[field]} ${labels[field]}</span>
-    <a class="file-row-link" href="${val}" target="_blank" title="${val}">${displayUrl}</a>
-    <button class="file-row-action" onclick="editFileLink(${idx},'${field}')">수정</button>
-    <button class="file-row-action clear" onclick="clearFileLink(${idx},'${field}')">✕</button>`;
-  renderTable(); // KPI·테이블 아이콘만 갱신
-  showToast(`${labels[field]} 링크 저장 완료`, 'success');
-}
-
-function clearFileLink(idx, field) {
-  STATE.jobs[idx][field] = '';
-  const icons  = { folder:'📂', dxf:'📄', invoice:'🧾' };
-  const labels = { folder:'Drive 폴더', dxf:'DXF 도면', invoice:'거래명세표' };
-  const row = document.getElementById(`file-row-${field}`);
-  row.innerHTML = `
-    <span class="file-row-label">${icons[field]} ${labels[field]}</span>
-    <input class="file-row-input" id="finput-${field}" placeholder="Drive 공유 링크 붙여넣기"
-      onkeydown="if(event.key==='Enter') saveFileLink(${idx},'${field}')">
-    <button class="file-row-action save" onclick="saveFileLink(${idx},'${field}')">저장</button>`;
-  renderTable();
-  showToast(`${labels[field]} 링크 삭제`, 'success');
-}
-
-// ── 새 건 등록 Drive 링크 토글 ──
-function toggleLinkSection() {
-  const sec = document.getElementById('link-section');
-  const btn = document.getElementById('link-toggle');
-  const ico = document.getElementById('link-toggle-icon');
-  const open = sec.style.display === 'none';
-  sec.style.display = open ? 'block' : 'none';
-  ico.textContent   = open ? '－' : '＋';
-  btn.classList.toggle('open', open);
-}
-
-// ── 거래명세표 OCR ──
-function handleOcrDrop(event) {
-  event.preventDefault();
-  const file = event.dataTransfer.files[0];
-  if (file) processOcrFile(file);
-}
-function handleOcrFile(input) {
-  const file = input.files[0];
-  if (file) processOcrFile(file);
-}
-
-async function processOcrFile(file) {
-  const zone = document.getElementById('ocr-zone-wrap');
-  const result = document.getElementById('ocr-result-box');
-
-  // 로딩 상태
-  zone.innerHTML = `<div class="ocr-loading"><div class="ocr-spinner"></div> 명세표 분석 중...</div>`;
-  result.style.display = 'none';
-
-  try {
-    const base64 = await fileToBase64(file);
-    const isPdf  = file.type === 'application/pdf';
-    const extracted = await callClaudeVision(base64, isPdf, file.type);
-    renderOcrResult(extracted, zone, result);
-  } catch(e) {
-    zone.innerHTML = `
-      <input type="file" id="ocr-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleOcrFile(this)">
-      <div class="ocr-zone-inner" onclick="document.getElementById('ocr-file-input').click()">
-        <div class="ocr-icon">⚠️</div>
-        <div class="ocr-hint" style="color:var(--red)">분석 실패 — 다시 시도</div>
-        <div class="ocr-hint2">${e.message || '파일을 확인해 주세요'}</div>
-      </div>`;
-  }
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload  = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = () => reject(new Error('파일 읽기 실패'));
-    reader.readAsDataURL(file);
-  });
-}
-
-async function callClaudeVision(base64, isPdf, mimeType) {
-  const apiKey = STATE.sheetsConfig?.anthropicKey || '';
-
-  // API Key 없을 때 → 데모 결과 반환
-  if (!apiKey) {
-    await new Promise(r => setTimeout(r, 1200)); // 로딩 연출
-    return {
-      vendor:    '신영스틸',
-      invoiceNo: 'INV-20260611',
-      date:      new Date().toISOString().split('T')[0],
-      amount:    480000,
-      tax:       48000,
-      total:     528000,
-      note:      '※ API Key 미설정 — 데모 데이터',
-      demo:      true,
-    };
-  }
-
-  const mediaType = isPdf ? 'application/pdf' : mimeType;
-  const sourceType = isPdf ? 'base64' : 'base64';
-
-  const prompt = `이 거래명세표에서 다음 항목을 추출해서 JSON으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
-{
-  "vendor": "공급업체명",
-  "invoiceNo": "명세서 번호 또는 전표번호 (없으면 null)",
-  "date": "발행일 YYYY-MM-DD 형식 (없으면 null)",
-  "amount": 공급가액 숫자만,
-  "tax": 세액 숫자만,
-  "total": 합계금액 숫자만,
-  "note": "특이사항 또는 품목 요약 (없으면 null)"
-}`;
-
-  const body = {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 512,
-    messages: [{
-      role: 'user',
-      content: [
-        { type: isPdf ? 'document' : 'image',
-          source: { type: 'base64', media_type: mediaType, data: base64 } },
-        { type: 'text', text: prompt },
-      ],
-    }],
-  };
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error(`API 오류 ${res.status}`);
-  const data = await res.json();
-  const text = data.content?.[0]?.text || '{}';
-  try {
-    return JSON.parse(text.replace(/```json|```/g, '').trim());
-  } catch {
-    throw new Error('응답 파싱 실패');
-  }
-}
-
-function renderOcrResult(data, zone, resultEl) {
-  // 드롭존 원복
-  zone.innerHTML = `
-    <input type="file" id="ocr-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleOcrFile(this)">
-    <div class="ocr-zone-inner" onclick="document.getElementById('ocr-file-input').click()">
-      <div class="ocr-icon">✅</div>
-      <div class="ocr-hint">분석 완료 — 다시 업로드하려면 클릭</div>
-      <div class="ocr-hint2">${data.vendor || ''} · ${data.date || ''}</div>
-    </div>`;
-
-  const fmt = v => v ? Number(v).toLocaleString() + '원' : '—';
-
-  resultEl.style.display = 'block';
-  resultEl.innerHTML = `
-    <div class="ocr-result-header">
-      🧾 추출 결과
-      ${data.demo ? '<span style="color:var(--amber);font-size:10px;font-weight:400">데모 데이터</span>' : ''}
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">업체명</div>
-      <div class="ocr-result-val">${data.vendor || '—'}</div>
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">발행일</div>
-      <div class="ocr-result-val">${data.date || '—'}</div>
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">명세서 번호</div>
-      <div class="ocr-result-val">${data.invoiceNo || '—'}</div>
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">공급가액</div>
-      <div class="ocr-result-val">${fmt(data.amount)}</div>
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">세액</div>
-      <div class="ocr-result-val">${fmt(data.tax)}</div>
-    </div>
-    <div class="ocr-result-row">
-      <div class="ocr-result-key">합계금액</div>
-      <div class="ocr-result-val highlight">${fmt(data.total)}</div>
-      <button class="ocr-apply-btn" onclick="applyOcrResult(${data.total || 0}, '${data.date || ''}')">납품금액에 적용</button>
-    </div>
-    ${data.note ? `<div class="ocr-result-row"><div class="ocr-result-key">비고</div><div class="ocr-result-val" style="color:var(--muted);font-family:var(--font)">${data.note}</div></div>` : ''}
-    ${!STATE.sheetsConfig?.anthropicKey ? `
-    <div class="ocr-api-notice">
-      💡 실제 명세표 분석을 위해 <strong style="color:var(--accent2)">Sheets 연결</strong> 설정에서 Anthropic API Key를 추가하세요
-    </div>` : ''}
-  `;
-}
-
-function applyOcrResult(total, date) {
-  const j = STATE.jobs[STATE.currentJobIdx];
-  if (!j) return;
-  j.invoiceAmt = total;
-  if (date && !j.doneDate) j.doneDate = date;
-  // 상태가 진행중이면 납품완료로 자동 전환 여부 확인
-  if (j.status === '진행중' || j.status === '발주완료') {
-    j.status   = '납품완료';
-    j.doneDate = j.doneDate || new Date().toISOString().split('T')[0];
-  }
-  closeModal('job-detail-modal');
-  renderAll();
-  showToast(`${j.no} 납품금액 ${total.toLocaleString()}원 적용 완료`, 'success');
-}
-
-// ── Sheets 설정 ──
-function openSheetsConfig() {
-  if (STATE.sheetsConfig) {
-    document.getElementById('sheets-id-input').value    = STATE.sheetsConfig.id           || '';
-    document.getElementById('sheets-api-input').value   = STATE.sheetsConfig.key          || '';
-    document.getElementById('anthropic-api-input').value= STATE.sheetsConfig.anthropicKey || '';
-  }
-  document.getElementById('sheets-modal').classList.add('open');
-}
-
-function saveSheetConfig() {
-  const id           = document.getElementById('sheets-id-input').value.trim();
-  const key          = document.getElementById('sheets-api-input').value.trim();
-  const anthropicKey = document.getElementById('anthropic-api-input').value.trim();
-  if (!id || !key) { showToast('ID와 API Key를 모두 입력해 주세요', 'error'); return; }
-  STATE.sheetsConfig = { id, key, anthropicKey };
-  localStorage.setItem('caddis_sheets', JSON.stringify(STATE.sheetsConfig));
-  closeModal('sheets-modal');
-  updateSheetStatusDot();
-  showToast('연결 설정 저장 — 데이터 불러오는 중...', 'success');
-  fetchFromSheets();
-}
-
-function updateSheetStatusDot() {
-  const dot = document.getElementById('sheets-status-dot');
-  dot.style.background = STATE.sheetsConfig?.id ? 'var(--green)' : 'var(--amber)';
-}
-
-// ── Sheets 쓰기 (실제 연결 시 사용) ──
-async function pushToSheets(job) {
-  const { id, key } = STATE.sheetsConfig;
-  const row = [job.no, job.name, job.client, job.orderDate, job.dueDate, job.doneDate, job.status, job.poNo, job.amount||'', job.invoiceAmt||'', job.folder, job.dxf, job.invoice, job.note];
-  try {
-    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/'📁 건명대장'!A:N:append?valueInputOption=USER_ENTERED&key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [row] }),
-    });
-  } catch(e) { console.warn('Sheets 쓰기 실패:', e); }
-}
-
-async function updateSheetStatus(job) {
-  // 실제 행 번호 찾아서 업데이트 필요 (구현 포인트)
-  console.log('상태 업데이트:', job.no, job.status);
-}
-
-// ── 유틸 ──
-function openVendorModal() { showToast('업체 추가 기능 — 준비 중입니다', 'info'); }
-
-function refreshData() {
-  showToast('새로고침 중...', 'info');
-  setTimeout(() => { loadData(); showToast('데이터 갱신 완료', 'success'); }, 600);
-}
-
-function exportData() {
-  const headers = ['건명번호','건명','고객사','수주일','납기요청','완료일','상태','발주번호','발주금액','납품금액','폴더','DXF','명세표','비고'];
-  const rows = STATE.jobs.map(j => [j.no,j.name,j.client,j.orderDate,j.dueDate,j.doneDate,j.status,j.poNo,j.amount,j.invoiceAmt,j.folder,j.dxf,j.invoice,j.note]);
-  const csv = [headers, ...rows].map(r => r.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `CADDIS_외주관리_${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  showToast('CSV 다운로드 완료', 'success');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-let toastTimer;
-function showToast(msg, type='info') {
-  const t = document.getElementById('toast');
-  const icons = { success:'✓', error:'✕', info:'ℹ' };
-  t.textContent = (icons[type]||'') + ' ' + msg;
-  t.className = `toast show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-// 모달 바깥 클릭 닫기
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay) {
-      // 삭제 확인 모달은 바깥 클릭으로 닫지 않음 (실수 방지)
-      if (overlay.id === 'delete-confirm-modal') return;
-      overlay.classList.remove('open');
+  if(USE_SHEETS){
+    if(editId){
+      obj.id = editId;
+      sheetPost('update', obj);
+      Object.assign(DATA.find(x=>String(x.id)===String(editId)), obj);
+    } else {
+      const temp = Object.assign({ id:'tmp'+Date.now() }, obj);
+      DATA.push(temp);
+      sheetPost('add', obj).then(res=>{ if(res&&res.id) temp.id=res.id; });
     }
-  });
+  } else {
+    if(editId){ Object.assign(DATA.find(x=>String(x.id)===String(editId)), obj); }
+    else { obj.id = 'J'+Date.now(); DATA.push(obj); }
+  }
+  closeModal(); renderTable();
+}
+
+function del(){
+  if(editId && confirm('이 건을 삭제할까요?')){
+    if(USE_SHEETS) sheetPost('delete', {id:editId});
+    DATA = DATA.filter(x=>String(x.id)!==String(editId));
+    closeModal(); renderTable();
+  }
+}
+
+/* ── 시트 통신 ── */
+function sheetGet(){
+  return fetch(SHEETS_URL).then(r=>r.json()).then(res=>{
+    if(res&&res.ok&&Array.isArray(res.rows)) return res.rows;
+    return null;
+  }).catch(()=>null);
+}
+function sheetPost(action, data){
+  return fetch(SHEETS_URL,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action, data})
+  }).then(r=>r.json()).catch(e=>{console.warn('sheet error',e);return null;});
+}
+
+/* ── 배너 ── */
+function setBanner(state){
+  const el = $('#banner');
+  el.className = 'banner ' + state;
+  const msgs = {
+    loading: '● 시트에서 불러오는 중…',
+    live:    '● 시트 연결됨 — 변경이 저장됩니다',
+    sample:  '● 샘플 없음 — 시트 미연결 (변경은 저장되지 않습니다)',
+    error:   '● 시트 연결 실패 — URL을 확인하세요'
+  };
+  el.textContent = msgs[state]||'';
+}
+
+/* ── 내보내기 ── */
+function exportSnapshot(){
+  const blob = new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='outsource-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ── 이벤트 연결 ── */
+$('#addBtn').onclick    = openAdd;
+$('#closeX').onclick    = closeModal;
+$('#cancelBtn').onclick = closeModal;
+$('#saveBtn').onclick   = save;
+$('#delBtn').onclick    = del;
+$('#exportBtn').onclick = exportSnapshot;
+$('#overlay').onclick   = e=>{ if(e.target===$('#overlay')) closeModal(); };
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+  renderTable();
 });
+$('#search').oninput = e=>{ query=e.target.value; renderTable(); };
+document.querySelectorAll('.stage-pick').forEach(p=>p.onclick=()=>setStagePicker(p.dataset.s));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ── 초기 로딩 ── */
+async function init(){
+  if(USE_SHEETS){
+    setBanner('loading'); renderTable();
+    const rows = await sheetGet();
+    if(rows){ DATA=rows; setBanner('live'); }
+    else { setBanner('error'); }
+    renderTable();
+  } else {
+    setBanner('sample'); renderTable();
+  }
+}
+init();
 </script>
 </body>
 </html>
