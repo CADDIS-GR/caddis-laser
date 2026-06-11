@@ -216,7 +216,7 @@
       <span class="chip" data-f="prog">진행</span>
       <span class="chip" data-f="done">완료</span>
       <span class="chip" data-f="ship">납품</span>
-      <input class="search" id="search" placeholder="건명·내용 검색">
+      <input class="search" id="search" placeholder="업체·내용 검색">
     </div>
   </div>
 
@@ -233,8 +233,8 @@
     </div>
     <div class="modal-body">
       <div class="field">
-        <label>건명</label>
-        <input id="f_cust" placeholder="예: SS400 브라켓 절단">
+        <label>업체명</label>
+        <input id="f_cust" placeholder="예: 조율산업">
       </div>
       <div class="row2">
         <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
@@ -283,6 +283,12 @@ const STAGES = {
   ship:{label:'납품', color:'var(--st-ship)'}
 };
 const STAGE_ORDER = ['wait','prog','done','ship'];
+
+/* ───────── 구글시트 연결 설정 ─────────
+   2단계에서 받은 Apps Script 웹앱 URL을 아래에 넣으면 시트 연동이 켜집니다.
+   비워두면(''), 아래 샘플 데이터로 동작합니다(저장 안 됨). */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-pyl_hSe9tnNO9ZBMIjhOlBmF6t6PK4It-uoAE-k1uRZwuFC5W_cvCBXiCZ6L_K5m/exec';
+const USE_SHEETS = !!SHEETS_URL;
 
 let DATA = [
   {id:1, cust:'청우에스티에스', start:'2024-02-20', due:'2024-02-29', work:'4950, 4951', docs:[{name:'4950.pdf',url:''},{name:'4951.pdf',url:''}], mat:0, fee:0, stage:'ship'},
@@ -358,7 +364,7 @@ function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
   area.innerHTML = `<div class="panel"><table>
     <thead><tr>
-      <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
+      <th>업체명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
     </tr></thead>
     <tbody>${rows.map(r=>{
       const dl = daysLeft(r.due);
@@ -465,14 +471,58 @@ function save(){
     stage:pickStage
   };
   if(!obj.cust){ $('#f_cust').focus(); return; }
-  if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
-  else { obj.id=nextId++; DATA.push(obj); }
+
+  if(USE_SHEETS){
+    if(editId){
+      obj.id = editId;
+      sheetPost('update', obj);
+      Object.assign(DATA.find(x=>x.id===editId), obj);
+    } else {
+      // 임시 id로 화면에 먼저 반영, 시트에서 실제 id 발급
+      const temp = Object.assign({id:'tmp'+Date.now()}, obj);
+      DATA.push(temp);
+      sheetPost('add', obj).then(res=>{ if(res&&res.id) temp.id=res.id; });
+    }
+  } else {
+    if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
+    else { obj.id=nextId++; DATA.push(obj); }
+  }
   closeModal(); render();
 }
 function del(){
   if(editId && confirm('이 작업을 삭제할까요?')){
+    if(USE_SHEETS) sheetPost('delete', {id:editId});
     DATA=DATA.filter(x=>x.id!==editId); closeModal(); render();
   }
+}
+
+/* ── 구글시트 통신 ── */
+function sheetGet(){
+  return fetch(SHEETS_URL).then(r=>r.json()).then(res=>{
+    if(res && res.ok && Array.isArray(res.rows)) return res.rows;
+    return null;
+  }).catch(()=>null);
+}
+function sheetPost(action, data){
+  // text/plain 으로 보내 CORS 프리플라이트를 피함
+  return fetch(SHEETS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action, data})
+  }).then(r=>r.json()).catch(e=>{ console.warn('sheet post fail',e); return null; });
+}
+function setBanner(state){
+  let el = document.getElementById('connBanner');
+  if(!el){
+    el = document.createElement('div');
+    el.id='connBanner';
+    el.style.cssText='font-family:var(--mono);font-size:11.5px;padding:8px 12px;border-radius:9px;margin-bottom:14px;border:1px solid var(--line-soft)';
+    $('#summary').insertAdjacentElement('beforebegin', el);
+  }
+  if(state==='sample'){ el.style.color='var(--st-ship)'; el.innerHTML='● 샘플 데이터 — 시트 미연결 (변경은 저장되지 않습니다)'; }
+  else if(state==='live'){ el.style.color='var(--st-done)'; el.innerHTML='● 시트 연결됨 — 변경이 저장됩니다'; }
+  else if(state==='loading'){ el.style.color='var(--ink-soft)'; el.innerHTML='● 시트에서 불러오는 중…'; }
+  else if(state==='error'){ el.style.color='#d36a6a'; el.innerHTML='● 시트 연결 실패 — 주소를 확인하세요 (지금은 샘플 표시)'; }
 }
 
 /* ── export (gentle path: snapshot to clipboard/JSON) ── */
@@ -510,7 +560,19 @@ $('#themeBtn').onclick=()=>{
 };
 document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
 
-render();
+/* ── 초기 로딩 ── */
+async function init(){
+  if(USE_SHEETS){
+    setBanner('loading'); render();
+    const rows = await sheetGet();
+    if(rows){ DATA = rows; setBanner('live'); }
+    else { setBanner('error'); }   // 실패 시 샘플 유지
+    render();
+  } else {
+    setBanner('sample'); render();
+  }
+}
+init();
 </script>
 </body>
 </html>
