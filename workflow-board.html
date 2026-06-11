@@ -290,16 +290,7 @@ const STAGE_ORDER = ['wait','prog','done','ship'];
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-pyl_hSe9tnNO9ZBMIjhOlBmF6t6PK4It-uoAE-k1uRZwuFC5W_cvCBXiCZ6L_K5m/exec';
 const USE_SHEETS = !!SHEETS_URL;
 
-let DATA = [
-  {id:1, cust:'청우에스티에스', start:'2024-02-20', due:'2024-02-29', work:'4950, 4951', docs:[{name:'4950.pdf',url:''},{name:'4951.pdf',url:''}], mat:0, fee:0, stage:'ship'},
-  {id:2, cust:'조율산업', start:'2024-03-01', due:'2024-03-07', work:'ME SIDE OTR, SV FRT RR DR OTR, SV T GATE ASSY', docs:[{name:'1638-14e.pdf',url:'https://drive.google.com/'},{name:'1638-48e.pdf',url:''},{name:'1740-86E.pdf',url:''},{name:'1900-4E.pdf',url:''}], mat:0, fee:0, stage:'done'},
-  {id:3, cust:'강진산기', start:'2024-03-06', due:'2024-03-11', work:'', docs:[{name:'42_2---.pdf',url:''},{name:'42_2------.pdf',url:''}], mat:0, fee:0, stage:'done'},
-  {id:4, cust:'하이와이드', start:'2024-03-13', due:'2024-03-14', work:'', docs:[{name:'34-3M.pdf',url:''},{name:'427-3M.pdf',url:''}], mat:0, fee:0, stage:'done'},
-  {id:5, cust:'조율산업', start:'2024-03-15', due:'2024-03-20', work:'SV FRT RR DR OTR (공정용), DN8 PE, SV HOOD', docs:[{name:'jo-5030.pdf',url:'https://drive.google.com/'},{name:'jo-5050.pdf',url:''},{name:'jo-10050.pdf',url:''}], mat:0, fee:0, stage:'done'},
-  {id:6, cust:'삼성아이앤디', start:'2024-03-26', due:'2024-03-29', work:'재원산업기계-240325', docs:[{name:'SS-10050.pdf',url:''},{name:'SS-32A.pdf',url:''},{name:'SS-5030-3T.pdf',url:''},{name:'SS-50A.pdf',url:''}], mat:0, fee:0, stage:'done'},
-  {id:7, cust:'조율산업', start:'2024-03-29', due:'2024-04-03', work:'SV FENDER, SV FRT RR DR OTR', docs:[{name:'JO-50.pdf',url:''},{name:'JO-5030.pdf',url:''},{name:'JO-7545.pdf',url:''}], mat:0, fee:0, stage:'wait'},
-  {id:8, cust:'대성테크', start:'2024-03-30', due:'2024-04-05', work:'1845, 1831 외', docs:[{name:'1845-2e.pdf',url:''},{name:'1831-300e.pdf',url:''},{name:'1607-1670e.pdf',url:''}], mat:0, fee:0, stage:'prog'}
-];
+let DATA = [];
 let nextId = 9;
 
 let view = 'table';
