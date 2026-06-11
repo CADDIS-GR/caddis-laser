@@ -216,7 +216,7 @@
       <span class="chip" data-f="prog">진행</span>
       <span class="chip" data-f="done">완료</span>
       <span class="chip" data-f="ship">납품</span>
-      <input class="search" id="search" placeholder="업체·내용 검색">
+      <input class="search" id="search" placeholder="건명·내용 검색">
     </div>
   </div>
 
@@ -233,8 +233,8 @@
     </div>
     <div class="modal-body">
       <div class="field">
-        <label>업체명</label>
-        <input id="f_cust" placeholder="예: 조율산업">
+        <label>건명</label>
+        <input id="f_cust" placeholder="예: DN8-OTR 브라켓">
       </div>
       <div class="row2">
         <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
@@ -242,7 +242,11 @@
       </div>
       <div class="field">
         <label>작업내용</label>
-        <textarea id="f_work" placeholder="예: SV FRT RR DR OTR, DN8 PE"></textarea>
+        <textarea id="f_work" placeholder="예: 레이저 절단 + 벤딩"></textarea>
+      </div>
+      <div class="field">
+        <label>사용자재</label>
+        <input id="f_material" placeholder="예: SS400-3t, STS304-2t">
       </div>
       <div class="field">
         <label>작업지시서 (한 줄에 하나 · 파일명 | 링크)</label>
@@ -316,7 +320,7 @@ function visible(){
     if(filter!=='all' && r.stage!==filter) return false;
     if(query){
       const q=query.toLowerCase();
-      if(!(r.cust.toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
+      if(!(( r.job||'').toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
     }
     return true;
   });
@@ -355,17 +359,18 @@ function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
   area.innerHTML = `<div class="panel"><table>
     <thead><tr>
-      <th>업체명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>작업내용</th><th style="text-align:right">정산</th>
+      <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>사용자재</th><th>작업내용</th><th style="text-align:right">정산</th>
     </tr></thead>
     <tbody>${rows.map(r=>{
       const dl = daysLeft(r.due);
       const urgent = (r.stage==='wait'||r.stage==='prog') && dl!==null && dl<=2;
       const total = (Number(r.mat)||0)+(Number(r.fee)||0);
       return `<tr data-id="${r.id}">
-        <td class="cust">${r.cust||'—'}</td>
+        <td class="cust">${r.job||'—'}</td>
         <td class="due ${urgent?'urgent':''}">${shortDate(r.start)}<span class="arr">→</span>${shortDate(r.due)}${urgent?` · D${dl<=0?'':'-'+dl}`:''}</td>
         <td>${stBadge(r.stage)}</td>
         <td><div class="docs">${docChips(r.docs)}</div></td>
+        <td class="work" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
       </tr>`;
@@ -383,7 +388,8 @@ function renderBoard(rows){
       </div>
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
-          <div class="c-top"><span class="c-cust">${r.cust||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          <div class="c-top"><span class="c-cust">${r.job||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
           ${r.work?`<div class="c-work">${r.work}</div>`:''}
           <div class="c-docs">${docChips(r.docs)}</div>
         </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
@@ -405,7 +411,7 @@ function renderTimeline(rows){
     return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
       <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
       <div class="tl-bar-wrap">
-        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.cust}</div>
+        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}</div>
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -438,8 +444,9 @@ function openEdit(id){
   const r=DATA.find(x=>String(x.id)===String(id)); if(!r)return;
   editId=id;
   $('#modalTitle').textContent='작업 수정';
-  $('#f_cust').value=r.cust;$('#f_start').value=r.start;$('#f_due').value=r.due;
+  $('#f_cust').value=r.job;$('#f_start').value=r.start;$('#f_due').value=r.due;
   $('#f_work').value=r.work||'';
+  $('#f_material').value=r.material||'';
   $('#f_docs').value=(r.docs||[]).map(d=>d.url?`${d.name} | ${d.url}`:d.name).join('\n');
   $('#f_mat').value=r.mat||'';$('#f_fee').value=r.fee||'';
   setStagePicker(r.stage);
@@ -449,10 +456,11 @@ function openEdit(id){
 function closeModal(){ $('#overlay').classList.remove('show'); }
 function save(){
   const obj={
-    cust:$('#f_cust').value.trim(),
+    job:$('#f_cust').value.trim(),
     start:$('#f_start').value,
     due:$('#f_due').value,
     work:$('#f_work').value.trim(),
+    material:$('#f_material').value.trim(),
     docs:$('#f_docs').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
       const [name,url] = line.split('|').map(p=>p.trim());
       return {name:name||line.trim(), url:url||''};
@@ -461,7 +469,7 @@ function save(){
     fee:+$('#f_fee').value||0,
     stage:pickStage
   };
-  if(!obj.cust){ $('#f_cust').focus(); return; }
+  if(!obj.job){ $('#f_cust').focus(); return; }
 
   if(USE_SHEETS){
     if(editId){
