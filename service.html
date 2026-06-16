@@ -74,7 +74,8 @@
   }
   .nav-links a:hover { color: var(--text); background: var(--surface2); }
   .nav-links a.active { color: var(--text); background: var(--surface2); }
-  .nav-right { margin-left: auto; }
+  .nav-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -86,6 +87,7 @@
     cursor: pointer;
     border: none;
     transition: opacity .15s, background .15s;
+    text-decoration: none;
   }
   .btn:hover { opacity: .85; }
   .btn-primary { background: var(--accent); color: #fff; }
@@ -95,9 +97,69 @@
     border: 1px solid var(--border);
   }
   .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+  .btn-blue {
+    background: rgba(88,166,255,.12);
+    color: var(--blue);
+    border: 1px solid rgba(88,166,255,.3);
+  }
+  .btn-blue:hover { background: rgba(88,166,255,.2); }
+
+  /* Sheets 연결 상태 표시 */
+  .sheets-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .sheets-status.connected {
+    background: rgba(63,185,80,.12);
+    color: var(--green);
+    border: 1px solid rgba(63,185,80,.3);
+  }
+  .sheets-status.disconnected {
+    background: rgba(210,153,34,.12);
+    color: var(--yellow);
+    border: 1px solid rgba(210,153,34,.3);
+  }
+  .sheets-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
 
   /* ── LAYOUT ──────────────────────────────────────────── */
   .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+  /* ── BANNER ──────────────────────────────────────────── */
+  .banner {
+    background: rgba(210,153,34,.08);
+    border: 1px solid rgba(210,153,34,.25);
+    border-radius: var(--r2);
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--yellow);
+  }
+  .banner button {
+    background: rgba(210,153,34,.15);
+    border: 1px solid rgba(210,153,34,.3);
+    color: var(--yellow);
+    border-radius: var(--r);
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .banner button:hover { background: rgba(210,153,34,.25); }
+  .banner.hidden { display: none; }
 
   /* ── PAGE HEADER ─────────────────────────────────────── */
   .page-header {
@@ -127,8 +189,6 @@
     font-weight: 600;
   }
   .badge-live { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
-  .badge-warn { background: rgba(210,153,34,.15); color: var(--yellow); border: 1px solid rgba(210,153,34,.3); }
-  .badge-err  { background: rgba(232,69,69,.15);  color: var(--accent2); border: 1px solid rgba(232,69,69,.3); }
   .badge-info { background: rgba(88,166,255,.15); color: var(--blue); border: 1px solid rgba(88,166,255,.3); }
 
   /* ── STAT CARDS ──────────────────────────────────────── */
@@ -159,10 +219,11 @@
     margin-bottom: 4px;
   }
   .stat-sub { font-size: 11px; color: var(--muted); }
-  .stat-card.red   .stat-value { color: var(--accent2); }
+  .stat-card.red    .stat-value { color: var(--accent2); }
   .stat-card.yellow .stat-value { color: var(--yellow); }
   .stat-card.green  .stat-value { color: var(--green); }
   .stat-card.blue   .stat-value { color: var(--blue); }
+  .stat-card.purple .stat-value { color: var(--purple); }
 
   /* ── TOOLBAR ─────────────────────────────────────────── */
   .toolbar {
@@ -172,11 +233,7 @@
     margin-bottom: 14px;
     flex-wrap: wrap;
   }
-  .toolbar-title {
-    font-weight: 600;
-    font-size: 14px;
-    margin-right: 4px;
-  }
+  .toolbar-title { font-weight: 600; font-size: 14px; margin-right: 4px; }
   .count-badge {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -211,16 +268,6 @@
     color: var(--text);
     box-shadow: 0 1px 3px rgba(0,0,0,.3);
   }
-  .search-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    color: var(--text);
-    padding: 6px 12px 6px 32px;
-    font-size: 13px;
-    width: 180px;
-    position: relative;
-  }
   .search-wrap { position: relative; }
   .search-wrap svg {
     position: absolute;
@@ -229,10 +276,16 @@
     pointer-events: none;
     color: var(--muted);
   }
-  .search-input:focus {
-    outline: none;
-    border-color: var(--blue);
+  .search-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    color: var(--text);
+    padding: 6px 12px 6px 32px;
+    font-size: 13px;
+    width: 180px;
   }
+  .search-input:focus { outline: none; border-color: var(--blue); }
 
   /* ── TABLE ───────────────────────────────────────────── */
   .table-wrap {
@@ -259,7 +312,7 @@
   th:hover { color: var(--text); }
   th .sort-icon { opacity: .4; font-size: 10px; margin-left: 3px; }
   td {
-    padding: 12px 14px;
+    padding: 11px 14px;
     font-size: 13px;
     border-bottom: 1px solid var(--border2);
     vertical-align: middle;
@@ -272,6 +325,7 @@
     color: var(--blue);
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
   }
   .date-cell { color: var(--muted); font-size: 12px; white-space: nowrap; }
 
@@ -293,31 +347,24 @@
     flex-shrink: 0;
   }
   .status-접수중 {
-    background: rgba(88,166,255,.12);
-    color: var(--blue);
+    background: rgba(88,166,255,.12); color: var(--blue);
     border: 1px solid rgba(88,166,255,.25);
   }
   .status-접수중::before { background: var(--blue); }
   .status-조치중 {
-    background: rgba(210,153,34,.12);
-    color: var(--yellow);
+    background: rgba(210,153,34,.12); color: var(--yellow);
     border: 1px solid rgba(210,153,34,.25);
     animation: pulse-dot 2s infinite;
   }
   .status-조치중::before { background: var(--yellow); }
   .status-완료 {
-    background: rgba(63,185,80,.12);
-    color: var(--green);
+    background: rgba(63,185,80,.12); color: var(--green);
     border: 1px solid rgba(63,185,80,.25);
   }
   .status-완료::before { background: var(--green); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.5} }
 
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .5; }
-  }
-
-  /* 증상 유형 칩 */
+  /* 증상 칩 */
   .symp-chip {
     display: inline-block;
     padding: 2px 8px;
@@ -329,22 +376,17 @@
     color: var(--muted);
     white-space: nowrap;
   }
-  .symp-절단불량 { color: var(--accent2); border-color: rgba(232,69,69,.3); background: rgba(232,69,69,.08); }
-  .symp-헤드이상 { color: var(--purple); border-color: rgba(188,140,255,.3); background: rgba(188,140,255,.08); }
-  .symp-소프트웨어 { color: var(--blue); border-color: rgba(88,166,255,.3); background: rgba(88,166,255,.08); }
-  .symp-전기계통 { color: var(--yellow); border-color: rgba(210,153,34,.3); background: rgba(210,153,34,.08); }
-  .symp-가스압력 { color: #79c0ff; border-color: rgba(121,192,255,.3); background: rgba(121,192,255,.08); }
-  .symp-냉각계통 { color: #56d364; border-color: rgba(86,211,100,.3); background: rgba(86,211,100,.08); }
-  .symp-기타     { color: var(--muted); }
+  .symp-절단불량  { color: var(--accent2); border-color: rgba(232,69,69,.3);    background: rgba(232,69,69,.08); }
+  .symp-헤드이상  { color: var(--purple);  border-color: rgba(188,140,255,.3);  background: rgba(188,140,255,.08); }
+  .symp-소프트웨어{ color: var(--blue);    border-color: rgba(88,166,255,.3);   background: rgba(88,166,255,.08); }
+  .symp-전기계통  { color: var(--yellow);  border-color: rgba(210,153,34,.3);   background: rgba(210,153,34,.08); }
+  .symp-가스압력  { color: #79c0ff;        border-color: rgba(121,192,255,.3);  background: rgba(121,192,255,.08); }
+  .symp-냉각계통  { color: #56d364;        border-color: rgba(86,211,100,.3);   background: rgba(86,211,100,.08); }
+  .symp-기타      { color: var(--muted); }
 
-  /* 조치유형 */
-  .act-chip {
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
+  .act-chip { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
-  /* 링크 아이콘 버튼 */
+  /* 링크 버튼 */
   .link-btns { display: flex; gap: 6px; align-items: center; }
   .link-btn {
     display: inline-flex;
@@ -365,20 +407,24 @@
   .link-btn.has-link { color: var(--blue); border-color: rgba(88,166,255,.35); }
   .link-btn.has-link:hover { background: rgba(88,166,255,.1); }
 
-  /* 행 메뉴 */
   .row-menu-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 4px 6px;
-    border-radius: var(--r);
-    font-size: 16px;
-    line-height: 1;
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    padding: 4px 6px; border-radius: var(--r);
+    font-size: 16px; line-height: 1;
   }
   .row-menu-btn:hover { background: var(--surface2); color: var(--text); }
 
-  /* ── SECTION 2열 ─────────────────────────────────────── */
+  /* ── 처리기간 칩 ─────────────────────────────────────── */
+  .duration-chip {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .duration-chip.fast { color: var(--green); }
+  .duration-chip.slow { color: var(--accent2); }
+
+  /* ── 2열 패널 ────────────────────────────────────────── */
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -407,6 +453,32 @@
   }
   .panel-body { padding: 16px 18px; }
 
+  /* 분석 탭 */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 3px;
+  }
+  .tab-btn {
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all .15s;
+    border: none;
+    background: transparent;
+  }
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  }
+
   /* 패턴 분석 바 */
   .pattern-row {
     display: flex;
@@ -414,11 +486,7 @@
     gap: 10px;
     margin-bottom: 12px;
   }
-  .pattern-label {
-    width: 68px;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
+  .pattern-label { width: 72px; font-size: 12px; flex-shrink: 0; }
   .bar-track {
     flex: 1;
     height: 6px;
@@ -431,15 +499,48 @@
     border-radius: 3px;
     transition: width .6s ease;
   }
-  .bar-count {
-    width: 28px;
-    text-align: right;
-    font-size: 12px;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
+  .bar-count { width: 28px; text-align: right; font-size: 12px; color: var(--muted); flex-shrink: 0; }
 
-  /* Drive 폴더 구조 */
+  /* 월별 바 차트 */
+  .month-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 100px;
+    padding-top: 8px;
+  }
+  .month-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .month-bar-wrap {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .month-bar {
+    width: 70%;
+    background: rgba(88,166,255,.4);
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+    transition: height .5s ease;
+  }
+  .month-bar.has-data { background: var(--blue); }
+  .month-cnt {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .month-label { font-size: 10px; color: var(--muted); }
+
+  /* Drive 폴더 */
   .folder-tree { font-family: 'Courier New', monospace; font-size: 12px; }
   .folder-row {
     display: flex;
@@ -470,9 +571,9 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r2);
-    width: 520px;
+    width: 560px;
     max-width: calc(100vw - 32px);
-    max-height: 85vh;
+    max-height: 88vh;
     overflow-y: auto;
   }
   .modal-header {
@@ -481,17 +582,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
   }
   .modal-header h2 { font-size: 16px; font-weight: 700; }
   .modal-close {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: var(--r);
-    line-height: 1;
+    background: none; border: none;
+    color: var(--muted); font-size: 20px;
+    cursor: pointer; padding: 2px 6px;
+    border-radius: var(--r); line-height: 1;
   }
   .modal-close:hover { color: var(--text); background: var(--surface2); }
   .modal-body { padding: 22px; }
@@ -501,16 +602,19 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
   }
 
   /* 폼 */
-  .form-row { margin-bottom: 16px; }
+  .form-row { margin-bottom: 14px; }
   .form-row label {
     display: block;
     font-size: 12px;
     font-weight: 600;
     color: var(--muted);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   .form-row input,
   .form-row select,
@@ -527,33 +631,54 @@
   }
   .form-row input:focus,
   .form-row select:focus,
-  .form-row textarea:focus {
-    outline: none;
-    border-color: var(--blue);
-  }
-  .form-row textarea { min-height: 70px; resize: vertical; }
+  .form-row textarea:focus { outline: none; border-color: var(--blue); }
+  .form-row textarea { min-height: 64px; resize: vertical; }
   .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
   .form-divider {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
     color: var(--muted);
     border-bottom: 1px solid var(--border2);
     padding-bottom: 6px;
     margin: 20px 0 14px;
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: .8px;
   }
   .form-row select option { background: var(--surface2); }
+  .input-prefix-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .input-prefix {
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    background: var(--border2);
+  }
+  .input-prefix-wrap input {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    flex: 1;
+  }
+  .input-prefix-wrap input:focus { outline: none; }
 
   /* 상세 모달 */
-  .detail-section { margin-bottom: 20px; }
+  .detail-section { margin-bottom: 18px; }
   .detail-label {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--muted);
     text-transform: uppercase;
     letter-spacing: .5px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
   .detail-value { font-size: 14px; }
   .detail-link {
@@ -578,6 +703,46 @@
     pointer-events: none;
   }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .detail-memo {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    min-height: 48px;
+  }
+  .detail-divider {
+    height: 1px;
+    background: var(--border2);
+    margin: 16px 0;
+  }
+  .detail-links-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Sheets 모달 */
+  .sheets-modal-info {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .sheets-modal-info code {
+    background: var(--bg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--blue);
+  }
 
   /* toast */
   .toast {
@@ -593,7 +758,7 @@
     opacity: 0;
     transition: all .25s;
     z-index: 999;
-    max-width: 300px;
+    max-width: 320px;
   }
   .toast.show { transform: translateY(0); opacity: 1; }
 
@@ -609,19 +774,6 @@
   footer a { color: var(--muted); text-decoration: none; }
   footer a:hover { color: var(--text); }
 
-  /* ── RESPONSIVE ──────────────────────────────────────── */
-  @media (max-width: 900px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .two-col { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 600px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .toolbar { flex-wrap: wrap; }
-    .filter-tabs { width: 100%; }
-    nav { padding: 0 14px; }
-    .page { padding: 18px 14px; }
-  }
-
   /* 빈 상태 */
   .empty-state {
     text-align: center;
@@ -629,18 +781,29 @@
     color: var(--muted);
   }
   .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
-  .empty-state p { font-size: 13px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
 
-  /* 드라이브 링크 입력 섹션 */
+  /* 링크 입력 섹션 */
   .link-section {
     background: var(--surface2);
     border: 1px solid var(--border2);
     border-radius: var(--r);
     padding: 14px;
-    margin-top: 4px;
   }
   .link-section .form-row { margin-bottom: 10px; }
   .link-section .form-row:last-child { margin-bottom: 0; }
+
+  /* ── RESPONSIVE ──────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    nav { padding: 0 14px; }
+    .page { padding: 18px 14px; }
+    .form-2col, .form-3col { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -657,13 +820,23 @@
     <a href="service.html" class="active">서비스</a>
     <a href="#">리포트</a>
   </div>
-  <div class="nav-right" style="display:flex;gap:8px;align-items:center;">
+  <div class="nav-right">
+    <div id="sheets-status-badge" class="sheets-status disconnected" style="cursor:pointer" onclick="openSheets()">
+      <span class="sheets-dot"></span>
+      <span id="sheets-status-text">Sheets 미연결</span>
+    </div>
     <button class="btn btn-ghost" onclick="openAdd()">＋ 서비스 등록</button>
   </div>
 </nav>
 
 <!-- PAGE -->
 <div class="page">
+
+  <!-- Sheets 미연결 배너 -->
+  <div class="banner" id="sheets-banner">
+    ⚠ Google Sheets 미연결 — 현재 데이터는 이 브라우저에만 저장됩니다. 다른 기기나 브라우저에서는 보이지 않습니다.
+    <button onclick="openSheets()">🔗 Sheets 연결하기</button>
+  </div>
 
   <!-- 헤더 -->
   <div class="page-header">
@@ -672,6 +845,7 @@
       <p>ByCut Nova 3015 6kW · 문제 발생 → 접수 → 조치 → 완료 이력 관리</p>
     </div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-ghost" id="sync-btn" onclick="syncSheets()" style="display:none">↻ Sheets 동기화</button>
       <button class="btn btn-ghost" onclick="exportCSV()">↓ CSV 내보내기</button>
       <a class="btn btn-ghost"
          href="https://drive.google.com/drive/folders/1vsnDCtCtb7_jWj4DzXyxiynvw3rW6G-3"
@@ -691,15 +865,15 @@
       <div class="stat-value" id="stat-open">0</div>
       <div class="stat-sub">접수중 + 조치중</div>
     </div>
-    <div class="stat-card green">
-      <div class="stat-label">✅ 완료</div>
-      <div class="stat-value" id="stat-done">0</div>
-      <div class="stat-sub">처리 완료</div>
+    <div class="stat-card purple">
+      <div class="stat-label">⏱ 평균 처리기간</div>
+      <div class="stat-value" id="stat-avg-days">—</div>
+      <div class="stat-sub">완료 건 기준 (일)</div>
     </div>
     <div class="stat-card red">
-      <div class="stat-label">⏱ 이번 달</div>
-      <div class="stat-value" id="stat-month">0</div>
-      <div class="stat-sub" id="stat-month-label">건 발생</div>
+      <div class="stat-label">💰 이번달 AS비용</div>
+      <div class="stat-value" id="stat-month-cost">—</div>
+      <div class="stat-sub" id="stat-month-label">원</div>
     </div>
   </div>
 
@@ -718,7 +892,7 @@
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input class="search-input" type="text" placeholder="검색..." id="search-input" oninput="renderTable()">
+      <input class="search-input" type="text" placeholder="SVC번호, 증상, 부품..." id="search-input" oninput="renderTable()">
     </div>
   </div>
 
@@ -731,6 +905,7 @@
           <th>증상분류</th>
           <th>조치유형</th>
           <th onclick="sortBy('status')">상태 <span class="sort-icon">↕</span></th>
+          <th>처리기간</th>
           <th>파일 링크</th>
           <th style="width:40px;"></th>
         </tr>
@@ -746,13 +921,12 @@
     <div class="panel">
       <div class="panel-header">
         <div class="panel-title">🔁 증상 패턴 분석</div>
-        <span class="badge badge-info">누적</span>
-      </div>
-      <div class="panel-body" id="pattern-body">
-        <div class="empty-state" style="padding:24px">
-          <p>등록된 서비스 이력이 없습니다</p>
+        <div class="tab-bar">
+          <button class="tab-btn active" id="tab-symp" onclick="switchTab('symp')">증상별</button>
+          <button class="tab-btn" id="tab-month" onclick="switchTab('month')">월별 트렌드</button>
         </div>
       </div>
+      <div class="panel-body" id="pattern-body"></div>
     </div>
 
     <!-- Drive 폴더 구조 -->
@@ -760,47 +934,46 @@
       <div class="panel-header">
         <div class="panel-title">📁 Drive 이력 폴더</div>
         <a href="https://drive.google.com/drive/folders/1C2TPBsvYFI7qxwb3T5emlPCwPLNmLY-g"
-           target="_blank" class="btn btn-ghost" style="font-size:12px;padding:4px 10px;">
-          열기 ↗
-        </a>
+           target="_blank" class="btn btn-ghost" style="font-size:12px;padding:4px 10px;">열기 ↗</a>
       </div>
       <div class="panel-body">
-        <div class="folder-tree" id="folder-tree">
+        <div class="folder-tree">
           <div class="folder-row">
             <span class="folder-icon">📁</span>
-            <a href="https://drive.google.com/drive/folders/1C2TPBsvYFI7qxwb3T5emlPCwPLNmLY-g" target="_blank">
-              CADDIS_레이저_장비관리
-            </a>
+            <a href="https://drive.google.com/drive/folders/1C2TPBsvYFI7qxwb3T5emlPCwPLNmLY-g" target="_blank">CADDIS_레이저_장비관리</a>
           </div>
           <div class="folder-row" style="padding-left:16px;">
             <span class="folder-icon">📁</span>
-            <a href="https://drive.google.com/drive/folders/1vsnDCtCtb7_jWj4DzXyxiynvw3rW6G-3" target="_blank">
-              서비스이력
-            </a>
+            <a href="https://drive.google.com/drive/folders/1vsnDCtCtb7_jWj4DzXyxiynvw3rW6G-3" target="_blank">서비스이력</a>
           </div>
-          <div class="folder-row" style="padding-left:32px;" id="folder-list-root">
+          <div class="folder-row" style="padding-left:32px;">
             <span class="folder-icon">📁</span>
-            <a href="https://drive.google.com/drive/folders/1uOp9j8lGV3EYhDrr3OTCBuZKUyag9mq9" target="_blank">
-              SVC-2026-001_절단불량
-            </a>
+            <span>SVC-YYYY-NNN_증상요약</span>
           </div>
           <div class="folder-row" style="padding-left:48px;">
             <span class="folder-icon">📂</span>
-            <a href="https://drive.google.com/drive/folders/13bBzwSu92n_QR4lloch_-PyTyQlZWQWC" target="_blank">
-              01_증상사진
-            </a>
+            <span>01_증상사진</span>
           </div>
-          <div class="folder-row" style="padding-left:48px;color:var(--border)">
+          <div class="folder-row" style="padding-left:48px; color:var(--muted);">
             <span class="folder-icon">📄</span>
             <span>02_서비스리포트.pdf</span>
           </div>
-          <div class="folder-row" style="padding-left:48px;color:var(--border)">
+          <div class="folder-row" style="padding-left:48px; color:var(--muted);">
             <span class="folder-icon">🧾</span>
             <span>03_청구서.pdf</span>
           </div>
         </div>
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);font-size:12px;color:var(--muted);">
-          📌 새 건 등록 시 Drive에 <code style="font-size:11px;background:var(--surface2);padding:1px 5px;border-radius:3px;">SVC-YYYY-NNN_증상요약</code> 폴더를 수동 생성하세요.
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);font-size:12px;color:var(--muted);line-height:1.7;">
+          📌 새 건 등록 후 Drive에 <code style="font-size:11px;background:var(--surface2);padding:1px 6px;border-radius:3px;color:var(--blue);">SVC-YYYY-NNN_증상요약</code> 폴더 생성 → 폴더 링크를 서비스 상세에 입력하세요.
+        </div>
+
+        <!-- Sheets 칼럼 안내 -->
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border2);">
+          <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;">📊 Sheets 시트 구조</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+            시트명: <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;color:var(--blue);">서비스이력_CADDIS레이저</code><br>
+            칼럼: id · svcNum · date · symp · memo · act · portalTicket · parts · cost · status · resolvedDate · folder · report · invoice
+          </div>
         </div>
       </div>
     </div>
@@ -810,7 +983,7 @@
 
 <!-- FOOTER -->
 <footer>
-  CADDIS 레이저 서비스 관리 v1.0 ·
+  CADDIS 레이저 서비스 관리 v2.0 ·
   <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a> · 2026
 </footer>
 
@@ -825,16 +998,19 @@
       <button class="modal-close" onclick="closeAdd()">✕</button>
     </div>
     <div class="modal-body">
+
       <div class="form-2col">
         <div class="form-row">
           <label>SVC번호 (자동생성)</label>
-          <input type="text" id="f-svcnum" readonly placeholder="저장 시 자동 발행">
+          <input type="text" id="f-svcnum" readonly placeholder="저장 시 자동 발행"
+                 style="opacity:.6;cursor:default;">
         </div>
         <div class="form-row">
           <label>발생일 *</label>
           <input type="date" id="f-date">
         </div>
       </div>
+
       <div class="form-2col">
         <div class="form-row">
           <label>증상분류 *</label>
@@ -859,13 +1035,40 @@
           </select>
         </div>
       </div>
+
       <div class="form-row">
-        <label>상태</label>
-        <select id="f-status">
-          <option>접수중</option>
-          <option>조치중</option>
-          <option>완료</option>
-        </select>
+        <label>📝 증상 상세 메모</label>
+        <textarea id="f-memo" placeholder="증상 상세 내용, 발생 상황, 에러 코드 등..."></textarea>
+      </div>
+
+      <div class="form-3col">
+        <div class="form-row">
+          <label>바이스트로닉 포털 티켓</label>
+          <input type="text" id="f-portal" placeholder="예) BY-2026-4821">
+        </div>
+        <div class="form-row">
+          <label>교체 부품명</label>
+          <input type="text" id="f-parts" placeholder="예) 노즐 DN2.0">
+        </div>
+        <div class="form-row">
+          <label>AS 비용 (원)</label>
+          <input type="number" id="f-cost" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="form-2col">
+        <div class="form-row">
+          <label>상태</label>
+          <select id="f-status">
+            <option>접수중</option>
+            <option>조치중</option>
+            <option>완료</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>완료일 <span style="font-weight:400;color:var(--muted)">(처리기간 자동 계산)</span></label>
+          <input type="date" id="f-resolved">
+        </div>
       </div>
 
       <div class="form-divider">📁 Drive 링크 (선택 — 나중에 추가 가능)</div>
@@ -875,14 +1078,15 @@
           <input type="url" id="f-folder" placeholder="https://drive.google.com/drive/folders/...">
         </div>
         <div class="form-row">
-          <label>📄 서비스 리포트 링크</label>
+          <label>📄 서비스 리포트</label>
           <input type="url" id="f-report" placeholder="https://drive.google.com/file/...">
         </div>
-        <div class="form-row">
-          <label>🧾 청구서 링크</label>
+        <div class="form-row" style="margin-bottom:0">
+          <label>🧾 청구서</label>
           <input type="url" id="f-invoice" placeholder="https://drive.google.com/file/...">
         </div>
       </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeAdd()">취소</button>
@@ -905,7 +1109,7 @@
     <div class="modal-footer">
       <button class="btn btn-ghost" style="color:var(--accent2);border-color:rgba(232,69,69,.3);"
               onclick="deleteRecord()">🗑 삭제</button>
-      <div class="spacer" style="flex:1"></div>
+      <div style="flex:1"></div>
       <button class="btn btn-ghost" onclick="closeDetail()">닫기</button>
     </div>
   </div>
@@ -919,6 +1123,7 @@
       <button class="modal-close" onclick="closeEdit()">✕</button>
     </div>
     <div class="modal-body">
+
       <div class="form-2col">
         <div class="form-row">
           <label>발생일</label>
@@ -938,6 +1143,27 @@
           </select>
         </div>
       </div>
+
+      <div class="form-row">
+        <label>📝 증상 상세 메모</label>
+        <textarea id="e-memo" placeholder="증상 상세 내용, 발생 상황, 에러 코드 등..."></textarea>
+      </div>
+
+      <div class="form-3col">
+        <div class="form-row">
+          <label>포털 티켓번호</label>
+          <input type="text" id="e-portal">
+        </div>
+        <div class="form-row">
+          <label>교체 부품명</label>
+          <input type="text" id="e-parts">
+        </div>
+        <div class="form-row">
+          <label>AS 비용 (원)</label>
+          <input type="number" id="e-cost" min="0">
+        </div>
+      </div>
+
       <div class="form-2col">
         <div class="form-row">
           <label>조치유형</label>
@@ -957,6 +1183,12 @@
           </select>
         </div>
       </div>
+
+      <div class="form-row">
+        <label>완료일</label>
+        <input type="date" id="e-resolved">
+      </div>
+
       <div class="form-divider">📁 Drive 링크</div>
       <div class="link-section">
         <div class="form-row">
@@ -967,11 +1199,12 @@
           <label>📄 서비스 리포트</label>
           <input type="url" id="e-report">
         </div>
-        <div class="form-row">
+        <div class="form-row" style="margin-bottom:0">
           <label>🧾 청구서</label>
           <input type="url" id="e-invoice">
         </div>
       </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeEdit()">취소</button>
@@ -980,47 +1213,146 @@
   </div>
 </div>
 
-<script>
-// ── 데이터 스토어 (localStorage) ─────────────────────────
-const STORE_KEY = 'caddis_svc_records';
+<!-- ═══ Sheets 연결 모달 ════════════════════════════════ -->
+<div class="overlay" id="sheets-overlay">
+  <div class="modal" style="width:480px;">
+    <div class="modal-header">
+      <h2>🔗 Google Sheets 연결</h2>
+      <button class="modal-close" onclick="closeSheets()">✕</button>
+    </div>
+    <div class="modal-body">
 
+      <div class="sheets-modal-info">
+        <strong>연결 방법</strong><br>
+        1. Apps Script 편집기 → <code>배포 → 배포 관리</code><br>
+        2. 기존 배포(또는 새 배포) → <strong>웹 앱 URL</strong> 복사<br>
+        3. 아래에 붙여넣기 후 <strong>연결 테스트</strong> → <strong>연결 저장</strong>
+      </div>
+
+      <div class="form-row">
+        <label>Apps Script Web App URL *</label>
+        <input type="url" id="s-webapp-url"
+               placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:-8px;margin-bottom:14px;line-height:1.6;">
+        배포 설정: 실행 대상 → <code>나</code> &nbsp;/&nbsp; 액세스 권한 → <code>모든 사용자</code>
+      </div>
+
+      <div id="sheets-test-result" style="display:none;padding:10px 14px;border-radius:var(--r);font-size:13px;margin-top:8px;"></div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="testSheets()" id="test-btn">연결 테스트</button>
+      <button class="btn btn-ghost" onclick="disconnectSheets()" id="disconnect-btn" style="display:none;color:var(--accent2);border-color:rgba(232,69,69,.3)">연결 해제</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-ghost" onclick="closeSheets()">취소</button>
+      <button class="btn btn-primary" onclick="saveSheets()">연결 저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// 상수
+// ══════════════════════════════════════════════════════════
+const STORE_KEY   = 'caddis_svc_v2';
+const WEBAPP_KEY  = 'caddis_svc_webapp_cfg';
+
+// ══════════════════════════════════════════════════════════
+// localStorage 기반 스토어
+// ══════════════════════════════════════════════════════════
 function loadRecords() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }
   catch { return []; }
 }
-function saveRecords(arr) {
+function saveRecordsLocal(arr) {
   localStorage.setItem(STORE_KEY, JSON.stringify(arr));
 }
 
-// ── 샘플 데이터 (첫 로드 시만) ──────────────────────────
-function initSampleData() {
-  if (loadRecords().length > 0) return;
-  const samples = [
-    {
-      svcNum: 'SVC-2026-001',
-      date:   '2026-06-10',
-      symp:   '절단불량',
-      act:    '방문',
-      status: '완료',
-      folder:  'https://drive.google.com/drive/folders/1uOp9j8lGV3EYhDrr3OTCBuZKUyag9mq9',
-      report:  '',
-      invoice: '',
-    },
-    {
-      svcNum: 'SVC-2026-002',
-      date:   '2026-06-11',
-      symp:   '헤드이상',
-      act:    '원격',
-      status: '조치중',
-      folder:  '',
-      report:  '',
-      invoice: '',
-    },
-  ];
-  saveRecords(samples);
+// ══════════════════════════════════════════════════════════
+// Web App 설정
+// ══════════════════════════════════════════════════════════
+function getWebAppCfg() {
+  try { return JSON.parse(localStorage.getItem(WEBAPP_KEY) || 'null'); }
+  catch { return null; }
+}
+function saveWebAppCfg(cfg) {
+  localStorage.setItem(WEBAPP_KEY, JSON.stringify(cfg));
+}
+function isConnected() {
+  const c = getWebAppCfg();
+  return !!(c && c.webAppUrl);
+}
+function getWebAppUrl() {
+  return getWebAppCfg()?.webAppUrl || null;
 }
 
-// ── SVC번호 생성 ────────────────────────────────────────
+function updateSheetsUI() {
+  const connected = isConnected();
+  const badge   = document.getElementById('sheets-status-badge');
+  const text    = document.getElementById('sheets-status-text');
+  const banner  = document.getElementById('sheets-banner');
+  const syncBtn = document.getElementById('sync-btn');
+
+  if (connected) {
+    badge.className = 'sheets-status connected';
+    text.textContent = 'Apps Script 연결됨';
+    banner.classList.add('hidden');
+    syncBtn.style.display = '';
+  } else {
+    badge.className = 'sheets-status disconnected';
+    text.textContent = 'Apps Script 미연결';
+    banner.classList.remove('hidden');
+    syncBtn.style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// Apps Script Web App 통신
+// ══════════════════════════════════════════════════════════
+async function webAppGet(url) {
+  const res = await fetch(`${url}?sheet=svc`, { redirect: 'follow' });
+  if (!res.ok) throw new Error(`서버 오류 ${res.status}`);
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || '데이터 오류');
+  return data.rows || [];
+}
+
+async function webAppPost(action, data) {
+  const url = getWebAppUrl();
+  if (!url) throw new Error('Web App URL 미설정');
+  const res = await fetch(url, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sheet: 'svc', action, data })
+  });
+  if (!res.ok) throw new Error(`서버 오류 ${res.status}`);
+  const result = await res.json();
+  if (!result.ok) throw new Error(result.error || '처리 오류');
+  return result;
+}
+
+// ══════════════════════════════════════════════════════════
+// 동기화 (Apps Script → localStorage 캐시 갱신)
+// ══════════════════════════════════════════════════════════
+async function syncSheets() {
+  const url = getWebAppUrl();
+  if (!url) return;
+  showToast('↻ 동기화 중...');
+  try {
+    const rows = await webAppGet(url);
+    saveRecordsLocal(rows);
+    renderTable();
+    showToast(`✅ ${rows.length}건 동기화 완료`);
+  } catch (e) {
+    showToast(`⚠ 동기화 실패: ${e.message}`);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// SVC번호 생성
+// ══════════════════════════════════════════════════════════
 function nextSvcNum() {
   const recs = loadRecords();
   const year = new Date().getFullYear();
@@ -1028,14 +1360,21 @@ function nextSvcNum() {
     .filter(r => r.svcNum && r.svcNum.startsWith(`SVC-${year}-`))
     .map(r => parseInt(r.svcNum.split('-')[2]) || 0);
   const next = nums.length ? Math.max(...nums) + 1 : 1;
-  return `SVC-${year}-${String(next).padStart(3, '0')}`;
+  return `SVC-${year}-${String(next).padStart(3,'0')}`;
 }
 
-// ── 상태/필터 ────────────────────────────────────────────
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+// ══════════════════════════════════════════════════════════
+// 상태/필터
+// ══════════════════════════════════════════════════════════
 let currentFilter = '전체';
 let sortKey = 'date';
 let sortAsc  = false;
 let detailIdx = null;
+let activeTab = 'symp';
 
 function setFilter(f, btn) {
   currentFilter = f;
@@ -1048,75 +1387,99 @@ function sortBy(key) {
   else { sortKey = key; sortAsc = false; }
   renderTable();
 }
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-symp').classList.toggle('active', tab === 'symp');
+  document.getElementById('tab-month').classList.toggle('active', tab === 'month');
+  renderPattern();
+}
 
-// ── 렌더 ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// 처리기간 계산
+// ══════════════════════════════════════════════════════════
+function calcDays(date, resolvedDate) {
+  if (!date || !resolvedDate) return null;
+  const d1 = new Date(date);
+  const d2 = new Date(resolvedDate);
+  const diff = Math.round((d2 - d1) / 86400000);
+  return diff >= 0 ? diff : null;
+}
+
+function durationChip(days) {
+  if (days === null) return '<span class="duration-chip">—</span>';
+  let cls = days <= 3 ? 'fast' : days >= 14 ? 'slow' : '';
+  return `<span class="duration-chip ${cls}">${days}일</span>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// 렌더 — 테이블
+// ══════════════════════════════════════════════════════════
 function renderTable() {
   const recs   = loadRecords();
-  const q      = document.getElementById('search-input').value.toLowerCase();
+  const q      = (document.getElementById('search-input').value||'').toLowerCase();
   const tbody  = document.getElementById('table-body');
 
   let filtered = recs.filter(r => {
     const matchFilter = currentFilter === '전체' || r.status === currentFilter;
     const matchSearch = !q ||
-      r.svcNum.toLowerCase().includes(q) ||
-      r.symp.toLowerCase().includes(q) ||
-      (r.act||'').toLowerCase().includes(q);
+      (r.svcNum||'').toLowerCase().includes(q) ||
+      (r.symp||'').toLowerCase().includes(q) ||
+      (r.memo||'').toLowerCase().includes(q) ||
+      (r.parts||'').toLowerCase().includes(q) ||
+      (r.portalTicket||'').toLowerCase().includes(q);
     return matchFilter && matchSearch;
   });
 
-  // 정렬
   filtered.sort((a, b) => {
     let va = a[sortKey] || '', vb = b[sortKey] || '';
     const cmp = va < vb ? -1 : va > vb ? 1 : 0;
     return sortAsc ? cmp : -cmp;
   });
 
+  document.getElementById('count-badge').textContent = `${filtered.length}건`;
+
   if (!filtered.length) {
     tbody.innerHTML = `
-      <tr><td colspan="7">
+      <tr><td colspan="8">
         <div class="empty-state">
           <div class="empty-icon">🔧</div>
           <p>등록된 서비스 이력이 없습니다.<br>우측 상단 "서비스 등록" 버튼을 눌러 추가하세요.</p>
         </div>
       </td></tr>`;
-    document.getElementById('count-badge').textContent = '0건';
+    renderStats(recs);
+    renderPattern();
     return;
   }
 
-  document.getElementById('count-badge').textContent = `${filtered.length}건`;
-
-  tbody.innerHTML = filtered.map((r, i) => {
+  tbody.innerHTML = filtered.map(r => {
     const origIdx = recs.indexOf(r);
-    const hasFolder  = !!r.folder;
-    const hasReport  = !!r.report;
-    const hasInvoice = !!r.invoice;
+    const days = calcDays(r.date, r.resolvedDate);
     return `
     <tr>
-      <td><span class="svc-num" style="cursor:pointer" onclick="openDetail(${origIdx})">${r.svcNum}</span></td>
+      <td><span class="svc-num" onclick="openDetail(${origIdx})">${r.svcNum}</span></td>
       <td><span class="date-cell">${r.date || '-'}</span></td>
-      <td><span class="symp-chip symp-${r.symp}">${r.symp || '-'}</span></td>
-      <td><span class="act-chip">${r.act ? actIcon(r.act) + ' ' + r.act : '-'}</span></td>
+      <td><span class="symp-chip symp-${r.symp||''}">${r.symp || '-'}</span></td>
+      <td><span class="act-chip">${r.act ? actIcon(r.act)+' '+r.act : '-'}</span></td>
       <td><span class="status status-${r.status}">${r.status}</span></td>
+      <td>${durationChip(days)}</td>
       <td>
         <div class="link-btns">
-          <a class="link-btn ${hasFolder?'has-link':'disabled'}"
-             ${hasFolder?`href="${r.folder}" target="_blank"`:''}
+          <a class="link-btn ${r.folder?'has-link':'disabled'}"
+             ${r.folder?`href="${r.folder}" target="_blank"`:''}
              title="Drive 폴더">📁</a>
-          <a class="link-btn ${hasReport?'has-link':'disabled'}"
-             ${hasReport?`href="${r.report}" target="_blank"`:''}
+          <a class="link-btn ${r.report?'has-link':'disabled'}"
+             ${r.report?`href="${r.report}" target="_blank"`:''}
              title="서비스 리포트">📄</a>
-          <a class="link-btn ${hasInvoice?'has-link':'disabled'}"
-             ${hasInvoice?`href="${r.invoice}" target="_blank"`:''}
+          <a class="link-btn ${r.invoice?'has-link':'disabled'}"
+             ${r.invoice?`href="${r.invoice}" target="_blank"`:''}
              title="청구서">🧾</a>
         </div>
       </td>
-      <td>
-        <button class="row-menu-btn" onclick="openDetail(${origIdx})">…</button>
-      </td>
+      <td><button class="row-menu-btn" onclick="openDetail(${origIdx})">…</button></td>
     </tr>`;
   }).join('');
 
-  renderStats();
+  renderStats(recs);
   renderPattern();
 }
 
@@ -1124,27 +1487,53 @@ function actIcon(act) {
   return {방문:'🚗',원격:'💻',자체조치:'🔧'}[act] || '';
 }
 
-// ── 통계 카드 ────────────────────────────────────────────
-function renderStats() {
-  const recs  = loadRecords();
-  const now   = new Date();
-  const ym    = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+// ══════════════════════════════════════════════════════════
+// 통계 카드
+// ══════════════════════════════════════════════════════════
+function renderStats(recs) {
+  if (!recs) recs = loadRecords();
+  const now = new Date();
+  const ym  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
-  const total = recs.length;
-  const open  = recs.filter(r => r.status !== '완료').length;
-  const done  = recs.filter(r => r.status === '완료').length;
-  const month = recs.filter(r => r.date && r.date.startsWith(ym)).length;
+  const total   = recs.length;
+  const open    = recs.filter(r => r.status !== '완료').length;
+
+  // 평균 처리기간 (완료 건)
+  const doneDays = recs
+    .filter(r => r.status === '완료' && r.date && r.resolvedDate)
+    .map(r => calcDays(r.date, r.resolvedDate))
+    .filter(d => d !== null && d >= 0);
+  const avgDays = doneDays.length
+    ? Math.round(doneDays.reduce((a,b) => a+b, 0) / doneDays.length)
+    : null;
+
+  // 이번달 AS 비용
+  const monthCost = recs
+    .filter(r => r.date && r.date.startsWith(ym))
+    .reduce((sum, r) => sum + (parseFloat(r.cost) || 0), 0);
 
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-open').textContent  = open;
-  document.getElementById('stat-done').textContent  = done;
-  document.getElementById('stat-month').textContent = month;
-  document.getElementById('stat-month-label').textContent =
-    `${now.getMonth()+1}월 발생`;
+  document.getElementById('stat-avg-days').textContent = avgDays !== null ? avgDays : '—';
+  document.getElementById('stat-month-cost').textContent =
+    monthCost > 0 ? (monthCost >= 10000 ? `${Math.round(monthCost/10000)}만` : monthCost.toLocaleString()) : '—';
+  document.getElementById('stat-month-label').textContent = `${now.getMonth()+1}월 청구`;
 }
 
-// ── 패턴 분석 ────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// 패턴 분석
+// ══════════════════════════════════════════════════════════
+const SYMP_COLORS = {
+  절단불량:'var(--accent2)', 헤드이상:'var(--purple)', 소프트웨어:'var(--blue)',
+  전기계통:'var(--yellow)', 가스압력:'#79c0ff', 냉각계통:'#56d364', 기타:'var(--muted)'
+};
+
 function renderPattern() {
+  if (activeTab === 'symp') renderSympPattern();
+  else renderMonthPattern();
+}
+
+function renderSympPattern() {
   const recs = loadRecords();
   const body = document.getElementById('pattern-body');
   if (!recs.length) {
@@ -1154,66 +1543,133 @@ function renderPattern() {
   const counts = {};
   recs.forEach(r => { if(r.symp) counts[r.symp] = (counts[r.symp]||0)+1; });
   const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-  const max    = sorted[0]?.[1] || 1;
-
-  const COLORS = {
-    절단불량:'var(--accent2)',헤드이상:'var(--purple)',소프트웨어:'var(--blue)',
-    전기계통:'var(--yellow)',가스압력:'#79c0ff',냉각계통:'#56d364',기타:'var(--muted)'
-  };
+  const max = sorted[0]?.[1] || 1;
 
   body.innerHTML = sorted.map(([label, cnt]) => `
     <div class="pattern-row">
       <span class="pattern-label">${label}</span>
       <div class="bar-track">
-        <div class="bar-fill"
-             style="width:${Math.round(cnt/max*100)}%;background:${COLORS[label]||'var(--muted)'}"></div>
+        <div class="bar-fill" style="width:${Math.round(cnt/max*100)}%;background:${SYMP_COLORS[label]||'var(--muted)'}"></div>
       </div>
       <span class="bar-count">${cnt}</span>
     </div>`).join('');
 }
 
-// ── 등록 ─────────────────────────────────────────────────
+function renderMonthPattern() {
+  const recs = loadRecords();
+  const body = document.getElementById('pattern-body');
+  if (!recs.length) {
+    body.innerHTML = `<div class="empty-state" style="padding:24px"><p>데이터 없음</p></div>`;
+    return;
+  }
+
+  // 최근 6개월
+  const now = new Date();
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({
+      key: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,
+      label: `${d.getMonth()+1}월`,
+      cnt: 0
+    });
+  }
+  recs.forEach(r => {
+    if (!r.date) return;
+    const ym = r.date.slice(0,7);
+    const m = months.find(m => m.key === ym);
+    if (m) m.cnt++;
+  });
+
+  const maxCnt = Math.max(...months.map(m => m.cnt), 1);
+
+  body.innerHTML = `
+    <div class="month-chart">
+      ${months.map(m => `
+        <div class="month-col">
+          <span class="month-cnt">${m.cnt || ''}</span>
+          <div class="month-bar-wrap">
+            <div class="month-bar ${m.cnt?'has-data':''}"
+                 style="height:${Math.max(Math.round(m.cnt/maxCnt*80),m.cnt?4:2)}px"></div>
+          </div>
+          <span class="month-label">${m.label}</span>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;">최근 6개월 발생 건수</div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// 등록
+// ══════════════════════════════════════════════════════════
 function openAdd() {
-  document.getElementById('f-svcnum').value = nextSvcNum();
-  document.getElementById('f-date').value   = new Date().toISOString().slice(0,10);
-  document.getElementById('f-symp').value   = '';
-  document.getElementById('f-act').value    = '';
-  document.getElementById('f-status').value = '접수중';
-  document.getElementById('f-folder').value = '';
-  document.getElementById('f-report').value = '';
-  document.getElementById('f-invoice').value= '';
+  document.getElementById('f-svcnum').value   = nextSvcNum();
+  document.getElementById('f-date').value     = new Date().toISOString().slice(0,10);
+  document.getElementById('f-symp').value     = '';
+  document.getElementById('f-memo').value     = '';
+  document.getElementById('f-act').value      = '';
+  document.getElementById('f-portal').value   = '';
+  document.getElementById('f-parts').value    = '';
+  document.getElementById('f-cost').value     = '';
+  document.getElementById('f-status').value   = '접수중';
+  document.getElementById('f-resolved').value = '';
+  document.getElementById('f-folder').value   = '';
+  document.getElementById('f-report').value   = '';
+  document.getElementById('f-invoice').value  = '';
   document.getElementById('add-overlay').classList.add('open');
 }
 function closeAdd() {
   document.getElementById('add-overlay').classList.remove('open');
 }
-function saveRecord() {
+
+async function saveRecord() {
   const symp = document.getElementById('f-symp').value;
   const date = document.getElementById('f-date').value;
   if (!symp || !date) { showToast('⚠ 발생일과 증상분류는 필수입니다'); return; }
 
   const rec = {
-    svcNum:  document.getElementById('f-svcnum').value,
+    id:           genId(),
+    svcNum:       document.getElementById('f-svcnum').value,
     date,
     symp,
-    act:     document.getElementById('f-act').value,
-    status:  document.getElementById('f-status').value,
-    folder:  document.getElementById('f-folder').value.trim(),
-    report:  document.getElementById('f-report').value.trim(),
-    invoice: document.getElementById('f-invoice').value.trim(),
+    memo:         document.getElementById('f-memo').value.trim(),
+    act:          document.getElementById('f-act').value,
+    portalTicket: document.getElementById('f-portal').value.trim(),
+    parts:        document.getElementById('f-parts').value.trim(),
+    cost:         document.getElementById('f-cost').value || '',
+    status:       document.getElementById('f-status').value,
+    resolvedDate: document.getElementById('f-resolved').value,
+    folder:       document.getElementById('f-folder').value.trim(),
+    report:       document.getElementById('f-report').value.trim(),
+    invoice:      document.getElementById('f-invoice').value.trim(),
   };
+
   const recs = loadRecords();
   recs.unshift(rec);
-  saveRecords(recs);
+  saveRecordsLocal(recs);
+
+  // Apps Script 연동
+  if (isConnected()) {
+    try {
+      await webAppPost('add', rec);
+      showToast(`✅ ${rec.svcNum} 등록 완료 (Sheets 저장)`);
+    } catch(e) {
+      showToast(`✅ ${rec.svcNum} 등록 완료 (로컬 저장, Sheets 실패: ${e.message})`);
+    }
+  } else {
+    showToast(`✅ ${rec.svcNum} 등록 완료 (로컬 저장)`);
+  }
+
   closeAdd();
   renderTable();
-  showToast(`✅ ${rec.svcNum} 등록 완료`);
 }
 
-// ── 상세 ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// 상세
+// ══════════════════════════════════════════════════════════
 function openDetail(idx) {
   detailIdx = idx;
   const r = loadRecords()[idx];
+  const days = calcDays(r.date, r.resolvedDate);
   document.getElementById('detail-title').textContent = `⚙ ${r.svcNum}`;
   document.getElementById('detail-body').innerHTML = `
     <div class="detail-grid">
@@ -1222,124 +1678,247 @@ function openDetail(idx) {
         <div class="detail-value">${r.date || '-'}</div>
       </div>
       <div class="detail-section">
-        <div class="detail-label">상태</div>
-        <div class="detail-value"><span class="status status-${r.status}">${r.status}</span></div>
+        <div class="detail-label">완료일 / 처리기간</div>
+        <div class="detail-value">
+          ${r.resolvedDate || '-'}
+          ${days !== null ? `<span style="color:var(--muted);font-size:12px;margin-left:8px;">(${days}일)</span>` : ''}
+        </div>
       </div>
       <div class="detail-section">
         <div class="detail-label">증상분류</div>
         <div class="detail-value"><span class="symp-chip symp-${r.symp}">${r.symp||'-'}</span></div>
       </div>
       <div class="detail-section">
+        <div class="detail-label">상태</div>
+        <div class="detail-value"><span class="status status-${r.status}">${r.status}</span></div>
+      </div>
+      <div class="detail-section">
         <div class="detail-label">조치유형</div>
         <div class="detail-value">${r.act ? actIcon(r.act)+' '+r.act : '-'}</div>
       </div>
+      <div class="detail-section">
+        <div class="detail-label">AS 비용</div>
+        <div class="detail-value">${r.cost ? Number(r.cost).toLocaleString()+'원' : '-'}</div>
+      </div>
     </div>
-    <div style="height:1px;background:var(--border2);margin:16px 0;"></div>
+    ${r.portalTicket || r.parts ? `
+    <div class="detail-grid" style="margin-top:0">
+      ${r.portalTicket ? `
+      <div class="detail-section">
+        <div class="detail-label">바이스트로닉 포털 티켓</div>
+        <div class="detail-value" style="font-family:monospace;color:var(--blue)">${r.portalTicket}</div>
+      </div>` : ''}
+      ${r.parts ? `
+      <div class="detail-section">
+        <div class="detail-label">교체 부품</div>
+        <div class="detail-value">${r.parts}</div>
+      </div>` : ''}
+    </div>` : ''}
+    ${r.memo ? `
     <div class="detail-section">
-      <div class="detail-label">📁 Drive 폴더</div>
-      ${r.folder
-        ? `<a class="detail-link" href="${r.folder}" target="_blank">📁 폴더 열기 ↗</a>`
-        : `<span class="detail-link disabled">미등록</span>`}
-    </div>
+      <div class="detail-label">증상 상세 메모</div>
+      <div class="detail-memo">${escHtml(r.memo)}</div>
+    </div>` : ''}
+    <div class="detail-divider"></div>
     <div class="detail-section">
-      <div class="detail-label">📄 서비스 리포트</div>
-      ${r.report
-        ? `<a class="detail-link" href="${r.report}" target="_blank">📄 리포트 보기 ↗</a>`
-        : `<span class="detail-link disabled">미등록</span>`}
-    </div>
-    <div class="detail-section">
-      <div class="detail-label">🧾 청구서</div>
-      ${r.invoice
-        ? `<a class="detail-link" href="${r.invoice}" target="_blank">🧾 청구서 보기 ↗</a>`
-        : `<span class="detail-link disabled">미등록</span>`}
+      <div class="detail-label">파일 링크</div>
+      <div class="detail-links-row">
+        ${r.folder  ? `<a class="detail-link" href="${r.folder}"  target="_blank">📁 Drive 폴더 ↗</a>` : `<span class="detail-link disabled">📁 폴더 미등록</span>`}
+        ${r.report  ? `<a class="detail-link" href="${r.report}"  target="_blank">📄 서비스 리포트 ↗</a>` : `<span class="detail-link disabled">📄 리포트 미등록</span>`}
+        ${r.invoice ? `<a class="detail-link" href="${r.invoice}" target="_blank">🧾 청구서 ↗</a>` : `<span class="detail-link disabled">🧾 청구서 미등록</span>`}
+      </div>
     </div>`;
   document.getElementById('detail-overlay').classList.add('open');
 }
-function closeDetail() {
-  document.getElementById('detail-overlay').classList.remove('open');
+function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
+
+function escHtml(str) {
+  return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── 수정 ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// 수정
+// ══════════════════════════════════════════════════════════
 function openEdit() {
   const r = loadRecords()[detailIdx];
   document.getElementById('edit-svcnum').textContent = r.svcNum;
-  document.getElementById('e-date').value    = r.date || '';
-  document.getElementById('e-symp').value    = r.symp || '';
-  document.getElementById('e-act').value     = r.act  || '';
-  document.getElementById('e-status').value  = r.status || '접수중';
-  document.getElementById('e-folder').value  = r.folder  || '';
-  document.getElementById('e-report').value  = r.report  || '';
-  document.getElementById('e-invoice').value = r.invoice || '';
+  document.getElementById('e-date').value     = r.date || '';
+  document.getElementById('e-symp').value     = r.symp || '';
+  document.getElementById('e-memo').value     = r.memo || '';
+  document.getElementById('e-act').value      = r.act  || '';
+  document.getElementById('e-portal').value   = r.portalTicket || '';
+  document.getElementById('e-parts').value    = r.parts || '';
+  document.getElementById('e-cost').value     = r.cost  || '';
+  document.getElementById('e-status').value   = r.status || '접수중';
+  document.getElementById('e-resolved').value = r.resolvedDate || '';
+  document.getElementById('e-folder').value   = r.folder  || '';
+  document.getElementById('e-report').value   = r.report  || '';
+  document.getElementById('e-invoice').value  = r.invoice || '';
   closeDetail();
   document.getElementById('edit-overlay').classList.add('open');
 }
-function closeEdit() {
-  document.getElementById('edit-overlay').classList.remove('open');
-}
-function saveEdit() {
+function closeEdit() { document.getElementById('edit-overlay').classList.remove('open'); }
+
+async function saveEdit() {
   const recs = loadRecords();
-  recs[detailIdx] = {
+  const updated = {
     ...recs[detailIdx],
-    date:    document.getElementById('e-date').value,
-    symp:    document.getElementById('e-symp').value,
-    act:     document.getElementById('e-act').value,
-    status:  document.getElementById('e-status').value,
-    folder:  document.getElementById('e-folder').value.trim(),
-    report:  document.getElementById('e-report').value.trim(),
-    invoice: document.getElementById('e-invoice').value.trim(),
+    date:         document.getElementById('e-date').value,
+    symp:         document.getElementById('e-symp').value,
+    memo:         document.getElementById('e-memo').value.trim(),
+    act:          document.getElementById('e-act').value,
+    portalTicket: document.getElementById('e-portal').value.trim(),
+    parts:        document.getElementById('e-parts').value.trim(),
+    cost:         document.getElementById('e-cost').value || '',
+    status:       document.getElementById('e-status').value,
+    resolvedDate: document.getElementById('e-resolved').value,
+    folder:       document.getElementById('e-folder').value.trim(),
+    report:       document.getElementById('e-report').value.trim(),
+    invoice:      document.getElementById('e-invoice').value.trim(),
   };
-  saveRecords(recs);
+  recs[detailIdx] = updated;
+  saveRecordsLocal(recs);
+
+  // Apps Script 연동
+  if (isConnected()) {
+    try {
+      await webAppPost('update', updated);
+      showToast('✅ 수정 완료 (Sheets 저장)');
+    } catch(e) {
+      showToast(`✅ 수정 완료 (로컬 저장, Sheets 실패: ${e.message})`);
+    }
+  } else {
+    showToast('✅ 수정 완료 (로컬 저장)');
+  }
+
   closeEdit();
   renderTable();
-  showToast('✅ 수정 완료');
 }
 
-// ── 삭제 ─────────────────────────────────────────────────
-function deleteRecord() {
+// ══════════════════════════════════════════════════════════
+// 삭제
+// ══════════════════════════════════════════════════════════
+async function deleteRecord() {
   if (!confirm('이 서비스 이력을 삭제하시겠습니까?')) return;
-  const recs = loadRecords();
-  const svcNum = recs[detailIdx].svcNum;
+  const recs    = loadRecords();
+  const target  = recs[detailIdx];
+  const svcNum  = target.svcNum;
   recs.splice(detailIdx, 1);
-  saveRecords(recs);
+  saveRecordsLocal(recs);
+
+  if (isConnected()) {
+    try {
+      await webAppPost('delete', { id: target.id });
+    } catch(e) {
+      console.warn('Apps Script 삭제 실패', e);
+    }
+  }
+
   closeDetail();
   renderTable();
   showToast(`🗑 ${svcNum} 삭제됨`);
 }
 
-// ── CSV 내보내기 ──────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// CSV 내보내기
+// ══════════════════════════════════════════════════════════
 function exportCSV() {
   const recs = loadRecords();
   if (!recs.length) { showToast('내보낼 데이터가 없습니다'); return; }
-  const header = ['SVC번호','발생일','증상분류','조치유형','상태','Drive폴더','서비스리포트','청구서'];
-  const rows   = recs.map(r =>
-    [r.svcNum,r.date,r.symp,r.act,r.status,r.folder,r.report,r.invoice].map(v=>`"${v||''}"`).join(',')
-  );
+  const header = ['SVC번호','발생일','증상분류','증상메모','조치유형','포털티켓','교체부품','AS비용','상태','완료일','처리기간(일)','Drive폴더','서비스리포트','청구서'];
+  const rows = recs.map(r => {
+    const days = calcDays(r.date, r.resolvedDate);
+    return [
+      r.svcNum, r.date, r.symp, r.memo, r.act, r.portalTicket, r.parts,
+      r.cost, r.status, r.resolvedDate, days !== null ? days : '',
+      r.folder, r.report, r.invoice
+    ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
+  });
   const csv  = [header.join(','), ...rows].join('\n');
-  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href = url; a.download = `CADDIS_서비스이력_${new Date().toISOString().slice(0,10)}.csv`;
+  a.href = url;
+  a.download = `CADDIS_서비스이력_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-// ── Toast ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// Sheets 연결 모달
+// ══════════════════════════════════════════════════════════
+function openSheets() {
+  const cfg = getWebAppCfg();
+  document.getElementById('s-webapp-url').value = cfg?.webAppUrl || '';
+  document.getElementById('sheets-test-result').style.display = 'none';
+  document.getElementById('disconnect-btn').style.display = cfg ? '' : 'none';
+  document.getElementById('sheets-overlay').classList.add('open');
+}
+function closeSheets() { document.getElementById('sheets-overlay').classList.remove('open'); }
+
+async function testSheets() {
+  const url    = document.getElementById('s-webapp-url').value.trim();
+  const result = document.getElementById('sheets-test-result');
+  if (!url) { showToast('Web App URL을 입력하세요'); return; }
+
+  result.style.display = '';
+  result.style.background = 'rgba(88,166,255,.08)';
+  result.style.color = 'var(--blue)';
+  result.textContent = '연결 테스트 중...';
+
+  try {
+    const rows = await webAppGet(url);
+    result.style.background = 'rgba(63,185,80,.08)';
+    result.style.color = 'var(--green)';
+    result.textContent = `✅ 연결 성공 — 서비스이력 시트에서 ${rows.length}건 읽음`;
+  } catch(e) {
+    result.style.background = 'rgba(232,69,69,.08)';
+    result.style.color = 'var(--accent2)';
+    result.textContent = `⚠ 연결 실패: ${e.message}`;
+  }
+}
+
+function saveSheets() {
+  const url = document.getElementById('s-webapp-url').value.trim();
+  if (!url) { showToast('Web App URL을 입력하세요'); return; }
+  saveWebAppCfg({ webAppUrl: url });
+  closeSheets();
+  updateSheetsUI();
+  showToast('✅ Apps Script 연결 저장됨');
+  syncSheets();
+}
+
+function disconnectSheets() {
+  if (!confirm('연결을 해제하시겠습니까?\n(로컬 데이터는 유지됩니다)')) return;
+  localStorage.removeItem(WEBAPP_KEY);
+  closeSheets();
+  updateSheetsUI();
+  showToast('연결 해제됨');
+}
+
+// ══════════════════════════════════════════════════════════
+// Toast
+// ══════════════════════════════════════════════════════════
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── 오버레이 바깥 클릭 닫기 ──────────────────────────────
-['add-overlay','detail-overlay','edit-overlay'].forEach(id => {
+// ══════════════════════════════════════════════════════════
+// 오버레이 바깥 클릭 닫기
+// ══════════════════════════════════════════════════════════
+['add-overlay','detail-overlay','edit-overlay','sheets-overlay'].forEach(id => {
   document.getElementById(id).addEventListener('click', e => {
     if (e.target.id === id) document.getElementById(id).classList.remove('open');
   });
 });
 
-// ── 초기화 ───────────────────────────────────────────────
-initSampleData();
+// ══════════════════════════════════════════════════════════
+// 초기화
+// ══════════════════════════════════════════════════════════
+updateSheetsUI();
 renderTable();
 </script>
 </body>
