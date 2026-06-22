@@ -133,6 +133,7 @@
   .card-service::before    { background: var(--accent); opacity:1; }
   .card-workflow::before   { background: var(--yellow); }
   .card-installlog::before { background: #e05a2b; opacity:1; }
+  .card-material::before   { background: var(--purple); opacity:1; }
 
   @keyframes pulse-dot {
     0%,100% { opacity:1; transform:scale(1); }
@@ -166,6 +167,7 @@
   .badge-locked { background: rgba(139,148,158,.1); color: var(--muted);  border: 1px solid var(--border); }
   .badge-dev    { background: rgba(210,153,34,.15); color: var(--yellow); border: 1px solid rgba(210,153,34,.3); }
   .badge-new    { background: rgba(232,69,69,.15);  color: #ff6b6b;       border: 1px solid rgba(232,69,69,.3); }
+  .badge-notion { background: rgba(188,140,255,.15); color: var(--purple); border: 1px solid rgba(188,140,255,.3); }
 
   /* STATUS BAR */
   .status-bar {
@@ -213,7 +215,7 @@
   </a>
   <div class="nav-links">
     <a href="outsource.html">외주관리</a>
-    <a href="#">자재관리</a>
+    <a href="https://app.notion.com/p/3825377f7598819b8982c9d1bfc2fd04" target="_blank">자재관리</a>
     <a href="#">견적</a>
     <a href="service.html">서비스</a>
     <a href="#">리포트</a>
@@ -230,6 +232,7 @@
     <span><span class="dot dot-green"></span> 외주관리 운영중</span>
     <span><span class="dot dot-green"></span> 작업 현황판 운영중</span>
     <span><span class="dot dot-green"></span> 서비스 관리 운영중</span>
+    <span><span class="dot dot-green"></span> 자재관리 운영중</span>
     <span><span class="dot dot-yellow"></span> ByCut Nova 3015 설치 준비중</span>
     <span id="hero-dday-meta"><span class="dot dot-red" style="animation:pulse-dot 1.2s ease-in-out infinite"></span> <span id="hero-dday-text">D-??</span></span>
   </div>
@@ -255,7 +258,7 @@
       </div>
     </a>
 
-    <!-- 서비스 관리 — 신규 -->
+    <!-- 서비스 관리 -->
     <a class="card live card-service" href="service.html">
       <div class="card-head">
         <div class="card-icon">⚙</div>
@@ -310,19 +313,20 @@
     </a>
 
     <!-- 자재관리 -->
-    <div class="card locked">
+    <a class="card live card-material" href="https://app.notion.com/p/3825377f7598819b8982c9d1bfc2fd04" target="_blank">
       <div class="card-head">
         <div class="card-icon">📦</div>
-        <span class="badge badge-locked">🔒 LOCKED</span>
+        <span class="badge badge-notion">● NOTION</span>
       </div>
       <div>
         <div class="card-title">자재관리</div>
-        <div class="card-desc">입고 · 재고 · 잔재 · 스크랩 통합 관리. OCR 자동 입고 포함.</div>
+        <div class="card-desc">입고 이력 · 재고 현황 · 잔재 관리. 명세표 전달 시 Claude가 자동 기록.</div>
       </div>
       <div class="card-footer">
-        <span>장비 가동 후 활성화</span>
+        <span>Notion DB 연동</span>
+        <span class="card-link">열기 →</span>
       </div>
-    </div>
+    </a>
 
     <!-- 견적 자동화 -->
     <div class="card dev">
@@ -379,6 +383,12 @@
     </div>
     <div class="status-sep"></div>
     <div class="status-item">
+      <span class="dot dot-green"></span>
+      <span class="label">자재관리</span>
+      <strong>운영중 (Notion 연동)</strong>
+    </div>
+    <div class="status-sep"></div>
+    <div class="status-item">
       <span class="dot dot-yellow"></span>
       <span class="label">ByCut Nova 3015</span>
       <strong>설치 준비중</strong>
@@ -392,7 +402,7 @@
     <div class="status-sep"></div>
     <div class="status-item">
       <span class="dot dot-red"></span>
-      <span class="label">자재관리 · 견적 · 리포트</span>
+      <span class="label">견적 · 리포트</span>
       <strong>대기</strong>
     </div>
   </div>
@@ -400,7 +410,7 @@
 
 <!-- FOOTER -->
 <footer>
-  CADDIS 레이저 허브 v1.3 ·
+  CADDIS 레이저 허브 v1.4 ·
   <a href="https://github.com/CADDIS-GR/caddis-laser" target="_blank">CADDIS-GR/caddis-laser</a> · 2026
 </footer>
 
