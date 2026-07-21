@@ -556,7 +556,7 @@ function save(){
       // 임시 id로 화면에 먼저 반영, 시트에서 실제 id 발급
       const temp = Object.assign({id:'tmp'+Date.now()}, obj);
       DATA.push(temp);
-      sheetPost('add', obj).then(res=>{ if(res&&res.id) temp.id=res.id; });
+      sheetPost('add', obj).then(res=>{ if(res&&res.id){ temp.id=res.id; render(); } });
     }
   } else {
     if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
