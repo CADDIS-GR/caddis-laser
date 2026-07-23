@@ -139,7 +139,8 @@
   /* ── TABLE ── */
   .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-xl);
     overflow:hidden;box-shadow:var(--shadow-sm)}
-  table{width:100%;border-collapse:collapse;font-size:14px}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-xl)}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
   thead th{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
     color:var(--ink-soft);text-align:left;padding:11px 14px;
     border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
@@ -247,16 +248,37 @@
     .summary{grid-template-columns:repeat(2,1fr)}
     .board{grid-template-columns:1fr 1fr}
     .work{max-width:160px}
-    thead th:nth-child(4),tbody td:nth-child(4){display:none}
   }
   @media(max-width:620px){
-    .wrap{padding:20px var(--sp-md) 60px}
-    .board{grid-template-columns:1fr}
-    .tl-row{grid-template-columns:88px 1fr;gap:8px}
-    thead th:nth-child(5),tbody td:nth-child(5){display:none}
-    thead th:nth-child(6),tbody td:nth-child(6){display:none}
-    .views{overflow:auto}
+    .wrap{padding:16px 12px 60px}
     .page-title h1{font-size:26px}
+    /* 요약 카드 2x2 유지 */
+    .summary{grid-template-columns:repeat(2,1fr);gap:10px}
+    .sum-card .v{font-size:30px}
+    /* 툴바 세로 정렬 */
+    .toolbar{flex-direction:column;align-items:stretch;gap:10px}
+    .filters{flex-wrap:wrap}
+    .search{width:100%}
+    /* 뷰탭 */
+    .views{width:fit-content}
+    /* 테이블 — 가로 스크롤 */
+    .table-scroll{border-radius:var(--r-xl)}
+    table{min-width:600px;font-size:13px}
+    thead th,tbody td{padding:10px 10px}
+    /* 건명 줄바꿈 방지 */
+    .cust{white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis}
+    /* 보드 1칸씩 */
+    .board{grid-template-columns:1fr}
+    /* 타임라인 */
+    .tl-row{grid-template-columns:80px 1fr;gap:8px}
+    /* 모달 */
+    .overlay{padding:16px 8px}
+    .modal{border-radius:var(--r-xl)}
+    .modal-head,.modal-body,.modal-foot{padding-left:16px;padding-right:16px}
+    .row2{grid-template-columns:1fr}
+    /* nav */
+    .top-nav{padding:0 12px;gap:8px}
+    .nav-logo span:last-child{display:none}
   }
 </style>
 </head>
@@ -433,7 +455,7 @@ function docChips(docs){
 
 function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
-  area.innerHTML = `<div class="panel"><table>
+  area.innerHTML = `<div class="panel"><div class="table-scroll"><table>
     <thead><tr>
       <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>사용자재</th><th>작업내용</th><th style="text-align:right">정산</th>
     </tr></thead>
@@ -450,7 +472,7 @@ function renderTable(rows){
         <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
       </tr>`;
-    }).join('')}</tbody></table></div>`;
+    }).join('')}</tbody></table></div></div>`;
   area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
 }
 
