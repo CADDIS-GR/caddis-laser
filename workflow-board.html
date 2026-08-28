@@ -421,6 +421,13 @@ function visible(){
       if(!(( r.job||'').toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
     }
     return true;
+  }).sort((a,b)=>{
+    // 최신 등록이 위로 — id(J+타임스탬프) 내림차순, tmp는 항상 최상단
+    const av=String(a.id), bv=String(b.id);
+    const at=av.startsWith('tmp'), bt=bv.startsWith('tmp');
+    if(at&&!bt) return -1;
+    if(bt&&!at) return 1;
+    return bv.localeCompare(av);
   });
 }
 
