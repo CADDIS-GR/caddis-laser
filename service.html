@@ -928,7 +928,7 @@
   .sum-card .v {
     font-size: 38px; font-weight: 700; line-height: 1;
     margin-top: 10px; letter-spacing: -1px;
-    color: var(--c);
+    color: var(--text);
   }
   .sum-card .sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
 
@@ -1002,6 +1002,14 @@
   .symp-가스압력 { --c: #38bdf8; }
   .symp-냉각계통 { --c: #22c55e; }
   .symp-기타     { --c: var(--muted); }
+  .symp-etc {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .detail-value .symp-etc { margin-top: 7px; font-size: 13px; }
 
   /* ── 파일 링크 버튼 ── */
   .link-btn { width: 26px; height: 26px; border-radius: var(--r); font-size: 13px; }
@@ -1009,7 +1017,9 @@
   .row-menu-btn { border-radius: var(--r-full); }
 
   /* ── PANELS ── */
-  .two-col { gap: 16px; margin-top: 32px; }
+  .two-col { gap: 16px; margin-top: 32px; align-items: start; }
+  .panel-body .empty-state { padding: 28px 16px; }
+  .panel-body .empty-state p { font-size: 12px; }
   .panel { border-radius: var(--r2); background: var(--surface); border-color: var(--border); }
   .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
   .panel-title { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
@@ -1265,7 +1275,7 @@
       <div class="form-2col">
         <div class="form-row">
           <label>증상분류 *</label>
-          <select id="f-symp">
+          <select id="f-symp" onchange="toggleSympEtc('f')">
             <option value="">선택</option>
             <option>절단불량</option>
             <option>헤드이상</option>
@@ -1285,6 +1295,11 @@
             <option>자체조치</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-row" id="f-symp-etc-row" style="display:none">
+        <label>기타 — 증상 요약</label>
+        <input type="text" id="f-symp-etc" placeholder="예) 셔틀테이블 오류">
       </div>
 
       <div class="form-row">
@@ -1382,7 +1397,7 @@
         </div>
         <div class="form-row">
           <label>증상분류</label>
-          <select id="e-symp">
+          <select id="e-symp" onchange="toggleSympEtc('e')">
             <option value="">선택</option>
             <option>절단불량</option>
             <option>헤드이상</option>
@@ -1393,6 +1408,11 @@
             <option>기타</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-row" id="e-symp-etc-row" style="display:none">
+        <label>기타 — 증상 요약</label>
+        <input type="text" id="e-symp-etc" placeholder="예) 셔틀테이블 오류">
       </div>
 
       <div class="form-row">
@@ -1694,6 +1714,7 @@ function renderTable() {
     const matchSearch = !q ||
       (r.svcNum||'').toLowerCase().includes(q) ||
       (r.symp||'').toLowerCase().includes(q) ||
+      (r.sympEtc||'').toLowerCase().includes(q) ||
       (r.memo||'').toLowerCase().includes(q) ||
       (r.parts||'').toLowerCase().includes(q) ||
       (r.portalTicket||'').toLowerCase().includes(q);
@@ -1728,7 +1749,10 @@ function renderTable() {
     <tr>
       <td><span class="svc-num" onclick="openDetail(${origIdx})">${r.svcNum}</span></td>
       <td><span class="date-cell">${r.date || '-'}</span></td>
-      <td><span class="symp-chip symp-${r.symp||''}">${r.symp || '-'}</span></td>
+      <td>
+        <span class="symp-chip symp-${r.symp||''}">${r.symp || '-'}</span>
+        ${r.symp === '기타' && r.sympEtc ? `<span class="symp-etc">${escHtml(r.sympEtc)}</span>` : ''}
+      </td>
       <td><span class="act-chip">${r.act ? actIcon(r.act)+' '+r.act : '-'}</span></td>
       <td><span class="status status-${r.status}">${r.status}</span></td>
       <td>${durationChip(days)}</td>
@@ -1885,10 +1909,18 @@ function openAdd() {
   document.getElementById('f-folder').value   = '';
   document.getElementById('f-report').value   = '';
   document.getElementById('f-invoice').value  = '';
+  document.getElementById('f-symp-etc').value = '';
+  toggleSympEtc('f');
   document.getElementById('add-overlay').classList.add('open');
 }
 function closeAdd() {
   document.getElementById('add-overlay').classList.remove('open');
+}
+
+// 증상분류가 "기타"일 때만 상세 입력칸을 노출
+function toggleSympEtc(prefix) {
+  const sel = document.getElementById(prefix + '-symp').value;
+  document.getElementById(prefix + '-symp-etc-row').style.display = (sel === '기타') ? '' : 'none';
 }
 
 async function saveRecord() {
@@ -1901,6 +1933,7 @@ async function saveRecord() {
     svcNum:       document.getElementById('f-svcnum').value,
     date,
     symp,
+    sympEtc:      symp === '기타' ? document.getElementById('f-symp-etc').value.trim() : '',
     memo:         document.getElementById('f-memo').value.trim(),
     act:          document.getElementById('f-act').value,
     portalTicket: document.getElementById('f-portal').value.trim(),
@@ -1956,7 +1989,10 @@ function openDetail(idx) {
       </div>
       <div class="detail-section">
         <div class="detail-label">증상분류</div>
-        <div class="detail-value"><span class="symp-chip symp-${r.symp}">${r.symp||'-'}</span></div>
+        <div class="detail-value">
+          <span class="symp-chip symp-${r.symp}">${r.symp||'-'}</span>
+          ${r.symp === '기타' && r.sympEtc ? `<span class="symp-etc">${escHtml(r.sympEtc)}</span>` : ''}
+        </div>
       </div>
       <div class="detail-section">
         <div class="detail-label">상태</div>
@@ -2014,6 +2050,8 @@ function openEdit() {
   document.getElementById('edit-svcnum').textContent = r.svcNum;
   document.getElementById('e-date').value     = r.date || '';
   document.getElementById('e-symp').value     = r.symp || '';
+  document.getElementById('e-symp-etc').value = r.sympEtc || '';
+  toggleSympEtc('e');
   document.getElementById('e-memo').value     = r.memo || '';
   document.getElementById('e-act').value      = r.act  || '';
   document.getElementById('e-portal').value   = r.portalTicket || '';
@@ -2035,6 +2073,8 @@ async function saveEdit() {
     ...recs[detailIdx],
     date:         document.getElementById('e-date').value,
     symp:         document.getElementById('e-symp').value,
+    sympEtc:      document.getElementById('e-symp').value === '기타'
+                    ? document.getElementById('e-symp-etc').value.trim() : '',
     memo:         document.getElementById('e-memo').value.trim(),
     act:          document.getElementById('e-act').value,
     portalTicket: document.getElementById('e-portal').value.trim(),
@@ -2095,11 +2135,11 @@ async function deleteRecord() {
 function exportCSV() {
   const recs = loadRecords();
   if (!recs.length) { showToast('내보낼 데이터가 없습니다'); return; }
-  const header = ['SVC번호','발생일','증상분류','증상메모','조치유형','포털티켓','교체부품','AS비용','상태','완료일','처리기간(일)','Drive폴더','서비스리포트','청구서'];
+  const header = ['SVC번호','발생일','증상분류','기타상세','증상메모','조치유형','포털티켓','교체부품','AS비용','상태','완료일','처리기간(일)','Drive폴더','서비스리포트','청구서'];
   const rows = recs.map(r => {
     const days = calcDays(r.date, r.resolvedDate);
     return [
-      r.svcNum, r.date, r.symp, r.memo, r.act, r.portalTicket, r.parts,
+      r.svcNum, r.date, r.symp, r.sympEtc, r.memo, r.act, r.portalTicket, r.parts,
       r.cost, r.status, r.resolvedDate, days !== null ? days : '',
       r.folder, r.report, r.invoice
     ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',');
