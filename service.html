@@ -1011,6 +1011,26 @@
   }
   .detail-value .symp-etc { margin-top: 7px; font-size: 13px; }
 
+  /* ── 저장 실패 경고 ── */
+  .banner-error {
+    color: var(--accent2);
+    border-color: color-mix(in srgb, var(--accent2) 45%, transparent);
+    background: color-mix(in srgb, var(--accent2) 8%, var(--surface));
+    font-family: var(--sans);
+  }
+  .banner-error strong { font-family: var(--mono); }
+  .banner-error button {
+    border-color: color-mix(in srgb, var(--accent2) 45%, transparent);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .unsynced-dot { margin-left: 6px; color: var(--accent2); font-size: 12px; cursor: help; }
+  .toast-error {
+    border-color: color-mix(in srgb, var(--accent2) 50%, transparent);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
   /* ── 파일 링크 버튼 ── */
   .link-btn { width: 26px; height: 26px; border-radius: var(--r); font-size: 13px; }
   .link-btn.has-link { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
@@ -1112,6 +1132,12 @@
   <div class="banner" id="sheets-banner">
     ● Google Sheets 미연결 — 이 브라우저에만 저장됩니다
     <button onclick="openSheets()">연결하기</button>
+  </div>
+
+  <!-- 시트에 저장 못 한 건 경고 -->
+  <div class="banner banner-error hidden" id="unsynced-banner">
+    ⚠ 시트에 저장되지 않은 <strong id="unsynced-count">0</strong>건이 있습니다 — 이 브라우저를 비우면 사라집니다
+    <button onclick="retryUnsynced()">지금 재시도</button>
   </div>
 
   <!-- 요약 카드 -->
@@ -1626,17 +1652,20 @@ async function webAppPost(action, data) {
 // ══════════════════════════════════════════════════════════
 // 동기화 (Apps Script → localStorage 캐시 갱신)
 // ══════════════════════════════════════════════════════════
-async function syncSheets() {
+async function syncSheets(silent) {
   const url = getWebAppUrl();
   if (!url) return;
-  showToast('↻ 동기화 중...');
+  if (!silent) showToast('↻ 동기화 중...');
   try {
     const rows = await webAppGet(url);
-    saveRecordsLocal(rows);
+    // 시트에 아직 저장되지 못한 건은 덮어쓰지 않고 보존한다
+    const pending = loadRecords().filter(r => r._unsynced);
+    const merged  = [...pending, ...rows.filter(r => !pending.some(p => String(p.id) === String(r.id)))];
+    saveRecordsLocal(merged);
     renderTable();
-    showToast(`✅ ${rows.length}건 동기화 완료`);
+    if (!silent) showToast(`✅ ${rows.length}건 동기화 완료`);
   } catch (e) {
-    showToast(`⚠ 동기화 실패: ${e.message}`);
+    showToast(`⚠ 동기화 실패: ${e.message}`, 'error');
   }
 }
 
@@ -1747,7 +1776,10 @@ function renderTable() {
     const days = calcDays(r.date, r.resolvedDate);
     return `
     <tr>
-      <td><span class="svc-num" onclick="openDetail(${origIdx})">${r.svcNum}</span></td>
+      <td>
+        <span class="svc-num" onclick="openDetail(${origIdx})">${r.svcNum}</span>
+        ${r._unsynced ? '<span class="unsynced-dot" title="시트에 저장되지 않음">⚠</span>' : ''}
+      </td>
       <td><span class="date-cell">${r.date || '-'}</span></td>
       <td>
         <span class="symp-chip symp-${r.symp||''}">${r.symp || '-'}</span>
@@ -1812,6 +1844,7 @@ function renderStats(recs) {
   document.getElementById('stat-month-cost').textContent =
     monthCost > 0 ? (monthCost >= 10000 ? `${Math.round(monthCost/10000)}만` : monthCost.toLocaleString()) : '—';
   document.getElementById('stat-month-label').textContent = `${now.getMonth()+1}월 청구`;
+  renderUnsyncedBanner();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1954,12 +1987,14 @@ async function saveRecord() {
   if (isConnected()) {
     try {
       await webAppPost('add', rec);
-      showToast(`✅ ${rec.svcNum} 등록 완료 (Sheets 저장)`);
+      showToast(`✅ ${rec.svcNum} 등록 완료 (시트 저장됨)`);
     } catch(e) {
-      showToast(`✅ ${rec.svcNum} 등록 완료 (로컬 저장, Sheets 실패: ${e.message})`);
+      markUnsynced(rec.id, 'add');
+      showToast(`⚠ 시트 저장 실패 — ${rec.svcNum}은 이 브라우저에만 있습니다 (${e.message})`, 'error');
     }
   } else {
-    showToast(`✅ ${rec.svcNum} 등록 완료 (로컬 저장)`);
+    markUnsynced(rec.id, 'add');
+    showToast(`⚠ ${rec.svcNum} — Sheets 미연결 상태라 이 브라우저에만 저장됐습니다`, 'error');
   }
 
   closeAdd();
@@ -2093,12 +2128,14 @@ async function saveEdit() {
   if (isConnected()) {
     try {
       await webAppPost('update', updated);
-      showToast('✅ 수정 완료 (Sheets 저장)');
+      showToast('✅ 수정 완료 (시트 저장됨)');
     } catch(e) {
-      showToast(`✅ 수정 완료 (로컬 저장, Sheets 실패: ${e.message})`);
+      markUnsynced(updated.id, 'update');
+      showToast(`⚠ 시트 저장 실패 — 수정 내용이 이 브라우저에만 있습니다 (${e.message})`, 'error');
     }
   } else {
-    showToast('✅ 수정 완료 (로컬 저장)');
+    markUnsynced(updated.id, 'update');
+    showToast('⚠ Sheets 미연결 — 수정 내용이 이 브라우저에만 저장됐습니다', 'error');
   }
 
   closeEdit();
@@ -2209,11 +2246,50 @@ function disconnectSheets() {
 // ══════════════════════════════════════════════════════════
 // Toast
 // ══════════════════════════════════════════════════════════
-function showToast(msg) {
+function showToast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  t.className = 'toast show' + (type ? ' toast-' + type : '');
+  setTimeout(() => t.classList.remove('show'), type === 'error' ? 6000 : 3000);
+}
+
+// ══════════════════════════════════════════════════════════
+// 미동기화(시트 저장 실패) 건 관리
+// ══════════════════════════════════════════════════════════
+function markUnsynced(id, pending) {
+  const recs = loadRecords();
+  const r = recs.find(x => String(x.id) === String(id));
+  if (r) { r._unsynced = true; r._pending = pending; saveRecordsLocal(recs); }
+  renderUnsyncedBanner();
+}
+
+function renderUnsyncedBanner() {
+  const banner = document.getElementById('unsynced-banner');
+  if (!banner) return;
+  const n = loadRecords().filter(r => r._unsynced).length;
+  document.getElementById('unsynced-count').textContent = n;
+  banner.classList.toggle('hidden', n === 0);
+}
+
+async function retryUnsynced() {
+  if (!isConnected()) { showToast('⚠ Apps Script 연결부터 해주세요', 'error'); return; }
+  const recs = loadRecords();
+  const pend = recs.filter(r => r._unsynced);
+  if (!pend.length) return;
+  showToast('↻ 재시도 중...');
+  let ok = 0, fail = 0;
+  for (const r of pend) {
+    try {
+      const clean = { ...r };
+      delete clean._unsynced; delete clean._pending;
+      await webAppPost(r._pending === 'update' ? 'update' : 'add', clean);
+      delete r._unsynced; delete r._pending;
+      ok++;
+    } catch (e) { fail++; }
+  }
+  saveRecordsLocal(recs);
+  renderTable();
+  showToast(fail ? `⚠ ${ok}건 저장 완료 · ${fail}건 실패` : `✅ ${ok}건 시트 저장 완료`, fail ? 'error' : '');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2230,6 +2306,9 @@ function showToast(msg) {
 // ══════════════════════════════════════════════════════════
 updateSheetsUI();
 renderTable();
+renderUnsyncedBanner();
+// 연결되어 있으면 열 때마다 시트에서 최신 데이터를 가져온다
+if (isConnected()) syncSheets(true);
 
 // ══════════════════════════════════════════════════════════
 // 테마 토글 (다크 ⇄ 라이트) — workflow-board.html과 동일 패턴
