@@ -1358,7 +1358,8 @@ async function webAppPost(action, data) {
   const res = await fetch(url, {
     method: 'POST',
     redirect: 'follow',
-    headers: { 'Content-Type': 'application/json' },
+    // text/plain 으로 보내 CORS 프리플라이트(OPTIONS)를 피함 — Apps Script는 OPTIONS를 처리하지 못함
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ sheet: 'svc', action, data })
   });
   if (!res.ok) throw new Error(`서버 오류 ${res.status}`);
