@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="절곡보정">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACXUlEQVR4nO3dS24aQQBF0SbKguzFmEVmM1mSM/AkcXLzQQGezDmzHiBVV10KRCPV6fXl6YBf+XTvAbBLHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB+nzvAfzWl68/XJ6f7zSOB3UaPTXhXRYf22r0e3E8VBbf20tk7DvHw5ZxLN77WBwPbqyPpTjGpuY+liZhKQ7GzMSx9I65s5mpmImDPeIgiYMkDtJMHHu/DzITB3uW4rB5jFmKgzFjcdg8lozFcRzH+VkiI/bieCORAdt/E/wAfcw8KLnA6s7BAHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxHFNF59VvnHIuThI4iCJgyQOkjhI4rim8/OtX/hfiYMkjiu7YA/Y2DYOcdzCPy32TBmHOG7kL5d8qYxDHLfzx4UfK+M4jtPry9O9x/Bgfn5uspfFG3GQfKyQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB+kbGKcpNEVVCQsAAAAASUVORK5CYII=">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACXUlEQVR4nO3dS24aQQBF0SbKguzFmEVmM1mSM/AkcXLzQQGezDmzHiBVV10KRCPV6fXl6YBf+XTvAbBLHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB+nzvAfzWl68/XJ6f7zSOB3UaPTXhXRYf22r0e3E8VBbf20tk7DvHw5ZxLN77WBwPbqyPpTjGpuY+liZhKQ7GzMSx9I65s5mpmImDPeIgiYMkDtJMHHu/DzITB3uW4rB5jFmKgzFjcdg8lozFcRzH+VkiI/bieCORAdt/E/wAfcw8KLnA6s7BAHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxHFNF59VvnHIuThI4iCJgyQOkjhI4rim8/OtX/hfiYMkjiu7YA/Y2DYOcdzCPy32TBmHOG7kL5d8qYxDHLfzx4UfK+M4jtPry9O9x/Bgfn5uspfFG3GQfKyQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB+kbGKcpNEVVCQsAAAAASUVORK5CYII=">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%EC%A0%88%EA%B3%A1%20%EB%B3%B4%EC%A0%95%20%EA%B3%84%EC%82%B0%EA%B8%B0%22%2C%22short_name%22%3A%22%EC%A0%88%EA%B3%A1%EB%B3%B4%EC%A0%95%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%2C%22background_color%22%3A%22%230d1117%22%2C%22theme_color%22%3A%22%230d1117%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAAITUlEQVR4nO3aQU4bQRBA0RBxIHwYfEhfxkciW6QoVgB7utr/vbWFajFTv9vm5eP97RcAPb9XDwDAGgIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUQIAECUAAFECABAlAABRAgAQJQAAUa%2BrB%2BBnLtfVE9BzPq2egPt4%2BXh/Wz0DX2TpM4cY7EwAtmL1M5YSbEgANmH1swsl2IcA7MD2ZzsysAMBmM3qZ18aMJ5/Ax3M9mdrHuDx3ACm8vLwNFwFpnIDGMn255l4nqcSgHm8LTwfT/VIAjCM9wQ4igAAh3C4mUcAJvGG8Nw84cMIwBjeDQo855MIAECUAMzgWESHp30MAQCIEoABHIiAFQQAOJxDzwwCABAlAABRArCauzBNnvwBBAAgSgAAogQAIEoAgEX8DLCaAABECQBAlAAARAkAQJQAAEQJwGrn0%2BoJgCgBAIgSAIAoAQCIEoAB/AwArCAAAFECMINLAHA4AQCIEoAxXAKAYwnAJBoAHEgAAKIEYBiXAOAoAjCPBgCHEICRNAB4PAGYSgOABxOAwTQAeCQBmO18kgHgQQRgBxoAPIAAbMJVALg3AdiKDAD387p6AL7ucwMu1//9JGW3nxOqBGBzVjzwXb4CAogSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAEAiBIAgCgBAIgSAIAoAQCIEgCAKAGAZ3e5rp6AoQQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAODZnU%2BrJ/iHsYNlCABAlAAARAkAQJQAQMDAb9sHjtQjAABRAgANo07co4YJEwCAKAGAjCHn7iFjIADQsnz5Lh%2BATwQAIEoAIGbhGdzxfxgBgJ4li9j2n0cAIOngdWz7jyQAUHXYUrb9pxIACDtgNdv%2Bg718vL%2BtngFY7XK9/9%2B0%2BsdzAwAesKxt/x24AQCf/PwqYPXvQwCAv3wvA1b/bgQAuOl2DCz9nQkAQJQfgQGiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACiBAAgSgAAogQAIEoAAKIEACBKAACi/gCbwmK3Lej1qQAAAABJRU5ErkJggg%3D%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image/png%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22data%3Aimage/png%3Bbase64%2CiVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACXUlEQVR4nO3dS24aQQBF0SbKguzFmEVmM1mSM/AkcXLzQQGezDmzHiBVV10KRCPV6fXl6YBf%2BXTvAbBLHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB%2BnzvAfzWl68/XJ6f7zSOB3UaPTXhXRYf22r0e3E8VBbf20tk7DvHw5ZxLN77WBwPbqyPpTjGpuY%2BliZhKQ7GzMSx9I65s5mpmImDPeIgiYMkDtJMHHu/DzITB3uW4rB5jFmKgzFjcdg8lozFcRzH%2BVkiI/bieCORAdt/E/wAfcw8KLnA6s7BAHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxHFNF59VvnHIuThI4iCJgyQOkjhI4rim8/OtX/hfiYMkjiu7YA/Y2DYOcdzCPy32TBmHOG7kL5d8qYxDHLfzx4UfK%2BM4jtPry9O9x/Bgfn5uspfFG3GQfKyQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB%2BkbGKcpNEVVCQsAAAAASUVORK5CYII%3D%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image/png%22%7D%5D%7D">
+<title>절곡 보정 계산기 · RG-100S</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117; --panel:#161b22; --panel-2:#1c2330; --line:#21262d; --line-soft:#30363d;
+  --ink:#e6edf3; --ink-soft:#8b949e; --ink-faint:#484f58;
+  --accent:#3b82f6; --brand-coral:#ff5530; --blue-200:rgba(59,130,246,.18); --blue-deep:#3b82f6;
+  --ok:#1ba673; --ok-bg:rgba(27,166,115,.13); --warn:#e3a008; --warn-bg:rgba(227,160,8,.13);
+  --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-hero:24px; --r-full:9999px;
+  --shadow:0 4px 24px rgba(0,0,0,.35); --shadow-sm:0 1px 4px rgba(0,0,0,.25); --nav-bg:rgba(13,17,23,.85);
+  --sans:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+}
+[data-theme="light"]{
+  --bg:#f7f8fa; --panel:#ffffff; --panel-2:#f2f3f5; --line:#eaecf0; --line-soft:#e5e7eb;
+  --ink:#0a0a0a; --ink-soft:#5f5f5f; --ink-faint:#a8aab2; --accent:#1456f0; --blue-200:#dbeafe; --blue-deep:#1d4ed8;
+  --ok:#1ba673; --ok-bg:#e8ffea; --warn:#b7791f; --warn-bg:#fef7e0;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06); --shadow-sm:0 1px 3px rgba(0,0,0,.06); --nav-bg:rgba(255,255,255,.9);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{transition:background .25s,color .25s}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.45; padding-bottom:48px}
+.mono{font-family:var(--mono)}
+.top-nav{position:sticky; top:0; z-index:100; height:56px; display:flex; align-items:center; gap:11px; padding:0 16px; background:var(--nav-bg); border-bottom:1px solid var(--line-soft); backdrop-filter:blur(12px)}
+.nav-mark{width:32px; height:32px; flex:none; border-radius:var(--r-md); background:var(--brand-coral); color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center}
+.nav-tt{font-weight:700; letter-spacing:-.4px; font-size:16px}
+.nav-tt small{display:block; font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); margin-top:1px}
+.nav-sp{flex:1}
+.btn{border:none; border-radius:var(--r-full); font-family:var(--sans); font-weight:600; cursor:pointer; font-size:14px; padding:9px 18px}
+.btn-ghost{background:transparent; color:var(--ink-soft); border:1px solid var(--line-soft)}
+.btn-sm{padding:7px 14px; font-size:13px}
+.btn-icon{width:38px; height:38px; padding:0; display:inline-flex; align-items:center; justify-content:center; font-size:16px}
+.wrap{max-width:560px; margin:0 auto; padding:18px 16px 0}
+.page-title{margin:4px 0 18px}
+.page-title .eyebrow{font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+.page-title h1{font-size:30px; font-weight:700; letter-spacing:-.8px; margin:3px 0 0}
+.page-title h1 span{color:var(--brand-coral)}
+.cond-bar{background:var(--panel); border:1px solid var(--line-soft); border-radius:var(--r-xl); padding:14px 15px; margin-bottom:16px; box-shadow:var(--shadow-sm)}
+.cond-bar label{display:block; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px}
+.sel{position:relative}
+.sel select{width:100%; appearance:none; -webkit-appearance:none; background:var(--panel-2); color:var(--ink); border:1px solid var(--line-soft); border-radius:var(--r-lg); padding:13px 40px 13px 14px; font-family:var(--sans); font-size:16px; font-weight:600}
+.sel::after{content:"▾"; position:absolute; right:16px; top:50%; transform:translateY(-50%); color:var(--ink-soft); pointer-events:none; font-size:13px}
+.ref-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:11px}
+.chip{display:inline-flex; align-items:center; gap:5px; background:var(--panel-2); border:1px solid var(--line-soft); border-radius:var(--r-full); padding:5px 11px; font-size:12px; font-weight:500; color:var(--ink-soft)}
+.chip b{color:var(--ink); font-family:var(--mono); font-weight:500}
+.chip.ok{background:var(--ok-bg); border-color:transparent; color:var(--ok)}
+.card{background:var(--panel); border:1px solid var(--line-soft); border-radius:var(--r-xl); padding:18px 16px; margin-bottom:16px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden}
+.card::after{content:""; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--c,var(--accent))}
+.card-h{display:flex; align-items:center; gap:8px; margin-bottom:14px}
+.card-h .tag{font-size:11px; font-weight:700; letter-spacing:.06em; padding:3px 9px; border-radius:var(--r-full); background:var(--blue-200); color:var(--blue-deep)}
+.card-h h2{font-size:16px; font-weight:700; letter-spacing:-.3px; margin:0}
+.seg{display:inline-flex; background:var(--panel-2); border:1px solid var(--line-soft); border-radius:var(--r-full); padding:3px; margin-bottom:13px}
+.seg-b{border:none; background:transparent; color:var(--ink-soft); font-family:var(--sans); font-weight:600; font-size:13px; padding:7px 20px; border-radius:var(--r-full); cursor:pointer}
+.seg-b.on{background:var(--accent); color:#fff}
+.field label{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:7px}
+.ylab{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:9px}
+.ylab b{color:var(--ink); font-family:var(--mono)}
+.numin{width:100%; background:var(--panel-2); color:var(--ink); border:1px solid var(--line-soft); border-radius:var(--r-lg); padding:14px 15px; font-family:var(--mono); font-size:26px; font-weight:500; text-align:right}
+.numin:focus{outline:none; border-color:var(--accent)}
+.nudge{display:flex; align-items:stretch; gap:10px}
+.nbtn{flex:none; width:58px; border:1px solid var(--line-soft); background:var(--panel-2); color:var(--ink); font-size:26px; font-weight:500; border-radius:var(--r-lg); cursor:pointer; font-family:var(--sans)}
+.nbtn:active{background:var(--accent); color:#fff}
+.numin.ycenter{text-align:center; flex:1}
+.eq{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-top:16px; padding-top:15px; border-top:1px dashed var(--line-soft)}
+.eq .lab{font-size:12px; font-weight:600; color:var(--ink-soft)}
+.eq .val{font-family:var(--mono); font-size:46px; font-weight:500; letter-spacing:-1px; line-height:1; color:var(--brand-coral)}
+.eq .val .u{font-size:16px; color:var(--ink-soft); margin-left:4px; font-weight:400}
+.breakdown{margin-top:11px; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); text-align:right}
+.breakdown b{color:var(--ink); font-weight:500}
+.note{margin-top:11px; font-size:11.5px; color:var(--ink-faint); line-height:1.55}
+.note b{color:var(--ink-soft)}
+.settings{margin-top:4px}
+.set-head{margin-bottom:12px}
+.set-head h2{font-size:15px; font-weight:700; margin:0}
+.crow{background:var(--panel); border:1px solid var(--line-soft); border-radius:var(--r-lg); padding:12px 13px; margin-bottom:10px}
+.crow-name{font-weight:700; font-size:14px; margin-bottom:10px}
+.crow-name small{font-weight:500; color:var(--ink-soft); font-family:var(--mono); font-size:12px; margin-left:6px}
+.grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px}
+.fin{display:flex; flex-direction:column; gap:4px}
+.fin label{font-size:10.5px; font-weight:600; color:var(--ink-soft)}
+.fin input{background:var(--panel-2); color:var(--ink); border:1px solid var(--line-soft); border-radius:var(--r-md); padding:9px 10px; font-family:var(--mono); font-size:14px; width:100%}
+.fin input.txt{font-family:var(--sans)}
+.fin input:focus{outline:none; border-color:var(--accent)}
+.crow-act{display:flex; gap:7px; margin-top:11px}
+.link-btn{background:none; border:none; color:var(--ink-soft); font-size:12px; font-weight:600; cursor:pointer; padding:6px 4px; font-family:var(--sans)}
+.link-btn.del{color:var(--brand-coral)}
+.tools{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 8px}
+.foot{margin-top:22px; padding-top:16px; border-top:1px solid var(--line); font-size:11px; color:var(--ink-faint); line-height:1.6}
+.foot b{color:var(--ink-soft)}
+.hidden{display:none !important}
+.toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); background:var(--ink); color:var(--bg); padding:11px 20px; border-radius:var(--r-full); font-size:13px; font-weight:600; opacity:0; transition:.25s; z-index:200; pointer-events:none}
+.toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-mark">RG</div>
+  <div class="nav-tt">절곡 보정<small>Amada RG-100S</small></div>
+  <div class="nav-sp"></div>
+  <button class="btn btn-ghost btn-icon" id="setBtn" title="설정">⚙</button>
+  <button class="btn btn-ghost btn-icon" id="themeBtn" title="테마">◐</button>
+</nav>
+<div class="wrap">
+  <section id="calcView">
+    <div class="page-title"><div class="eyebrow">Press Brake · Backgauge & Angle</div><h1>절곡 <span>계산기</span></h1></div>
+    <div class="cond-bar">
+      <label>가공 조건</label>
+      <div class="sel"><select id="condSel"></select></div>
+      <div class="ref-chips" id="refChips"></div>
+    </div>
+    <div class="card" style="--c:var(--brand-coral)">
+      <div class="card-h"><span class="tag">X 축</span><h2>백게이지 입력값</h2></div>
+      <div class="seg" id="basisSeg">
+        <button class="seg-b on" data-b="in">내측</button>
+        <button class="seg-b" data-b="out">외측</button>
+      </div>
+      <div class="field">
+        <label id="dimLabel">목표 내측 치수 (mm)</label>
+        <input class="numin" id="dimIn" type="text" inputmode="decimal" value="34" autocomplete="off">
+      </div>
+      <div class="eq">
+        <span class="lab">SK-II <b>X</b> 입력</span>
+        <span class="val"><span id="xOut">31.8</span><span class="u">mm</span></span>
+      </div>
+      <div class="breakdown" id="xBreak"></div>
+    </div>
+    <div class="card" style="--c:var(--accent)">
+      <div class="card-h"><span class="tag">Y 축</span><h2>각도 보정</h2></div>
+      <label class="ylab">SK-II 입력 각도 · 제품 목표 <b id="angTarget">90</b>°</label>
+      <div class="nudge">
+        <button class="nbtn" id="yMinus">−</button>
+        <input class="numin ycenter" id="yIn" type="text" inputmode="decimal" value="90">
+        <button class="nbtn" id="yPlus">＋</button>
+      </div>
+      <div class="breakdown" id="yBreak"></div>
+      <div class="note" id="yHint">제품 재보고 — 굽힘이 <b>센(과절곡)</b>이면 ↓, <b>약(덜절곡)</b>이면 ↑. 맞춘 값은 이 조건에 저장됩니다.</div>
+    </div>
+  </section>
+  <section id="setView" class="settings hidden">
+    <div class="page-title"><div class="eyebrow">Data</div><h1>조건 <span>관리</span></h1></div>
+    <div class="set-head"><h2>두께 · 금형 · 각도별 보정값</h2></div>
+    <div id="condList"></div>
+    <button class="btn btn-ghost btn-sm" id="addBtn" style="width:100%; margin-top:4px">＋ 조건 추가</button>
+    <div class="tools">
+      <button class="btn btn-ghost btn-sm" id="expBtn">데이터 복사(백업)</button>
+      <button class="btn btn-ghost btn-sm" id="impBtn">붙여넣기(복원)</button>
+      <button class="btn btn-ghost btn-sm" id="resetBtn">초기값</button>
+    </div>
+    <div class="foot">
+      <b>보정(내측, mm)</b> = 목표 내측치수 − 백게이지 X. (예: 내측 34 → X 31.8 ⇒ 보정 2.2)<br>
+      <b>외측 입력</b> 선택 시 내측 = 외측 − 두께t 로 먼저 변환.<br>
+      <b>입력각</b> = SK-II에 실제로 넣는 Y각. 제품 재보고 ± 로 맞춘 값이 저장됩니다.<br>
+      값은 이 폰에 저장됩니다. 실측으로 다듬어 조율산업 절곡 표준표로 키우세요.
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const DKEY='jy-brake-v2', TKEY='jyb-theme';
+const SEED=[{id:'s1',mat:'HR 6T',t:6,die:'V38',ang:90,ded:2.2,yin:90,memo:'실측 외측40→내측34→X31.8'}];
+let state=load();
+let activeId=state[0]?state[0].id:null;
+let basis='in';
+function load(){
+  try{const raw=localStorage.getItem(DKEY); if(raw){const d=JSON.parse(raw); if(Array.isArray(d)&&d.length) return d.map(norm);}}catch(e){}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function norm(c){ return {id:c.id||('c'+Math.random()), mat:c.mat||'', t:num(c.t,6), die:c.die||'', ang:num(c.ang,90), ded:num(c.ded,0), yin:num(c.yin,c.ang||90), memo:c.memo||''}; }
+function num(v,d){ const n=parseFloat(v); return isNaN(n)?d:n; }
+function save(){ try{localStorage.setItem(DKEY,JSON.stringify(state));}catch(e){} }
+const fmt=(n,d=1)=>(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);
+const active=()=>state.find(c=>c.id===activeId)||state[0];
+function renderCond(){
+  const sel=$('#condSel');
+  sel.innerHTML=state.map(c=>`<option value="${c.id}">${c.mat} · ${c.die} · ${c.ang}°</option>`).join('');
+  if(!state.find(c=>c.id===activeId)) activeId=state[0]&&state[0].id;
+  sel.value=activeId;
+  const c=active();
+  $('#refChips').innerHTML=c?`
+    <span class="chip ok">보정(내측) <b>${fmt(c.ded,1)}</b> mm</span>
+    <span class="chip">두께 <b>${fmt(c.t,1)}</b></span>
+    <span class="chip">목표 <b>${c.ang}°</b> → 입력 <b>${fmt(c.yin,1)}°</b></span>`:'';
+  if(c){ $('#angTarget').textContent=c.ang; $('#yIn').value=fmt(c.yin,1); }
+  calc();
+}
+function calc(){
+  const c=active(); if(!c) return;
+  const raw=parseFloat(($('#dimIn').value||'').replace(/[^0-9.\-]/g,''));
+  const dim=isNaN(raw)?null:raw;
+  if(dim===null){ $('#xOut').textContent='—'; $('#xBreak').innerHTML=''; }
+  else{
+    const inner = basis==='out' ? dim - c.t : dim;
+    const x = inner - c.ded;
+    $('#xOut').textContent=fmt(x,1);
+    $('#xBreak').innerHTML = basis==='out'
+      ? `외측 <b>${fmt(dim,1)}</b> − 두께 <b>${fmt(c.t,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`
+      : `내측 <b>${fmt(dim,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`;
+  }
+  const sb=c.ang-c.yin;
+  $('#yBreak').innerHTML=`제품 목표 <b>${c.ang}°</b> → SK-II 입력 <b>${fmt(c.yin,1)}°</b> · 스프링백 <b>${fmt(sb,1)}°</b>`;
+}
+function nudge(d){ const c=active(); if(!c) return; c.yin=Math.round((c.yin+d)*10)/10; save(); renderCond(); }
+function renderList(){
+  $('#condList').innerHTML=state.map(c=>`
+    <div class="crow" data-id="${c.id}">
+      <div class="crow-name">${c.mat}<small>${c.die} · ${c.ang}°</small></div>
+      <div class="grid">
+        <div class="fin"><label>재질·두께</label><input class="txt" data-f="mat" value="${c.mat}"></div>
+        <div class="fin"><label>금형(V다이)</label><input class="txt" data-f="die" value="${c.die}"></div>
+        <div class="fin"><label>목표각(°)</label><input data-f="ang" inputmode="decimal" value="${c.ang}"></div>
+      </div>
+      <div class="grid" style="margin-top:9px">
+        <div class="fin"><label>두께 t(mm)</label><input data-f="t" inputmode="decimal" value="${c.t}"></div>
+        <div class="fin"><label>보정 내측(mm)</label><input data-f="ded" inputmode="decimal" value="${c.ded}"></div>
+        <div class="fin"><label>입력각(°)</label><input data-f="yin" inputmode="decimal" value="${c.yin}"></div>
+      </div>
+      <div class="fin" style="margin-top:9px"><label>비고</label><input class="txt" data-f="memo" value="${c.memo||''}"></div>
+      <div class="crow-act"><button class="link-btn" data-act="ok">저장</button><button class="link-btn del" data-act="del">삭제</button></div>
+    </div>`).join('');
+  $$('#condList .crow').forEach(row=>{
+    const id=row.dataset.id;
+    row.querySelector('[data-act="ok"]').onclick=()=>{
+      const c=state.find(x=>x.id===id); if(!c) return;
+      row.querySelectorAll('input').forEach(inp=>{
+        const f=inp.dataset.f, v=inp.value.trim();
+        if(['ang','t','ded','yin'].includes(f)){ const n=parseFloat(v); if(!isNaN(n)) c[f]=n; }
+        else c[f]=v;
+      });
+      save(); renderList(); renderCond(); toast('저장됨');
+    };
+    row.querySelector('[data-act="del"]').onclick=()=>{
+      if(state.length<=1){ toast('최소 1개는 필요합니다'); return; }
+      state=state.filter(x=>x.id!==id); save(); renderList(); renderCond(); toast('삭제됨');
+    };
+  });
+}
+$('#addBtn').onclick=()=>{ const b=active()||SEED[0];
+  state.push({id:'c'+Date.now(),mat:b.mat,t:b.t,die:b.die,ang:b.ang,ded:b.ded,yin:b.ang,memo:''});
+  save(); renderList(); renderCond(); toast('조건 추가'); };
+$('#expBtn').onclick=async()=>{ const t=JSON.stringify(state);
+  try{await navigator.clipboard.writeText(t); toast('클립보드에 복사됨');}catch(e){prompt('복사해 보관하세요',t);} };
+$('#impBtn').onclick=()=>{ const t=prompt('백업 텍스트를 붙여넣으세요'); if(!t) return;
+  try{const d=JSON.parse(t); if(Array.isArray(d)&&d.length){state=d.map(norm); activeId=state[0].id; save(); renderList(); renderCond(); toast('복원됨');} else toast('형식 오류');}catch(e){toast('형식 오류');} };
+$('#resetBtn').onclick=()=>{ if(confirm('초기값(HR 6T·V38·90°)으로 되돌립니다. 추가한 조건은 사라집니다.')){
+  state=JSON.parse(JSON.stringify(SEED)); activeId=state[0].id; save(); renderList(); renderCond(); toast('초기화됨'); } };
+$('#setBtn').onclick=()=>{ const on=$('#setView').classList.contains('hidden');
+  $('#setView').classList.toggle('hidden',!on); $('#calcView').classList.toggle('hidden',on);
+  $('#setBtn').textContent=on?'✕':'⚙'; if(on) renderList(); };
+$('#condSel').onchange=e=>{ activeId=e.target.value; renderCond(); };
+$('#dimIn').oninput=calc;
+$$('#basisSeg .seg-b').forEach(b=>b.onclick=()=>{ basis=b.dataset.b;
+  $$('#basisSeg .seg-b').forEach(x=>x.classList.toggle('on',x.dataset.b===basis));
+  $('#dimLabel').textContent = basis==='out'?'목표 외측 치수 (mm)':'목표 내측 치수 (mm)'; calc(); });
+$('#yMinus').onclick=()=>nudge(-0.5);
+$('#yPlus').onclick=()=>nudge(0.5);
+$('#yIn').onchange=e=>{ const n=parseFloat(e.target.value); const c=active(); if(!isNaN(n)&&c){ c.yin=n; save(); renderCond(); } };
+$('#themeBtn').onclick=()=>{ const b=document.documentElement; const isL=b.dataset.theme==='light';
+  b.dataset.theme=isL?'dark':'light'; $('#themeBtn').textContent=isL?'◐':'◑'; try{localStorage.setItem(TKEY,b.dataset.theme);}catch(e){} };
+(()=>{ let s=null; try{s=localStorage.getItem(TKEY);}catch(e){} if(s){document.documentElement.dataset.theme=s; $('#themeBtn').textContent=s==='light'?'◑':'◐';} })();
+let tT; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('on'),1500); }
+renderCond();
+</script>
+</body>
+</html>
