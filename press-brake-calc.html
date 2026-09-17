@@ -147,7 +147,7 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
         <button class="nbtn" id="yPlus">＋</button>
       </div>
       <div class="breakdown" id="yBreak"></div>
-      <div class="note" id="yHint">제품 재보고 — 굽힘이 <b>센(과절곡)</b>이면 ↓, <b>약(덜절곡)</b>이면 ↑. 맞춘 값은 이 조건에 저장됩니다.</div>
+      <div class="note" id="yHint">입력각 ≈ 나오는 각도. 제품 재보고 — 목표보다 <b>더 꺾이면(과절곡)</b> 입력각 <b>↑ 올림</b>, <b>덜 꺾이면(약)</b> 입력각 <b>↓ 내림</b>. 맞춘 값은 이 조건에 저장됩니다.</div>
     </div>
   </section>
   <section id="setView" class="settings hidden">
@@ -212,8 +212,8 @@ function calc(){
       ? `외측 <b>${fmt(dim,1)}</b> − 두께 <b>${fmt(c.t,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`
       : `내측 <b>${fmt(dim,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`;
   }
-  const sb=c.ang-c.yin;
-  $('#yBreak').innerHTML=`제품 목표 <b>${c.ang}°</b> → SK-II 입력 <b>${fmt(c.yin,1)}°</b> · 스프링백 <b>${fmt(sb,1)}°</b>`;
+  const trim=c.yin-c.ang;
+  $('#yBreak').innerHTML=`제품 목표 <b>${c.ang}°</b> → SK-II 입력 <b>${fmt(c.yin,1)}°</b> · 보정 <b>${trim>0?'+':''}${fmt(trim,1)}°</b>`;
 }
 function nudge(d){ const c=active(); if(!c) return; c.yin=Math.round((c.yin+d)*10)/10; save(); renderCond(); }
 function renderList(){
