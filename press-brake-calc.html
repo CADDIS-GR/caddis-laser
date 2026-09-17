@@ -20,21 +20,19 @@
   --bg:#0d1117; --panel:#161b22; --panel-2:#1c2330; --line:#21262d; --line-soft:#30363d;
   --ink:#e6edf3; --ink-soft:#8b949e; --ink-faint:#484f58;
   --accent:#3b82f6; --brand-coral:#ff5530; --blue-200:rgba(59,130,246,.18); --blue-deep:#3b82f6;
-  --ok:#1ba673; --ok-bg:rgba(27,166,115,.13); --warn:#e3a008; --warn-bg:rgba(227,160,8,.13);
+  --ok:#1ba673; --ok-bg:rgba(27,166,115,.13);
   --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-hero:24px; --r-full:9999px;
-  --shadow:0 4px 24px rgba(0,0,0,.35); --shadow-sm:0 1px 4px rgba(0,0,0,.25); --nav-bg:rgba(13,17,23,.85);
+  --shadow-sm:0 1px 4px rgba(0,0,0,.25); --nav-bg:rgba(13,17,23,.85);
   --sans:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
 }
 [data-theme="light"]{
   --bg:#f7f8fa; --panel:#ffffff; --panel-2:#f2f3f5; --line:#eaecf0; --line-soft:#e5e7eb;
   --ink:#0a0a0a; --ink-soft:#5f5f5f; --ink-faint:#a8aab2; --accent:#1456f0; --blue-200:#dbeafe; --blue-deep:#1d4ed8;
-  --ok:#1ba673; --ok-bg:#e8ffea; --warn:#b7791f; --warn-bg:#fef7e0;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06); --shadow-sm:0 1px 3px rgba(0,0,0,.06); --nav-bg:rgba(255,255,255,.9);
+  --ok:#1ba673; --ok-bg:#e8ffea; --shadow-sm:0 1px 3px rgba(0,0,0,.06); --nav-bg:rgba(255,255,255,.9);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{transition:background .25s,color .25s}
 body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:16px; line-height:1.45; padding-bottom:48px}
-.mono{font-family:var(--mono)}
 .top-nav{position:sticky; top:0; z-index:100; height:56px; display:flex; align-items:center; gap:11px; padding:0 16px; background:var(--nav-bg); border-bottom:1px solid var(--line-soft); backdrop-filter:blur(12px)}
 .nav-mark{width:32px; height:32px; flex:none; border-radius:var(--r-md); background:var(--brand-coral); color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center}
 .nav-tt{font-weight:700; letter-spacing:-.4px; font-size:16px}
@@ -63,9 +61,6 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
 .card-h{display:flex; align-items:center; gap:8px; margin-bottom:14px}
 .card-h .tag{font-size:11px; font-weight:700; letter-spacing:.06em; padding:3px 9px; border-radius:var(--r-full); background:var(--blue-200); color:var(--blue-deep)}
 .card-h h2{font-size:16px; font-weight:700; letter-spacing:-.3px; margin:0}
-.seg{display:inline-flex; background:var(--panel-2); border:1px solid var(--line-soft); border-radius:var(--r-full); padding:3px; margin-bottom:13px}
-.seg-b{border:none; background:transparent; color:var(--ink-soft); font-family:var(--sans); font-weight:600; font-size:13px; padding:7px 20px; border-radius:var(--r-full); cursor:pointer}
-.seg-b.on{background:var(--accent); color:#fff}
 .field label{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:7px}
 .ylab{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:9px}
 .ylab b{color:var(--ink); font-family:var(--mono)}
@@ -90,6 +85,7 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
 .crow-name{font-weight:700; font-size:14px; margin-bottom:10px}
 .crow-name small{font-weight:500; color:var(--ink-soft); font-family:var(--mono); font-size:12px; margin-left:6px}
 .grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px}
+.grid.g2{grid-template-columns:1fr 1fr}
 .fin{display:flex; flex-direction:column; gap:4px}
 .fin label{font-size:10.5px; font-weight:600; color:var(--ink-soft)}
 .fin input{background:var(--panel-2); color:var(--ink); border:1px solid var(--line-soft); border-radius:var(--r-md); padding:9px 10px; font-family:var(--mono); font-size:14px; width:100%}
@@ -124,13 +120,9 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
     </div>
     <div class="card" style="--c:var(--brand-coral)">
       <div class="card-h"><span class="tag">X 축</span><h2>백게이지 입력값</h2></div>
-      <div class="seg" id="basisSeg">
-        <button class="seg-b on" data-b="in">내측</button>
-        <button class="seg-b" data-b="out">외측</button>
-      </div>
       <div class="field">
-        <label id="dimLabel">목표 내측 치수 (mm)</label>
-        <input class="numin" id="dimIn" type="text" inputmode="decimal" value="34" autocomplete="off">
+        <label>목표 치수 (mm)</label>
+        <input class="numin" id="dimIn" type="text" inputmode="decimal" value="40" autocomplete="off">
       </div>
       <div class="eq">
         <span class="lab">SK-II <b>X</b> 입력</span>
@@ -161,9 +153,8 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
       <button class="btn btn-ghost btn-sm" id="resetBtn">초기값</button>
     </div>
     <div class="foot">
-      <b>보정(내측, mm)</b> = 목표 내측치수 − 백게이지 X. (예: 내측 34 → X 31.8 ⇒ 보정 2.2)<br>
-      <b>외측 입력</b> 선택 시 내측 = 외측 − 두께t 로 먼저 변환.<br>
-      <b>입력각</b> = SK-II에 실제로 넣는 Y각. 제품 재보고 ± 로 맞춘 값이 저장됩니다.<br>
+      <b>공제(mm)</b> = 목표 치수 − 백게이지 X. (예: 40 → 31.8 ⇒ 공제 8.2)<br>
+      <b>입력각</b> = SK-II에 넣는 Y각. 입력각 ≈ 나오는 각도이며, 제품 재보고 ± 로 맞춘 값이 저장됩니다.<br>
       값은 이 폰에 저장됩니다. 실측으로 다듬어 조율산업 절곡 표준표로 키우세요.
     </div>
   </section>
@@ -172,17 +163,16 @@ body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); 
 <script>
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const DKEY='jy-brake-v2', TKEY='jyb-theme';
-const SEED=[{id:'s1',mat:'HR 6T',t:6,die:'V38',ang:90,ded:2.2,yin:90,memo:'실측 외측40→내측34→X31.8'}];
+const DKEY='jy-brake-v3', TKEY='jyb-theme';
+const SEED=[{id:'s1',mat:'HR 6T',die:'V38',ang:90,ded:8.2,yin:90,memo:'40→31.8'}];
 let state=load();
 let activeId=state[0]?state[0].id:null;
-let basis='in';
 function load(){
   try{const raw=localStorage.getItem(DKEY); if(raw){const d=JSON.parse(raw); if(Array.isArray(d)&&d.length) return d.map(norm);}}catch(e){}
   return JSON.parse(JSON.stringify(SEED));
 }
-function norm(c){ return {id:c.id||('c'+Math.random()), mat:c.mat||'', t:num(c.t,6), die:c.die||'', ang:num(c.ang,90), ded:num(c.ded,0), yin:num(c.yin,c.ang||90), memo:c.memo||''}; }
 function num(v,d){ const n=parseFloat(v); return isNaN(n)?d:n; }
+function norm(c){ return {id:c.id||('c'+Math.random()), mat:c.mat||'', die:c.die||'', ang:num(c.ang,90), ded:num(c.ded,0), yin:num(c.yin,c.ang||90), memo:c.memo||''}; }
 function save(){ try{localStorage.setItem(DKEY,JSON.stringify(state));}catch(e){} }
 const fmt=(n,d=1)=>(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);
 const active=()=>state.find(c=>c.id===activeId)||state[0];
@@ -193,8 +183,7 @@ function renderCond(){
   sel.value=activeId;
   const c=active();
   $('#refChips').innerHTML=c?`
-    <span class="chip ok">보정(내측) <b>${fmt(c.ded,1)}</b> mm</span>
-    <span class="chip">두께 <b>${fmt(c.t,1)}</b></span>
+    <span class="chip ok">공제 <b>${fmt(c.ded,1)}</b> mm</span>
     <span class="chip">목표 <b>${c.ang}°</b> → 입력 <b>${fmt(c.yin,1)}°</b></span>`:'';
   if(c){ $('#angTarget').textContent=c.ang; $('#yIn').value=fmt(c.yin,1); }
   calc();
@@ -205,12 +194,9 @@ function calc(){
   const dim=isNaN(raw)?null:raw;
   if(dim===null){ $('#xOut').textContent='—'; $('#xBreak').innerHTML=''; }
   else{
-    const inner = basis==='out' ? dim - c.t : dim;
-    const x = inner - c.ded;
+    const x=dim-c.ded;
     $('#xOut').textContent=fmt(x,1);
-    $('#xBreak').innerHTML = basis==='out'
-      ? `외측 <b>${fmt(dim,1)}</b> − 두께 <b>${fmt(c.t,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`
-      : `내측 <b>${fmt(dim,1)}</b> − 보정 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`;
+    $('#xBreak').innerHTML=`치수 <b>${fmt(dim,1)}</b> − 공제 <b>${fmt(c.ded,1)}</b> = <b>${fmt(x,1)}</b>`;
   }
   const trim=c.yin-c.ang;
   $('#yBreak').innerHTML=`제품 목표 <b>${c.ang}°</b> → SK-II 입력 <b>${fmt(c.yin,1)}°</b> · 보정 <b>${trim>0?'+':''}${fmt(trim,1)}°</b>`;
@@ -225,9 +211,8 @@ function renderList(){
         <div class="fin"><label>금형(V다이)</label><input class="txt" data-f="die" value="${c.die}"></div>
         <div class="fin"><label>목표각(°)</label><input data-f="ang" inputmode="decimal" value="${c.ang}"></div>
       </div>
-      <div class="grid" style="margin-top:9px">
-        <div class="fin"><label>두께 t(mm)</label><input data-f="t" inputmode="decimal" value="${c.t}"></div>
-        <div class="fin"><label>보정 내측(mm)</label><input data-f="ded" inputmode="decimal" value="${c.ded}"></div>
+      <div class="grid g2" style="margin-top:9px">
+        <div class="fin"><label>공제(mm)</label><input data-f="ded" inputmode="decimal" value="${c.ded}"></div>
         <div class="fin"><label>입력각(°)</label><input data-f="yin" inputmode="decimal" value="${c.yin}"></div>
       </div>
       <div class="fin" style="margin-top:9px"><label>비고</label><input class="txt" data-f="memo" value="${c.memo||''}"></div>
@@ -239,7 +224,7 @@ function renderList(){
       const c=state.find(x=>x.id===id); if(!c) return;
       row.querySelectorAll('input').forEach(inp=>{
         const f=inp.dataset.f, v=inp.value.trim();
-        if(['ang','t','ded','yin'].includes(f)){ const n=parseFloat(v); if(!isNaN(n)) c[f]=n; }
+        if(['ang','ded','yin'].includes(f)){ const n=parseFloat(v); if(!isNaN(n)) c[f]=n; }
         else c[f]=v;
       });
       save(); renderList(); renderCond(); toast('저장됨');
@@ -251,7 +236,7 @@ function renderList(){
   });
 }
 $('#addBtn').onclick=()=>{ const b=active()||SEED[0];
-  state.push({id:'c'+Date.now(),mat:b.mat,t:b.t,die:b.die,ang:b.ang,ded:b.ded,yin:b.ang,memo:''});
+  state.push({id:'c'+Date.now(),mat:b.mat,die:b.die,ang:b.ang,ded:b.ded,yin:b.ang,memo:''});
   save(); renderList(); renderCond(); toast('조건 추가'); };
 $('#expBtn').onclick=async()=>{ const t=JSON.stringify(state);
   try{await navigator.clipboard.writeText(t); toast('클립보드에 복사됨');}catch(e){prompt('복사해 보관하세요',t);} };
@@ -264,9 +249,6 @@ $('#setBtn').onclick=()=>{ const on=$('#setView').classList.contains('hidden');
   $('#setBtn').textContent=on?'✕':'⚙'; if(on) renderList(); };
 $('#condSel').onchange=e=>{ activeId=e.target.value; renderCond(); };
 $('#dimIn').oninput=calc;
-$$('#basisSeg .seg-b').forEach(b=>b.onclick=()=>{ basis=b.dataset.b;
-  $$('#basisSeg .seg-b').forEach(x=>x.classList.toggle('on',x.dataset.b===basis));
-  $('#dimLabel').textContent = basis==='out'?'목표 외측 치수 (mm)':'목표 내측 치수 (mm)'; calc(); });
 $('#yMinus').onclick=()=>nudge(-0.5);
 $('#yPlus').onclick=()=>nudge(0.5);
 $('#yIn').onchange=e=>{ const n=parseFloat(e.target.value); const c=active(); if(!isNaN(n)&&c){ c.yin=n; save(); renderCond(); } };
