@@ -171,6 +171,9 @@
   .dk::before{content:"✓"}
   .dw.ok .dk{background:var(--doc-ok-k);border-color:transparent;color:var(--doc-ok)}
   .dw.auto .dk{cursor:default}
+  /* 참고용(도면) — 체크 없음, 회색 칩 */
+  .dw.ref .doc{background:var(--panel-2);color:var(--ink-soft);border:1px solid var(--line-soft)}
+  .dw.ref a.doc:hover{background:var(--line-soft);color:var(--ink)}
   .dw.ok .doc{background:var(--doc-ok-bg);color:var(--doc-ok)}
   .dw.ok a.doc:hover{background:var(--doc-ok-k);color:var(--doc-ok)}
   .dw.ok .doc::before{content:"✓";font-weight:700;margin-right:1px}
@@ -482,7 +485,10 @@ function normDocs(docs){
   return (Array.isArray(docs)?docs:[]).map(parseDoc).filter(d=>d.name);
 }
 function docsOut(docs){
-  return (docs||[]).map(d=>({name:(d.done?DONE_MARK+' ':'')+d.name, url:d.url||'', done:!!d.done}));
+  return (docs||[]).map(d=>{
+    const done = !!d.done && !isRefDoc(d);   // 참고용(도면)은 완료 표시 저장 안 함
+    return {name:(done?DONE_MARK+' ':'')+d.name, url:d.url||'', done};
+  });
 }
 function docLine(d){
   const n = (d.done?DONE_MARK+' ':'')+d.name;
@@ -495,16 +501,25 @@ function sheetObj(r){
 /* 완료·납품 단계는 지시서 전부 완료로 표시 (시트 값은 그대로) */
 function stageDone(r){ return r.stage==='done' || r.stage==='ship'; }
 function docDone(r, d){ return stageDone(r) || !!d.done; }
+/* 참고용 지시서(체크 대상 아님) — 이름이 정확히 일치할 때만 */
+const REF_DOCS = ['도면'];
+function isRefDoc(d){ return REF_DOCS.includes(d.name); }
 function docProgress(r){
-  const list = r.docs||[];
+  const list = (r.docs||[]).filter(d=>!isRefDoc(d));
   return {done:list.filter(d=>docDone(r,d)).length, total:list.length};
 }
 function docChips(r){
   const list = r.docs||[];
   if(!list.length) return '';
   const auto = stageDone(r);
-  const {done} = docProgress(r);
-  return list.map((d,i)=>`<span class="dw${docDone(r,d)?' ok':''}${auto?' auto':''}">`
+  const {done, total} = docProgress(r);
+  return list.map((d,i)=>isRefDoc(d)
+      ? `<span class="dw ref">`
+        + (d.url
+            ? `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`
+            : `<span class="doc">${d.name}</span>`)
+        + `</span>`
+      : `<span class="dw${docDone(r,d)?' ok':''}${auto?' auto':''}">`
       + (auto
           ? `<button class="dk" disabled title="${STAGES[r.stage].label} 단계 — 자동 완료"></button>`
           : `<button class="dk" data-rid="${r.id}" data-i="${i}" title="${d.done?'완료 취소':'완료 표시'}"></button>`)
@@ -512,7 +527,7 @@ function docChips(r){
           ? `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`
           : `<span class="doc">${d.name}</span>`)
       + `</span>`).join('')
-    + `<span class="doc-cnt${done===list.length?' full':''}">${done}/${list.length}</span>`;
+    + (total ? `<span class="doc-cnt${done===total?' full':''}">${done}/${total}</span>` : '');
 }
 function toggleDoc(rid, i){
   const r = DATA.find(x=>String(x.id)===String(rid)); if(!r||!r.docs||!r.docs[i]) return;
@@ -587,7 +602,7 @@ function renderTimeline(rows){
     return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
       <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
       <div class="tl-bar-wrap">
-        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}${(r.docs||[]).length?` · ${docProgress(r).done}/${r.docs.length}`:''}</div>
+        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}${docProgress(r).total?` · ${docProgress(r).done}/${docProgress(r).total}`:''}</div>
       </div>
     </div>`;
   }).join('')}</div>`;
