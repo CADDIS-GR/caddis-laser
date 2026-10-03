@@ -171,6 +171,25 @@
   .dk::before{content:"✓"}
   .dw.ok .dk{background:var(--doc-ok-k);border-color:transparent;color:var(--doc-ok)}
   .dw.auto .dk{cursor:default}
+
+  /* 상태 배지 — 탭하면 단계 선택 창 */
+  .st-pick{cursor:pointer;padding:5px 10px;transition:.13s}
+  .st-pick:hover{filter:brightness(1.08);box-shadow:0 0 0 1px currentColor inset}
+  .st-pick .caret{font-size:9px;opacity:.7;margin-left:1px}
+  .stage-pop{position:absolute;z-index:70;display:flex;gap:6px;padding:8px;
+    background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);animation:pop .15s ease}
+  .stage-pop .sp-opt{border:1px solid transparent;cursor:pointer;font-family:var(--sans);
+    font-size:13px;padding:9px 14px}
+  .stage-pop .sp-opt.cur{border-color:currentColor}
+
+  /* ── 보기 모드(기본) / 관리자 모드 — 실수 터치로 인한 편집 방지 ── */
+  #adminBtn.on{background:var(--st-ship-bg);color:var(--brand-coral);border-color:var(--brand-coral)}
+  body:not(.admin) #addBtn{display:none}
+  body:not(.admin) tbody tr,
+  body:not(.admin) .card,
+  body:not(.admin) .tl-row{cursor:default !important}
+  body:not(.admin) .card:hover{border-color:var(--line);transform:none;box-shadow:none}
   /* 참고용(도면) — 체크 없음, 회색 칩 */
   .dw.ref .doc{background:var(--panel-2);color:var(--ink-soft);border:1px solid var(--line-soft)}
   .dw.ref a.doc:hover{background:var(--line-soft);color:var(--ink)}
@@ -210,17 +229,46 @@
   .card .c-work{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
   .card .c-docs{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
 
-  /* ── TIMELINE ── */
-  .timeline{padding:6px 4px}
-  .tl-row{display:grid;grid-template-columns:148px 1fr;gap:16px;
-    padding:10px 8px;border-bottom:1px solid var(--line);align-items:center}
-  .tl-row:last-child{border-bottom:none}
-  .tl-date{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-align:right}
-  .tl-bar-wrap{position:relative;height:30px;background:var(--panel-2);
-    border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
-  .tl-bar{position:absolute;top:4px;bottom:4px;border-radius:var(--r-sm);
-    display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;
-    color:#fff;white-space:nowrap;overflow:hidden}
+  /* ── CALENDAR ── */
+  .cal{padding:14px 14px 16px;margin-bottom:var(--sp-md)}
+  .cal-head{display:flex;align-items:center;gap:6px;margin-bottom:12px}
+  .cal-title{font-size:17px;font-weight:700;letter-spacing:-.3px;min-width:120px;text-align:center}
+  .cal-nav{width:36px;height:36px;border-radius:var(--r-full);border:1px solid var(--line-soft);
+    background:transparent;color:var(--ink-soft);font-size:18px;cursor:pointer;line-height:1}
+  .cal-nav:hover{color:var(--ink);border-color:var(--ink-soft)}
+  .cal-today{margin-left:auto}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+  .cal-wd{font-size:11px;font-weight:600;color:var(--ink-faint);text-align:center;padding:2px 0 4px}
+  .cal-wd:first-child{color:var(--brand-coral)}
+  .cal-cell{min-height:96px;border:1px solid var(--line);border-radius:var(--r-md);padding:5px;
+    display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:.12s;min-width:0}
+  .cal-cell:hover{border-color:var(--line-soft);background:var(--panel-2)}
+  .cal-cell.out{opacity:.45}
+  .cal-cell.today .cal-dn{background:var(--accent);color:#fff}
+  .cal-cell.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .cal-dn{font-family:var(--mono);font-size:11px;color:var(--ink-soft);width:22px;height:22px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+  .cal-ev{font-size:11px;font-weight:600;padding:2px 6px;border-radius:var(--r-sm);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-ev[data-s="wait"]{color:var(--st-wait);background:var(--st-wait-bg)}
+  .cal-ev[data-s="prog"]{color:var(--st-prog);background:var(--st-prog-bg)}
+  .cal-ev[data-s="done"]{color:var(--st-done);background:var(--st-done-bg)}
+  .cal-ev[data-s="ship"]{color:var(--st-ship);background:var(--st-ship-bg)}
+  .cal-more{font-size:11px;color:var(--ink-faint);padding-left:4px}
+  .cal-dots{display:none;flex-wrap:wrap;gap:3px;padding:0 2px}
+  .cal-dots i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+  .cal-dots i[data-s="wait"]{--c:var(--st-wait)} .cal-dots i[data-s="prog"]{--c:var(--st-prog)}
+  .cal-dots i[data-s="done"]{--c:var(--st-done)} .cal-dots i[data-s="ship"]{--c:var(--st-ship)}
+  .cal-day{margin-bottom:var(--sp-md)}
+  .cal-day-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+    font-size:14px;font-weight:600;border-bottom:1px solid var(--line);background:var(--panel-2)}
+  .cal-day-head .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);font-weight:500}
+  .cal-item{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+  .cal-item:last-child{border-bottom:none}
+  body.admin .cal-item{cursor:pointer}
+  body.admin .cal-item:hover{background:var(--panel-2)}
+  .ci-top{display:flex;align-items:center;gap:10px;min-width:0}
+  .ci-job{font-size:14px;font-weight:600;letter-spacing:-.2px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   .empty{padding:60px 20px;text-align:center;color:var(--ink-faint);font-size:13px;font-family:var(--mono)}
 
@@ -299,6 +347,14 @@
     /* nav */
     .top-nav{padding:0 12px;gap:8px}
     .nav-logo span:last-child{display:none}
+    .btn-lbl{display:none}
+    /* 달력 — 폰에선 건명 대신 단계 색 점 */
+    .cal{padding:10px 8px 12px}
+    .cal-grid{gap:2px}
+    .cal-cell{min-height:54px;padding:3px}
+    .cal-ev,.cal-more{display:none}
+    .cal-dots{display:flex}
+    .cal-title{min-width:96px;font-size:15px}
   }
 </style>
 </head>
@@ -306,12 +362,13 @@
 <nav class="top-nav">
   <a class="nav-logo" href="index.html">
     <div class="nav-mark">C</div>
-    CADDIS 레이저
+    <span>CADDIS 레이저</span>
   </a>
   <div class="nav-right">
     <button class="btn btn-ghost btn-sm" id="themeBtn" title="테마 전환">◐</button>
-    <button class="btn btn-ghost btn-sm" id="exportBtn">↗ 공유</button>
+    <button class="btn btn-ghost btn-sm" id="exportBtn">↗<span class="btn-lbl"> 공유</span></button>
     <button class="btn btn-primary btn-sm" id="addBtn">+ 작업 추가</button>
+    <button class="btn btn-ghost btn-sm" id="adminBtn" title="관리자 모드 켜기/끄기">🔒 보기 모드</button>
   </div>
 </nav>
 <div class="wrap">
@@ -326,7 +383,7 @@
     <div class="views" id="views">
       <button class="view-tab active" data-v="table">표</button>
       <button class="view-tab" data-v="board">보드</button>
-      <button class="view-tab" data-v="timeline">타임라인</button>
+      <button class="view-tab" data-v="calendar">달력</button>
     </div>
     <div class="filters">
       <span class="chip on" data-f="all">전체</span>
@@ -542,7 +599,47 @@ function wireDocChips(){
     if(el.disabled) return;
     toggleDoc(el.dataset.rid, +el.dataset.i);
   });
+  area.querySelectorAll('.st-pick').forEach(el=>el.onclick=e=>{
+    e.stopPropagation();
+    openStagePop(el);
+  });
 }
+
+/* ── 상태 변경 — 보기 모드에서도 가능. 배지 탭 → 선택 창 → 단계 선택 ── */
+function stPick(r){
+  return `<span class="st st-pick" data-s="${r.stage}" data-rid="${r.id}" title="상태 변경"><span class="dot"></span>${STAGES[r.stage].label}<span class="caret">▾</span></span>`;
+}
+function closeStagePop(){ const p=document.getElementById('stagePop'); if(p) p.remove(); }
+function openStagePop(badge){
+  const rid = badge.dataset.rid;
+  const r = DATA.find(x=>String(x.id)===String(rid)); if(!r) return;
+  const already = document.getElementById('stagePop');
+  closeStagePop();
+  if(already && already.dataset.rid===String(rid)) return;   // 같은 배지 다시 누르면 닫기
+  const pop = document.createElement('div');
+  pop.id='stagePop'; pop.className='stage-pop'; pop.dataset.rid=String(rid);
+  pop.innerHTML = STAGE_ORDER.map(s=>
+    `<button class="st sp-opt${s===r.stage?' cur':''}" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</button>`).join('');
+  document.body.appendChild(pop);
+  const b = badge.getBoundingClientRect();
+  const left = Math.min(b.left + scrollX, scrollX + document.documentElement.clientWidth - pop.offsetWidth - 8);
+  pop.style.left = Math.max(8, left) + 'px';
+  pop.style.top = (b.bottom + scrollY + 6) + 'px';
+  pop.querySelectorAll('.sp-opt').forEach(o=>o.onclick=e=>{
+    e.stopPropagation();
+    closeStagePop();
+    setStage(rid, o.dataset.s);
+  });
+}
+function setStage(rid, s){
+  const r = DATA.find(x=>String(x.id)===String(rid)); if(!r || r.stage===s) return;
+  if(String(r.id).startsWith('tmp')) return;   // 시트 id 발급 전엔 저장 불가
+  r.stage = s;
+  if(USE_SHEETS) sheetPost('update', sheetObj(r));
+  render();
+}
+document.addEventListener('click', e=>{ if(!e.target.closest('#stagePop')) closeStagePop(); });
+window.addEventListener('resize', closeStagePop);
 
 function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
@@ -557,7 +654,7 @@ function renderTable(rows){
       return `<tr data-id="${r.id}">
         <td class="cust">${r.job||'—'}</td>
         <td class="due ${urgent?'urgent':''}">${shortDate(r.start)}<span class="arr">→</span>${shortDate(r.due)}${urgent?` · D${dl<=0?'':'-'+dl}`:''}</td>
-        <td>${stBadge(r.stage)}</td>
+        <td>${stPick(r)}</td>
         <td><div class="docs">${docChips(r)}</div></td>
         <td class="work" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
@@ -579,6 +676,7 @@ function renderBoard(rows){
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
           <div class="c-top"><span class="c-cust">${r.job||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          <div style="margin-top:6px">${stPick(r)}</div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
           ${r.work?`<div class="c-work">${r.work}</div>`:''}
           <div class="c-docs">${docChips(r)}</div>
@@ -590,23 +688,81 @@ function renderBoard(rows){
   wireDocChips();
 }
 
-function renderTimeline(rows){
-  const dated = rows.filter(r=>r.start&&r.due).slice().sort((a,b)=>a.start.localeCompare(b.start));
-  if(!dated.length){ area.innerHTML='<div class="panel"><div class="empty">날짜가 있는 작업이 없습니다.</div></div>'; return; }
-  const min = dated.reduce((m,r)=>r.start<m?r.start:m, dated[0].start);
-  const max = dated.reduce((m,r)=>r.due>m?r.due:m, dated[0].due);
-  const span = Math.max(1,(new Date(max)-new Date(min))/86400000);
-  area.innerHTML = `<div class="panel timeline">${dated.map(r=>{
-    const off = (new Date(r.start)-new Date(min))/86400000/span*100;
-    const w = Math.max(6,((new Date(r.due)-new Date(r.start))/86400000)/span*100);
-    return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
-      <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
-      <div class="tl-bar-wrap">
-        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}${docProgress(r).total?` · ${docProgress(r).done}/${docProgress(r).total}`:''}</div>
-      </div>
+/* ── 달력 뷰 — 시작일 기준 월간 달력, 날짜를 누르면 그날 작업 목록 ── */
+function ymd(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+const WEEK = ['일','월','화','수','목','금','토'];
+let calMonth = (()=>{ const t=new Date(); return new Date(t.getFullYear(), t.getMonth(), 1); })();
+let calSel = ymd(new Date());
+
+function calItem(r){
+  return `<div class="cal-item" data-id="${r.id}">
+    <div class="ci-top">${stPick(r)}<span class="ci-job">${r.job||'—'}</span></div>
+    ${(r.docs||[]).length?`<div class="docs">${docChips(r)}</div>`:''}
+  </div>`;
+}
+function renderCalendar(rows){
+  const today = ymd(new Date());
+  const byDay = {};
+  rows.forEach(r=>{ if(r.start) (byDay[r.start] = byDay[r.start]||[]).push(r); });
+  const undated = rows.filter(r=>!r.start);
+
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const first = new Date(y, m, 1);
+  const gridStart = new Date(y, m, 1 - first.getDay());
+  const lastDay = new Date(y, m+1, 0).getDate();
+  const weeks = Math.ceil((first.getDay() + lastDay) / 7);
+  let cells = '';
+  for(let i=0;i<weeks*7;i++){
+    const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate()+i);
+    const key = ymd(d), list = byDay[key]||[];
+    const cls = ['cal-cell'];
+    if(d.getMonth()!==m) cls.push('out');
+    if(key===today) cls.push('today');
+    if(key===calSel) cls.push('sel');
+    cells += `<div class="${cls.join(' ')}" data-day="${key}">
+      <span class="cal-dn">${d.getDate()}</span>
+      ${list.slice(0,3).map(r=>`<span class="cal-ev" data-s="${r.stage}">${r.job||'—'}</span>`).join('')}
+      ${list.length>3?`<span class="cal-more">+${list.length-3}</span>`:''}
+      ${list.length?`<span class="cal-dots">${list.map(r=>`<i data-s="${r.stage}"></i>`).join('')}</span>`:''}
     </div>`;
-  }).join('')}</div>`;
-  area.querySelectorAll('.tl-row[data-id]').forEach(row=>row.onclick=()=>openEdit(row.dataset.id));
+  }
+
+  const selList = byDay[calSel]||[];
+  const sd = new Date(calSel+'T00:00:00');
+  const selTitle = `${sd.getMonth()+1}월 ${sd.getDate()}일 (${WEEK[sd.getDay()]})${calSel===today?' · 오늘':''}`;
+
+  area.innerHTML = `<div class="panel cal">
+      <div class="cal-head">
+        <button class="cal-nav" data-nav="-1" aria-label="이전 달">‹</button>
+        <span class="cal-title">${y}년 ${m+1}월</span>
+        <button class="cal-nav" data-nav="1" aria-label="다음 달">›</button>
+        <button class="btn btn-ghost btn-sm cal-today" data-nav="0">오늘</button>
+      </div>
+      <div class="cal-grid">${WEEK.map(w=>`<div class="cal-wd">${w}</div>`).join('')}${cells}</div>
+    </div>
+    <div class="panel cal-day">
+      <div class="cal-day-head">${selTitle}<span class="cnt">${selList.length}건</span></div>
+      ${selList.length ? selList.map(calItem).join('') : '<div class="empty" style="padding:28px 12px">이 날 시작한 작업이 없습니다.</div>'}
+    </div>
+    ${undated.length?`<div class="panel cal-day">
+      <div class="cal-day-head">날짜 없음<span class="cnt">${undated.length}건</span></div>
+      ${undated.map(calItem).join('')}
+    </div>`:''}`;
+
+  area.querySelectorAll('.cal-nav,.cal-today').forEach(b=>b.onclick=()=>{
+    const n = +b.dataset.nav;
+    if(n===0){ const t=new Date(); calMonth=new Date(t.getFullYear(), t.getMonth(), 1); calSel=ymd(t); }
+    else calMonth = new Date(y, m+n, 1);
+    render();
+  });
+  area.querySelectorAll('.cal-cell').forEach(c=>c.onclick=()=>{
+    calSel = c.dataset.day;
+    const d = new Date(calSel+'T00:00:00');
+    if(d.getMonth()!==m) calMonth = new Date(d.getFullYear(), d.getMonth(), 1);
+    render();
+  });
+  area.querySelectorAll('.cal-item[data-id]').forEach(it=>it.onclick=()=>openEdit(it.dataset.id));
+  wireDocChips();
 }
 
 function render(){
@@ -614,7 +770,7 @@ function render(){
   const rows = visible();
   if(view==='table') renderTable(rows);
   else if(view==='board') renderBoard(rows);
-  else renderTimeline(rows);
+  else renderCalendar(rows);
 }
 
 /* ── modal logic ── */
@@ -623,6 +779,7 @@ function setStagePicker(s){
   document.querySelectorAll('.stage-pick').forEach(p=>p.classList.toggle('sel',p.dataset.s===s));
 }
 function openAdd(){
+  if(!isAdmin()) return;
   editId=null;
   $('#modalTitle').textContent='작업 추가';
   $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
@@ -632,6 +789,7 @@ function openAdd(){
   $('#overlay').classList.add('show');
 }
 function openEdit(id){
+  if(!isAdmin()) return;   // 보기 모드에선 등록 내용 수정 불가 (○ 완료 체크는 가능)
   const r=DATA.find(x=>String(x.id)===String(id)); if(!r)return;
   editId=id;
   $('#modalTitle').textContent='작업 수정';
@@ -735,6 +893,17 @@ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
 });
 $('#search').oninput=e=>{query=e.target.value;render();};
 $('#addBtn').onclick=openAdd;
+/* ── 보기 / 관리자 모드 — 직접 끌 때까지 유지 ── */
+function isAdmin(){ return document.body.classList.contains('admin'); }
+function setAdmin(on){
+  document.body.classList.toggle('admin', on);
+  $('#adminBtn').classList.toggle('on', on);
+  $('#adminBtn').innerHTML = on ? '🔓<span class="btn-lbl"> 관리자 모드</span>' : '🔒<span class="btn-lbl"> 보기 모드</span>';
+  if(!on) closeModal();
+  try{ localStorage.setItem('wf-admin', on?'1':'0'); }catch(e){}
+}
+$('#adminBtn').onclick=()=>setAdmin(!isAdmin());
+(()=>{ let on=false; try{ on = localStorage.getItem('wf-admin')==='1'; }catch(e){} setAdmin(on); })();
 $('#closeX').onclick=closeModal;
 $('#cancelBtn').onclick=closeModal;
 $('#saveBtn').onclick=save;
@@ -754,7 +923,7 @@ $('#themeBtn').onclick=()=>{
   const saved = localStorage.getItem('wf-theme');
   if(saved){ document.documentElement.dataset.theme=saved; $('#themeBtn').textContent=saved==='light'?'◑':'◐'; }
 })();
-document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeStagePop(); } });
 
 /* ── 초기 로딩 ── */
 async function init(){
