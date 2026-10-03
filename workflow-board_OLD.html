@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work Flow Sheet · 작업 진행 현황판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── Hybrid: Dark base + MiniMax tokens ── */
+  :root{
+    /* dark canvas */
+    --bg:#0d1117;
+    --panel:#161b22;
+    --panel-2:#1c2330;
+    --line:#21262d;
+    --line-soft:#30363d;
+    /* ink */
+    --ink:#e6edf3;
+    --ink-soft:#8b949e;
+    --ink-faint:#484f58;
+    /* MiniMax accent + brand */
+    --accent:#3b82f6;
+    --brand-coral:#ff5530;
+    --brand-blue:#1456f0;
+    --brand-blue-200:rgba(59,130,246,.18);
+    --brand-blue-deep:#3b82f6;
+    /* status — MiniMax 컬러, 다크 bg */
+    --st-wait:#8b949e;   --st-wait-bg:rgba(139,148,158,.12);
+    --st-prog:#3b82f6;   --st-prog-bg:rgba(59,130,246,.13);
+    --st-done:#1ba673;   --st-done-bg:rgba(27,166,115,.13);
+    --st-ship:#ff5530;   --st-ship-bg:rgba(255,85,48,.13);
+    /* radius — MiniMax scale */
+    --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-hero:24px; --r-full:9999px;
+    /* spacing */
+    --sp-sm:12px; --sp-md:16px; --sp-lg:20px; --sp-xl:24px; --sp-xxl:32px;
+    --shadow:0 4px 24px rgba(0,0,0,.35);
+    --shadow-sm:0 1px 4px rgba(0,0,0,.25);
+    --nav-bg:rgba(13,17,23,.85);
+    --sans:'DM Sans',sans-serif;
+    --mono:'DM Mono',monospace;
+  }
+
+  /* ── Light theme (MiniMax 라이트) ── */
+  [data-theme="light"]{
+    --bg:#f7f8fa;
+    --panel:#ffffff;
+    --panel-2:#f2f3f5;
+    --line:#eaecf0;
+    --line-soft:#e5e7eb;
+    --ink:#0a0a0a;
+    --ink-soft:#5f5f5f;
+    --ink-faint:#a8aab2;
+    --accent:#1456f0;
+    --brand-blue-200:#dbeafe;
+    --brand-blue-deep:#1d4ed8;
+    --st-wait:#5f5f5f;   --st-wait-bg:#f2f3f5;
+    --st-prog:#1456f0;   --st-prog-bg:#eff4ff;
+    --st-done:#1ba673;   --st-done-bg:#e8ffea;
+    --st-ship:#ff5530;   --st-ship-bg:#fff2ef;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+    --nav-bg:rgba(255,255,255,.9);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+  body{min-height:100vh}
+
+  /* ── nav ── */
+  .top-nav{background:var(--nav-bg);border-bottom:1px solid var(--line-soft);
+    height:56px;display:flex;align-items:center;padding:0 var(--sp-xxl);gap:var(--sp-xl);
+    position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+  .nav-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;
+    letter-spacing:-.3px;color:var(--ink);text-decoration:none}
+  .nav-mark{width:30px;height:30px;background:var(--accent);border-radius:var(--r-md);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+  .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+  /* ── buttons — pill (MiniMax signature) ── */
+  .btn{font-family:var(--sans);font-size:13px;font-weight:600;
+    padding:8px 18px;border-radius:var(--r-full);cursor:pointer;border:none;
+    display:inline-flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{filter:brightness(1.1)}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line-soft)}
+  .btn-ghost:hover{border-color:var(--ink-soft);color:var(--ink)}
+  .btn-sm{padding:7px 16px;font-size:13px}
+
+  /* ── wrap ── */
+  .wrap{max-width:1200px;margin:0 auto;padding:36px var(--sp-xxl) 80px}
+
+  /* ── page title ── */
+  .page-title{margin-bottom:var(--sp-xxl)}
+  .page-title .eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px}
+  .page-title h1{font-size:36px;font-weight:700;line-height:1.15;letter-spacing:-.8px;color:var(--ink)}
+  .page-title h1 span{color:var(--accent)}
+
+  /* ── banner ── */
+  #connBanner{font-family:var(--mono);font-size:12px;padding:9px 14px;
+    border-radius:var(--r-lg);margin-bottom:var(--sp-xl);
+    border:1px solid var(--line-soft);background:var(--panel);color:var(--ink-soft)}
+
+  /* ── summary cards ── */
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-md);margin-bottom:var(--sp-xxl)}
+  .sum-card{background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:var(--r-xl);padding:var(--sp-xl);position:relative;overflow:hidden;
+    box-shadow:var(--shadow-sm)}
+  .sum-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--c)}
+  .sum-card .k{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .sum-card .v{font-size:38px;font-weight:700;line-height:1;margin-top:10px;color:var(--c);letter-spacing:-1px}
+  .sum-card .sub{font-size:12px;color:var(--ink-faint);margin-top:6px}
+
+  /* ── toolbar ── */
+  .toolbar{display:flex;align-items:center;justify-content:space-between;
+    gap:var(--sp-md);flex-wrap:wrap;margin-bottom:var(--sp-md)}
+
+  /* view tabs — pill (MiniMax) */
+  .views{display:flex;gap:3px;background:var(--panel);border:1px solid var(--line-soft);
+    padding:3px;border-radius:var(--r-full)}
+  .view-tab{font-size:13px;font-weight:500;color:var(--ink-soft);background:transparent;
+    border:none;padding:6px 16px;border-radius:var(--r-full);cursor:pointer;transition:.15s}
+  .view-tab.active{background:var(--accent);color:#fff}
+  .view-tab:hover:not(.active){color:var(--ink);background:var(--panel-2)}
+
+  /* filter chips — pill */
+  .filters{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .chip{font-size:12px;font-weight:500;color:var(--ink-soft);background:var(--panel);
+    border:1px solid var(--line-soft);padding:5px 13px;border-radius:var(--r-full);cursor:pointer;transition:.15s}
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chip:hover:not(.on){border-color:var(--ink-soft);color:var(--ink)}
+  .search{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-full);
+    padding:7px 16px;color:var(--ink);font-family:var(--sans);font-size:13px;width:180px;height:36px}
+  .search::placeholder{color:var(--ink-faint)}
+  .search:focus{outline:none;border-color:var(--accent);border-width:1.5px}
+
+  /* ── TABLE ── */
+  .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-xl);
+    overflow:hidden;box-shadow:var(--shadow-sm)}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-xl)}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
+  thead th{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:left;padding:11px 14px;
+    border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+  tbody td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr{transition:background .1s;cursor:pointer}
+  tbody tr:hover{background:var(--panel-2)}
+  tbody tr:last-child td{border-bottom:none}
+  .cust{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+  .due{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .due .arr{color:var(--ink-faint);margin:0 4px}
+  .due.urgent{color:var(--brand-coral)}
+  .docs{display:flex;flex-wrap:wrap;gap:4px}
+  .doc{font-family:var(--mono);font-size:11px;background:var(--brand-blue-200);
+    color:var(--brand-blue-deep);padding:2px 8px;border-radius:var(--r-sm);
+    text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-weight:500}
+  a.doc{cursor:pointer;transition:.13s}
+  a.doc:hover{background:var(--accent);color:#fff}
+  a.doc::after{content:"↗";font-size:8px;opacity:.7}
+  .work{color:var(--ink-soft);font-size:13px;max-width:260px;line-height:1.45}
+  .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+
+  /* status badge — pill */
+  .st{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    padding:3px 10px;border-radius:var(--r-full);white-space:nowrap}
+  .st .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .st[data-s="wait"]{color:var(--st-wait);background:var(--st-wait-bg)} .st[data-s="wait"] .dot{background:var(--st-wait)}
+  .st[data-s="prog"]{color:var(--st-prog);background:var(--st-prog-bg)} .st[data-s="prog"] .dot{background:var(--st-prog)}
+  .st[data-s="done"]{color:var(--st-done);background:var(--st-done-bg)} .st[data-s="done"] .dot{background:var(--st-done)}
+  .st[data-s="ship"]{color:var(--st-ship);background:var(--st-ship-bg)} .st[data-s="ship"] .dot{background:var(--st-ship)}
+
+  /* ── BOARD ── */
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-md);align-items:start}
+  .col{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-xl);
+    min-height:120px;box-shadow:var(--shadow-sm)}
+  .col-head{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;border-bottom:1px solid var(--line)}
+  .col-head .lbl{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;color:var(--ink-soft)}
+  .col-head .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+    background:var(--panel-2);padding:2px 8px;border-radius:var(--r-full);border:1px solid var(--line)}
+  .col-body{padding:10px;display:flex;flex-direction:column;gap:8px}
+  .card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-lg);
+    padding:13px;cursor:pointer;transition:.15s}
+  .card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 16px rgba(59,130,246,.15)}
+  .card .c-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .c-cust{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+  .card .c-due{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .card .c-work{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
+  .card .c-docs{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+
+  /* ── TIMELINE ── */
+  .timeline{padding:6px 4px}
+  .tl-row{display:grid;grid-template-columns:148px 1fr;gap:16px;
+    padding:10px 8px;border-bottom:1px solid var(--line);align-items:center}
+  .tl-row:last-child{border-bottom:none}
+  .tl-date{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-align:right}
+  .tl-bar-wrap{position:relative;height:30px;background:var(--panel-2);
+    border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
+  .tl-bar{position:absolute;top:4px;bottom:4px;border-radius:var(--r-sm);
+    display:flex;align-items:center;padding:0 12px;font-size:12px;font-weight:600;
+    color:#fff;white-space:nowrap;overflow:hidden}
+
+  .empty{padding:60px 20px;text-align:center;color:var(--ink-faint);font-size:13px;font-family:var(--mono)}
+
+  /* ── MODAL ── */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
+    display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-hero);
+    width:100%;max-width:520px;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:pop .2s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;
+    padding:var(--sp-xl) var(--sp-xxl);border-bottom:1px solid var(--line)}
+  .modal-head h3{font-size:22px;font-weight:700;letter-spacing:-.5px}
+  .modal-body{padding:var(--sp-xl) var(--sp-xxl);display:flex;flex-direction:column;gap:var(--sp-md)}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .field input,.field textarea,.field select{background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:var(--r-md);padding:9px 12px;color:var(--ink);font-family:var(--sans);font-size:14px}
+  .field textarea{resize:vertical;min-height:60px}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);border-width:1.5px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-sm)}
+  .modal-foot{display:flex;justify-content:space-between;gap:10px;
+    padding:var(--sp-md) var(--sp-xxl) var(--sp-xl);border-top:1px solid var(--line)}
+  .x{cursor:pointer;color:var(--ink-faint);font-size:20px;line-height:1;background:none;border:none;
+    width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+    border-radius:var(--r-full);transition:.15s}
+  .x:hover{background:var(--panel-2);color:var(--ink)}
+  .del{color:var(--brand-coral);background:none;border:1px solid transparent;cursor:pointer;
+    font-size:13px;font-weight:600;font-family:var(--sans);padding:8px 14px;border-radius:var(--r-full)}
+  .del:hover{border-color:var(--brand-coral);background:var(--st-ship-bg)}
+
+  /* stage picker — pill */
+  .stagebar{display:flex;gap:5px;margin-top:2px}
+  .stage-pick{flex:1;font-size:11px;font-weight:600;padding:8px 4px;border-radius:var(--r-full);
+    border:1px solid var(--line-soft);background:var(--panel-2);color:var(--ink-faint);
+    cursor:pointer;transition:.15s;text-align:center}
+  .stage-pick:hover:not(.sel){border-color:var(--ink-soft);color:var(--ink)}
+  .stage-pick.sel[data-s="wait"]{background:var(--st-wait-bg);color:var(--st-wait);border-color:var(--st-wait)}
+  .stage-pick.sel[data-s="prog"]{background:var(--st-prog-bg);color:var(--st-prog);border-color:var(--st-prog)}
+  .stage-pick.sel[data-s="done"]{background:var(--st-done-bg);color:var(--st-done);border-color:var(--st-done)}
+  .stage-pick.sel[data-s="ship"]{background:var(--st-ship-bg);color:var(--st-ship);border-color:var(--st-ship)}
+
+  /* ── responsive ── */
+  @media(max-width:900px){
+    .summary{grid-template-columns:repeat(2,1fr)}
+    .board{grid-template-columns:1fr 1fr}
+    .work{max-width:160px}
+  }
+  @media(max-width:620px){
+    .wrap{padding:16px 12px 60px}
+    .page-title h1{font-size:26px}
+    /* 요약 카드 2x2 유지 */
+    .summary{grid-template-columns:repeat(2,1fr);gap:10px}
+    .sum-card .v{font-size:30px}
+    /* 툴바 세로 정렬 */
+    .toolbar{flex-direction:column;align-items:stretch;gap:10px}
+    .filters{flex-wrap:wrap}
+    .search{width:100%}
+    /* 뷰탭 */
+    .views{width:fit-content}
+    /* 테이블 — 가로 스크롤 */
+    .table-scroll{border-radius:var(--r-xl)}
+    table{min-width:600px;font-size:13px}
+    thead th,tbody td{padding:10px 10px}
+    /* 건명 줄바꿈 방지 */
+    .cust{white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis}
+    /* 보드 1칸씩 */
+    .board{grid-template-columns:1fr}
+    /* 타임라인 */
+    .tl-row{grid-template-columns:80px 1fr;gap:8px}
+    /* 모달 */
+    .overlay{padding:16px 8px}
+    .modal{border-radius:var(--r-xl)}
+    .modal-head,.modal-body,.modal-foot{padding-left:16px;padding-right:16px}
+    .row2{grid-template-columns:1fr}
+    /* nav */
+    .top-nav{padding:0 12px;gap:8px}
+    .nav-logo span:last-child{display:none}
+  }
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-mark">C</div>
+    CADDIS 레이저
+  </a>
+  <div class="nav-right">
+    <button class="btn btn-ghost btn-sm" id="themeBtn" title="테마 전환">◐</button>
+    <button class="btn btn-ghost btn-sm" id="exportBtn">↗ 공유</button>
+    <button class="btn btn-primary btn-sm" id="addBtn">+ 작업 추가</button>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="page-title">
+    <div class="eyebrow">Work Flow Sheet</div>
+    <h1>작업 진행 <span>현황판</span></h1>
+  </div>
+
+  <section class="summary" id="summary"></section>
+
+  <div class="toolbar">
+    <div class="views" id="views">
+      <button class="view-tab active" data-v="table">표</button>
+      <button class="view-tab" data-v="board">보드</button>
+      <button class="view-tab" data-v="timeline">타임라인</button>
+    </div>
+    <div class="filters">
+      <span class="chip on" data-f="all">전체</span>
+      <span class="chip" data-f="wait">대기</span>
+      <span class="chip" data-f="prog">진행</span>
+      <span class="chip" data-f="done">완료</span>
+      <span class="chip" data-f="ship">납품</span>
+      <input class="search" id="search" placeholder="건명·내용 검색">
+    </div>
+  </div>
+
+  <div id="viewArea"></div>
+
+</div>
+
+<!-- modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">작업 추가</h3>
+      <button class="x" id="closeX">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>건명</label>
+        <input id="f_cust" placeholder="예: DN8-OTR 브라켓">
+      </div>
+      <div class="row2">
+        <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
+        <div class="field"><label>납기일</label><input id="f_due" type="date"></div>
+      </div>
+      <div class="field">
+        <label>작업내용</label>
+        <textarea id="f_work" placeholder="예: 레이저 절단 + 벤딩"></textarea>
+      </div>
+      <div class="field">
+        <label>사용자재</label>
+        <input id="f_material" placeholder="예: SS400-3t, STS304-2t">
+      </div>
+      <div class="field">
+        <label>작업지시서 (한 줄에 하나 · 파일명 | 링크)</label>
+        <textarea id="f_docs" placeholder="jo-5030.pdf | https://drive.google.com/...&#10;jo-5050.pdf"></textarea>
+        <span style="font-size:10.5px;color:var(--ink-faint);font-family:var(--mono)">링크는 선택입니다. 적으면 클릭해 열리고, 없으면 이름만 표시됩니다.</span>
+      </div>
+      <div class="row2">
+        <div class="field"><label>자재비</label><input id="f_mat" type="number" placeholder="0"></div>
+        <div class="field"><label>가공비</label><input id="f_fee" type="number" placeholder="0"></div>
+      </div>
+      <div class="field">
+        <label>진행 단계</label>
+        <div class="stagebar" id="stagebar">
+          <div class="stage-pick" data-s="wait">대기</div>
+          <div class="stage-pick" data-s="prog">진행</div>
+          <div class="stage-pick" data-s="done">완료</div>
+          <div class="stage-pick" data-s="ship">납품</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="del" id="delBtn" style="visibility:hidden">삭제</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" id="cancelBtn">취소</button>
+        <button class="btn primary" id="saveBtn">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────── 1단계 프로토타입: 데이터는 화면 안 샘플 (브라우저 메모리) ─────────
+   2단계에서 이 SAMPLE 배열 대신 구글시트 Apps Script 연동으로 교체합니다. */
+const STAGES = {
+  wait:{label:'대기', color:'var(--st-wait)'},
+  prog:{label:'진행', color:'var(--st-prog)'},
+  done:{label:'완료', color:'var(--st-done)'},
+  ship:{label:'납품', color:'var(--st-ship)'}
+};
+const STAGE_ORDER = ['wait','prog','done','ship'];
+
+/* ───────── 구글시트 연결 설정 ─────────
+   2단계에서 받은 Apps Script 웹앱 URL을 아래에 넣으면 시트 연동이 켜집니다.
+   비워두면(''), 아래 샘플 데이터로 동작합니다(저장 안 됨). */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-pyl_hSe9tnNO9ZBMIjhOlBmF6t6PK4It-uoAE-k1uRZwuFC5W_cvCBXiCZ6L_K5m/exec';
+const USE_SHEETS = !!SHEETS_URL;
+
+let DATA = [];
+let nextId = 9;
+
+let view = 'table';
+let filter = 'all';
+let query = '';
+let editId = null;
+let pickStage = 'wait';
+
+const $ = s=>document.querySelector(s);
+const area = $('#viewArea');
+
+function fmt(n){ return '₩' + (Number(n)||0).toLocaleString('ko-KR'); }
+function shortDate(d){ return d ? d.slice(2).replace(/-/g,'/') : '—'; }
+function daysLeft(due){
+  if(!due) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(due+'T00:00:00');
+  return Math.round((d-today)/86400000);
+}
+
+function visible(){
+  return DATA.filter(r=>{
+    if(filter!=='all' && r.stage!==filter) return false;
+    if(query){
+      const q=query.toLowerCase();
+      if(!(( r.job||'').toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    // 최신 등록이 위로 — id(J+타임스탬프) 내림차순, tmp는 항상 최상단
+    const av=String(a.id), bv=String(b.id);
+    const at=av.startsWith('tmp'), bt=bv.startsWith('tmp');
+    if(at&&!bt) return -1;
+    if(bt&&!at) return 1;
+    return bv.localeCompare(av);
+  });
+}
+
+function renderSummary(){
+  const counts = {wait:0,prog:0,done:0,ship:0};
+  DATA.forEach(r=>counts[r.stage]++);
+  const cards = [
+    {k:'대기', v:counts.wait, c:'var(--st-wait)', sub:'착수 전'},
+    {k:'진행', v:counts.prog, c:'var(--st-prog)', sub:'작업 중'},
+    {k:'완료', v:counts.done, c:'var(--st-done)', sub:'가공 완료'},
+    {k:'납품', v:counts.ship, c:'var(--st-ship)', sub:'출하 완료'}
+  ];
+  $('#summary').innerHTML = cards.map(c=>`
+    <div class="sum-card" style="--c:${c.c}">
+      <div class="k">${c.k}</div>
+      <div class="v">${c.v}</div>
+      <div class="sub">${c.sub}</div>
+    </div>`).join('');
+}
+
+function stBadge(s){
+  return `<span class="st" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</span>`;
+}
+function docChips(docs){
+  return (docs||[]).map(d=>{
+    if(d.url){
+      return `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`;
+    }
+    return `<span class="doc">${d.name}</span>`;
+  }).join('');
+}
+
+function renderTable(rows){
+  if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
+  area.innerHTML = `<div class="panel"><div class="table-scroll"><table>
+    <thead><tr>
+      <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th>사용자재</th><th>작업내용</th><th style="text-align:right">정산</th>
+    </tr></thead>
+    <tbody>${rows.map(r=>{
+      const dl = daysLeft(r.due);
+      const urgent = (r.stage==='wait'||r.stage==='prog') && dl!==null && dl<=2;
+      const total = (Number(r.mat)||0)+(Number(r.fee)||0);
+      return `<tr data-id="${r.id}">
+        <td class="cust">${r.job||'—'}</td>
+        <td class="due ${urgent?'urgent':''}">${shortDate(r.start)}<span class="arr">→</span>${shortDate(r.due)}${urgent?` · D${dl<=0?'':'-'+dl}`:''}</td>
+        <td>${stBadge(r.stage)}</td>
+        <td><div class="docs">${docChips(r.docs)}</div></td>
+        <td class="work" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
+        <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
+        <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div></div>`;
+  area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
+}
+
+function renderBoard(rows){
+  area.innerHTML = `<div class="board">${STAGE_ORDER.map(s=>{
+    const items = rows.filter(r=>r.stage===s);
+    return `<div class="col">
+      <div class="col-head">
+        <span class="lbl"><span class="st" data-s="${s}" style="padding:2px 8px"><span class="dot"></span>${STAGES[s].label}</span></span>
+        <span class="cnt">${items.length}</span>
+      </div>
+      <div class="col-body">${items.map(r=>`
+        <div class="card" data-id="${r.id}">
+          <div class="c-top"><span class="c-cust">${r.job||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
+          ${r.work?`<div class="c-work">${r.work}</div>`:''}
+          <div class="c-docs">${docChips(r.docs)}</div>
+        </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  area.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>openEdit(c.dataset.id));
+}
+
+function renderTimeline(rows){
+  const dated = rows.filter(r=>r.start&&r.due).slice().sort((a,b)=>a.start.localeCompare(b.start));
+  if(!dated.length){ area.innerHTML='<div class="panel"><div class="empty">날짜가 있는 작업이 없습니다.</div></div>'; return; }
+  const min = dated.reduce((m,r)=>r.start<m?r.start:m, dated[0].start);
+  const max = dated.reduce((m,r)=>r.due>m?r.due:m, dated[0].due);
+  const span = Math.max(1,(new Date(max)-new Date(min))/86400000);
+  area.innerHTML = `<div class="panel timeline">${dated.map(r=>{
+    const off = (new Date(r.start)-new Date(min))/86400000/span*100;
+    const w = Math.max(6,((new Date(r.due)-new Date(r.start))/86400000)/span*100);
+    return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
+      <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
+      <div class="tl-bar-wrap">
+        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  area.querySelectorAll('.tl-row[data-id]').forEach(row=>row.onclick=()=>openEdit(row.dataset.id));
+}
+
+function render(){
+  renderSummary();
+  const rows = visible();
+  if(view==='table') renderTable(rows);
+  else if(view==='board') renderBoard(rows);
+  else renderTimeline(rows);
+}
+
+/* ── modal logic ── */
+function setStagePicker(s){
+  pickStage = s;
+  document.querySelectorAll('.stage-pick').forEach(p=>p.classList.toggle('sel',p.dataset.s===s));
+}
+function openAdd(){
+  editId=null;
+  $('#modalTitle').textContent='작업 추가';
+  $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
+  $('#f_work').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
+  setStagePicker('wait');
+  $('#delBtn').style.visibility='hidden';
+  $('#overlay').classList.add('show');
+}
+function openEdit(id){
+  const r=DATA.find(x=>String(x.id)===String(id)); if(!r)return;
+  editId=id;
+  $('#modalTitle').textContent='작업 수정';
+  $('#f_cust').value=r.job;$('#f_start').value=r.start;$('#f_due').value=r.due;
+  $('#f_work').value=r.work||'';
+  $('#f_material').value=r.material||'';
+  $('#f_docs').value=(r.docs||[]).map(d=>d.url?`${d.name} | ${d.url}`:d.name).join('\n');
+  $('#f_mat').value=r.mat||'';$('#f_fee').value=r.fee||'';
+  setStagePicker(r.stage);
+  $('#delBtn').style.visibility='visible';
+  $('#overlay').classList.add('show');
+}
+function closeModal(){ $('#overlay').classList.remove('show'); }
+function save(){
+  const obj={
+    job:$('#f_cust').value.trim(),
+    start:$('#f_start').value,
+    due:$('#f_due').value,
+    work:$('#f_work').value.trim(),
+    material:$('#f_material').value.trim(),
+    docs:$('#f_docs').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+      const [name,url] = line.split('|').map(p=>p.trim());
+      return {name:name||line.trim(), url:url||''};
+    }),
+    mat:+$('#f_mat').value||0,
+    fee:+$('#f_fee').value||0,
+    stage:pickStage
+  };
+  if(!obj.job){ $('#f_cust').focus(); return; }
+
+  if(USE_SHEETS){
+    if(editId){
+      obj.id = editId;
+      sheetPost('update', obj);
+      Object.assign(DATA.find(x=>x.id===editId), obj);
+    } else {
+      // 임시 id로 화면에 먼저 반영, 시트에서 실제 id 발급
+      const temp = Object.assign({id:'tmp'+Date.now()}, obj);
+      DATA.push(temp);
+      sheetPost('add', obj).then(res=>{ if(res&&res.id){ temp.id=res.id; render(); } });
+    }
+  } else {
+    if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
+    else { obj.id=nextId++; DATA.push(obj); }
+  }
+  closeModal(); render();
+}
+function del(){
+  if(editId && confirm('이 작업을 삭제할까요?')){
+    if(USE_SHEETS) sheetPost('delete', {id:editId});
+    DATA=DATA.filter(x=>String(x.id)!==String(editId)); closeModal(); render();
+  }
+}
+
+/* ── 구글시트 통신 ── */
+function sheetGet(){
+  return fetch(SHEETS_URL).then(r=>r.json()).then(res=>{
+    if(res && res.ok && Array.isArray(res.rows)) return res.rows;
+    return null;
+  }).catch(()=>null);
+}
+function sheetPost(action, data){
+  // text/plain 으로 보내 CORS 프리플라이트를 피함
+  return fetch(SHEETS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action, data})
+  }).then(r=>r.json()).catch(e=>{ console.warn('sheet post fail',e); return null; });
+}
+function setBanner(state){
+  let el = document.getElementById('connBanner');
+  if(!el){
+    el = document.createElement('div');
+    el.id='connBanner';
+    el.style.cssText='font-family:var(--mono);font-size:11.5px;padding:8px 12px;border-radius:9px;margin-bottom:14px;border:1px solid var(--line-soft)';
+    $('#summary').insertAdjacentElement('beforebegin', el);
+  }
+  if(state==='sample'){ el.style.color='var(--st-ship)'; el.innerHTML='● 샘플 데이터 — 시트 미연결 (변경은 저장되지 않습니다)'; }
+  else if(state==='live'){ el.style.color='var(--st-done)'; el.innerHTML='● 시트 연결됨 — 변경이 저장됩니다'; }
+  else if(state==='loading'){ el.style.color='var(--ink-soft)'; el.innerHTML='● 시트에서 불러오는 중…'; }
+  else if(state==='error'){ el.style.color='#d36a6a'; el.innerHTML='● 시트 연결 실패 — 주소를 확인하세요 (지금은 샘플 표시)'; }
+}
+
+/* ── export (gentle path: snapshot to clipboard/JSON) ── */
+function exportSnapshot(){
+  const blob = new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='workflow-snapshot-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ── wiring ── */
+$('#views').querySelectorAll('.view-tab').forEach(t=>t.onclick=()=>{
+  view=t.dataset.v;
+  $('#views').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x===t));
+  render();
+});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===c));
+  render();
+});
+$('#search').oninput=e=>{query=e.target.value;render();};
+$('#addBtn').onclick=openAdd;
+$('#closeX').onclick=closeModal;
+$('#cancelBtn').onclick=closeModal;
+$('#saveBtn').onclick=save;
+$('#delBtn').onclick=del;
+$('#exportBtn').onclick=exportSnapshot;
+$('#overlay').onclick=e=>{ if(e.target===$('#overlay')) closeModal(); };
+document.querySelectorAll('.stage-pick').forEach(p=>p.onclick=()=>setStagePicker(p.dataset.s));
+$('#themeBtn').onclick=()=>{
+  const b=document.documentElement;
+  const isLight = b.dataset.theme==='light';
+  b.dataset.theme = isLight ? 'dark' : 'light';
+  $('#themeBtn').textContent = isLight ? '◐' : '◑';
+  localStorage.setItem('wf-theme', b.dataset.theme);
+};
+// 저장된 테마 복원
+(()=>{
+  const saved = localStorage.getItem('wf-theme');
+  if(saved){ document.documentElement.dataset.theme=saved; $('#themeBtn').textContent=saved==='light'?'◑':'◐'; }
+})();
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+/* ── 초기 로딩 ── */
+async function init(){
+  if(USE_SHEETS){
+    setBanner('loading'); render();
+    const rows = await sheetGet();
+    if(rows){ DATA = rows; setBanner('live'); }
+    else { setBanner('error'); }   // 실패 시 샘플 유지
+    render();
+  } else {
+    setBanner('sample'); render();
+  }
+}
+init();
+</script>
+</body>
+</html>
