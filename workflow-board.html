@@ -31,6 +31,8 @@
     --st-prog:#3b82f6;   --st-prog-bg:rgba(59,130,246,.13);
     --st-done:#1ba673;   --st-done-bg:rgba(27,166,115,.13);
     --st-ship:#ff5530;   --st-ship-bg:rgba(255,85,48,.13);
+    /* 작업지시서 완료 — 연보라 */
+    --doc-ok:#c4b5fd;    --doc-ok-bg:rgba(139,92,246,.16);  --doc-ok-k:rgba(139,92,246,.25);
     /* radius — MiniMax scale */
     --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-hero:24px; --r-full:9999px;
     /* spacing */
@@ -59,6 +61,7 @@
     --st-prog:#1456f0;   --st-prog-bg:#eff4ff;
     --st-done:#1ba673;   --st-done-bg:#e8ffea;
     --st-ship:#ff5530;   --st-ship-bg:#fff2ef;
+    --doc-ok:#5b3fc4;    --doc-ok-bg:#efeafd;  --doc-ok-k:#e4dcfb;
     --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
     --shadow-sm:0 1px 3px rgba(0,0,0,.06);
     --nav-bg:rgba(255,255,255,.9);
@@ -159,6 +162,20 @@
   a.doc{cursor:pointer;transition:.13s}
   a.doc:hover{background:var(--accent);color:#fff}
   a.doc::after{content:"↗";font-size:8px;opacity:.7}
+  /* 작업지시서 완료 체크 — ○ 버튼: 완료 토글 / 칩: 링크 열기(기존 동작) */
+  .dw{display:inline-flex;align-items:center;gap:3px}
+  .dk{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ink-faint);background:transparent;
+    cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;line-height:1;color:transparent;transition:.13s;flex-shrink:0}
+  .dk:hover{border-color:var(--doc-ok);color:var(--doc-ok)}
+  .dk::before{content:"✓"}
+  .dw.ok .dk{background:var(--doc-ok-k);border-color:transparent;color:var(--doc-ok)}
+  .dw.auto .dk{cursor:default}
+  .dw.ok .doc{background:var(--doc-ok-bg);color:var(--doc-ok)}
+  .dw.ok a.doc:hover{background:var(--doc-ok-k);color:var(--doc-ok)}
+  .dw.ok .doc::before{content:"✓";font-weight:700;margin-right:1px}
+  .doc-cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin-left:2px}
+  .doc-cnt.full{color:var(--doc-ok);font-weight:600}
   .work{color:var(--ink-soft);font-size:13px;max-width:260px;line-height:1.45}
   .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
 
@@ -368,8 +385,8 @@
     <div class="modal-foot">
       <button class="del" id="delBtn" style="visibility:hidden">삭제</button>
       <div style="display:flex;gap:8px">
-        <button class="btn ghost" id="cancelBtn">취소</button>
-        <button class="btn primary" id="saveBtn">저장</button>
+        <button class="btn btn-ghost" id="cancelBtn">취소</button>
+        <button class="btn btn-primary" id="saveBtn">저장</button>
       </div>
     </div>
   </div>
@@ -451,13 +468,65 @@ function renderSummary(){
 function stBadge(s){
   return `<span class="st" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</span>`;
 }
-function docChips(docs){
-  return (docs||[]).map(d=>{
-    if(d.url){
-      return `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`;
-    }
-    return `<span class="doc">${d.name}</span>`;
-  }).join('');
+/* ── 작업지시서 완료 표시 ──
+   시트에는 이름 앞 '✓ ' 로 저장 → Apps Script 수정 없이 그대로 유지됨 */
+const DONE_MARK = '✓';
+function parseDoc(d){
+  if(typeof d==='string'){ const [n,u]=d.split('|').map(p=>p.trim()); d={name:n||d.trim(), url:u||''}; }
+  let name = String(d.name||'').trim(), done = !!d.done;
+  if(name.startsWith(DONE_MARK)){ done = true; name = name.slice(DONE_MARK.length).trim(); }
+  return {name, url:d.url||'', done};
+}
+function normDocs(docs){
+  if(typeof docs==='string') docs = docs.split('\n').map(s=>s.trim()).filter(Boolean);
+  return (Array.isArray(docs)?docs:[]).map(parseDoc).filter(d=>d.name);
+}
+function docsOut(docs){
+  return (docs||[]).map(d=>({name:(d.done?DONE_MARK+' ':'')+d.name, url:d.url||'', done:!!d.done}));
+}
+function docLine(d){
+  const n = (d.done?DONE_MARK+' ':'')+d.name;
+  return d.url ? `${n} | ${d.url}` : n;
+}
+function sheetObj(r){
+  return {id:r.id, job:r.job, start:r.start, due:r.due, work:r.work, material:r.material,
+    docs:docsOut(r.docs), mat:r.mat, fee:r.fee, stage:r.stage};
+}
+/* 완료·납품 단계는 지시서 전부 완료로 표시 (시트 값은 그대로) */
+function stageDone(r){ return r.stage==='done' || r.stage==='ship'; }
+function docDone(r, d){ return stageDone(r) || !!d.done; }
+function docProgress(r){
+  const list = r.docs||[];
+  return {done:list.filter(d=>docDone(r,d)).length, total:list.length};
+}
+function docChips(r){
+  const list = r.docs||[];
+  if(!list.length) return '';
+  const auto = stageDone(r);
+  const {done} = docProgress(r);
+  return list.map((d,i)=>`<span class="dw${docDone(r,d)?' ok':''}${auto?' auto':''}">`
+      + (auto
+          ? `<button class="dk" disabled title="${STAGES[r.stage].label} 단계 — 자동 완료"></button>`
+          : `<button class="dk" data-rid="${r.id}" data-i="${i}" title="${d.done?'완료 취소':'완료 표시'}"></button>`)
+      + (d.url
+          ? `<a class="doc" href="${d.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${d.name}</a>`
+          : `<span class="doc">${d.name}</span>`)
+      + `</span>`).join('')
+    + `<span class="doc-cnt${done===list.length?' full':''}">${done}/${list.length}</span>`;
+}
+function toggleDoc(rid, i){
+  const r = DATA.find(x=>String(x.id)===String(rid)); if(!r||!r.docs||!r.docs[i]) return;
+  if(String(r.id).startsWith('tmp')) return;   // 시트 id 발급 전엔 저장 불가
+  r.docs[i].done = !r.docs[i].done;
+  if(USE_SHEETS) sheetPost('update', sheetObj(r));
+  render();
+}
+function wireDocChips(){
+  area.querySelectorAll('.dk').forEach(el=>el.onclick=e=>{
+    e.stopPropagation();
+    if(el.disabled) return;
+    toggleDoc(el.dataset.rid, +el.dataset.i);
+  });
 }
 
 function renderTable(rows){
@@ -474,13 +543,14 @@ function renderTable(rows){
         <td class="cust">${r.job||'—'}</td>
         <td class="due ${urgent?'urgent':''}">${shortDate(r.start)}<span class="arr">→</span>${shortDate(r.due)}${urgent?` · D${dl<=0?'':'-'+dl}`:''}</td>
         <td>${stBadge(r.stage)}</td>
-        <td><div class="docs">${docChips(r.docs)}</div></td>
+        <td><div class="docs">${docChips(r)}</div></td>
         <td class="work" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="work">${r.work||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="num">${total?fmt(total):'<span style="color:var(--ink-faint)">₩0</span>'}</td>
       </tr>`;
     }).join('')}</tbody></table></div></div>`;
   area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
+  wireDocChips();
 }
 
 function renderBoard(rows){
@@ -496,12 +566,13 @@ function renderBoard(rows){
           <div class="c-top"><span class="c-cust">${r.job||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
           ${r.work?`<div class="c-work">${r.work}</div>`:''}
-          <div class="c-docs">${docChips(r.docs)}</div>
+          <div class="c-docs">${docChips(r)}</div>
         </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
       </div>
     </div>`;
   }).join('')}</div>`;
   area.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>openEdit(c.dataset.id));
+  wireDocChips();
 }
 
 function renderTimeline(rows){
@@ -516,7 +587,7 @@ function renderTimeline(rows){
     return `<div class="tl-row" data-id="${r.id}" style="cursor:pointer">
       <div class="tl-date">${shortDate(r.start)} → ${shortDate(r.due)}</div>
       <div class="tl-bar-wrap">
-        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}</div>
+        <div class="tl-bar" style="left:${off}%;width:${w}%;background:${STAGES[r.stage].color}">${r.job}${(r.docs||[]).length?` · ${docProgress(r).done}/${r.docs.length}`:''}</div>
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -540,7 +611,7 @@ function openAdd(){
   editId=null;
   $('#modalTitle').textContent='작업 추가';
   $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
-  $('#f_work').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
+  $('#f_work').value='';$('#f_material').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
   setStagePicker('wait');
   $('#delBtn').style.visibility='hidden';
   $('#overlay').classList.add('show');
@@ -552,7 +623,7 @@ function openEdit(id){
   $('#f_cust').value=r.job;$('#f_start').value=r.start;$('#f_due').value=r.due;
   $('#f_work').value=r.work||'';
   $('#f_material').value=r.material||'';
-  $('#f_docs').value=(r.docs||[]).map(d=>d.url?`${d.name} | ${d.url}`:d.name).join('\n');
+  $('#f_docs').value=(r.docs||[]).map(docLine).join('\n');
   $('#f_mat').value=r.mat||'';$('#f_fee').value=r.fee||'';
   setStagePicker(r.stage);
   $('#delBtn').style.visibility='visible';
@@ -566,10 +637,7 @@ function save(){
     due:$('#f_due').value,
     work:$('#f_work').value.trim(),
     material:$('#f_material').value.trim(),
-    docs:$('#f_docs').value.split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
-      const [name,url] = line.split('|').map(p=>p.trim());
-      return {name:name||line.trim(), url:url||''};
-    }),
+    docs:normDocs($('#f_docs').value),
     mat:+$('#f_mat').value||0,
     fee:+$('#f_fee').value||0,
     stage:pickStage
@@ -579,16 +647,17 @@ function save(){
   if(USE_SHEETS){
     if(editId){
       obj.id = editId;
-      sheetPost('update', obj);
-      Object.assign(DATA.find(x=>x.id===editId), obj);
+      sheetPost('update', sheetObj(obj));
+      Object.assign(DATA.find(x=>String(x.id)===String(editId)), obj);
     } else {
       // 임시 id로 화면에 먼저 반영, 시트에서 실제 id 발급
       const temp = Object.assign({id:'tmp'+Date.now()}, obj);
       DATA.push(temp);
-      sheetPost('add', obj).then(res=>{ if(res&&res.id){ temp.id=res.id; render(); } });
+      const out = sheetObj(obj); delete out.id;
+      sheetPost('add', out).then(res=>{ if(res&&res.id){ temp.id=res.id; render(); } });
     }
   } else {
-    if(editId){ Object.assign(DATA.find(x=>x.id===editId),obj); }
+    if(editId){ Object.assign(DATA.find(x=>String(x.id)===String(editId)),obj); }
     else { obj.id=nextId++; DATA.push(obj); }
   }
   closeModal(); render();
@@ -677,7 +746,7 @@ async function init(){
   if(USE_SHEETS){
     setBanner('loading'); render();
     const rows = await sheetGet();
-    if(rows){ DATA = rows; setBanner('live'); }
+    if(rows){ DATA = rows.map(r=>Object.assign(r,{docs:normDocs(r.docs)})); setBanner('live'); }
     else { setBanner('error'); }   // 실패 시 샘플 유지
     render();
   } else {
