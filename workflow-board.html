@@ -35,6 +35,8 @@
     --doc-ok:#c4b5fd;    --doc-ok-bg:rgba(139,92,246,.16);  --doc-ok-k:rgba(139,92,246,.25);
     /* 작업내용 첨부 링크 — 청록 */
     --att:#5eead4;       --att-bg:rgba(45,212,191,.13);
+    /* 우선순위 — 빨·노·파·보 */
+    --p1:#ef4444; --p2:#facc15; --p3:#3b82f6; --p4:#a855f7;
     /* radius — MiniMax scale */
     --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-hero:24px; --r-full:9999px;
     /* spacing */
@@ -65,6 +67,7 @@
     --st-ship:#ff5530;   --st-ship-bg:#fff2ef;
     --doc-ok:#5b3fc4;    --doc-ok-bg:#efeafd;  --doc-ok-k:#e4dcfb;
     --att:#0f766e;       --att-bg:#e3f8f4;
+    --p1:#dc2626; --p2:#eab308; --p3:#1456f0; --p4:#7c3aed;
     --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
     --shadow-sm:0 1px 3px rgba(0,0,0,.06);
     --nav-bg:rgba(255,255,255,.9);
@@ -203,6 +206,32 @@
   .doc-cnt.full{color:var(--doc-ok);font-weight:600}
   .work{color:var(--ink-soft);font-size:13px;max-width:260px;line-height:1.45}
   .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+
+  /* ── 연번 + 우선순위 (동그라미 채움) ── */
+  .sn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    flex-shrink:0;font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:-.5px;line-height:1;
+    border:1.5px solid var(--ink-faint);color:var(--ink-soft);background:transparent}
+  .sn.d3{font-size:10.5px;letter-spacing:-.8px} .sn.d4{font-size:9px;letter-spacing:-1px}
+  .sn[data-p="1"]{background:var(--p1);border-color:var(--p1);color:#fff}
+  .sn[data-p="2"]{background:var(--p2);border-color:var(--p2);color:#1a1a1a}
+  .sn[data-p="3"]{background:var(--p3);border-color:var(--p3);color:#fff}
+  .sn[data-p="4"]{background:var(--p4);border-color:var(--p4);color:#fff}
+  .jl{display:flex;align-items:flex-start;gap:9px;min-width:0}
+  .jl .sn{margin-top:-3px}
+  .jl-t{min-width:0;word-break:keep-all}
+  .legend{display:inline-flex;align-items:center;gap:10px;font-size:11px;color:var(--ink-faint);flex-wrap:wrap}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+  .tool-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .prio-pick{flex:1;font-size:11px;font-weight:600;padding:8px 4px;border-radius:var(--r-full);
+    border:1px solid var(--line-soft);background:var(--panel-2);color:var(--ink-faint);
+    cursor:pointer;transition:.15s;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+  .prio-pick i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-faint)}
+  .prio-pick[data-p="1"] i{background:var(--p1);border-color:var(--p1)}
+  .prio-pick[data-p="2"] i{background:var(--p2);border-color:var(--p2)}
+  .prio-pick[data-p="3"] i{background:var(--p3);border-color:var(--p3)}
+  .prio-pick[data-p="4"] i{background:var(--p4);border-color:var(--p4)}
+  .prio-pick:hover:not(.sel){border-color:var(--ink-soft);color:var(--ink)}
+  .prio-pick.sel{border-color:var(--accent);color:var(--ink);background:var(--brand-blue-200)}
 
   .cust-sub{display:none;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-faint);
     margin-top:3px;letter-spacing:0;word-break:break-all}
@@ -437,10 +466,17 @@
   <section class="summary" id="summary"></section>
 
   <div class="toolbar">
-    <div class="views" id="views">
-      <button class="view-tab active" data-v="table">표</button>
-      <button class="view-tab" data-v="board">보드</button>
-      <button class="view-tab" data-v="calendar">달력</button>
+    <div class="tool-left">
+      <div class="views" id="views">
+        <button class="view-tab active" data-v="table">표</button>
+        <button class="view-tab" data-v="board">보드</button>
+        <button class="view-tab" data-v="calendar">달력</button>
+      </div>
+      <div class="views" id="sorts">
+        <button class="view-tab active" data-sort="new">최신순</button>
+        <button class="view-tab" data-sort="prio">우선순위순</button>
+      </div>
+      <span class="legend"><span><i style="background:var(--p1)"></i>긴급</span><span><i style="background:var(--p2)"></i>높음</span><span><i style="background:var(--p3)"></i>보통</span><span><i style="background:var(--p4)"></i>낮음</span></span>
     </div>
     <div class="filters">
       <span class="chip on" data-f="all">전체</span>
@@ -448,7 +484,7 @@
       <span class="chip" data-f="prog">진행</span>
       <span class="chip" data-f="done">완료</span>
       <span class="chip" data-f="ship">납품</span>
-      <input class="search" id="search" placeholder="건명·내용 검색">
+      <input class="search" id="search" placeholder="건명·내용·연번 검색">
     </div>
   </div>
 
@@ -495,6 +531,16 @@
         <div class="field"><label>가공비</label><input id="f_fee" type="number" placeholder="0"></div>
       </div>
       <div class="field">
+        <label>우선순위</label>
+        <div class="stagebar" id="priobar">
+          <div class="prio-pick" data-p="0"><i></i>없음</div>
+          <div class="prio-pick" data-p="1"><i></i>1 긴급</div>
+          <div class="prio-pick" data-p="2"><i></i>2 높음</div>
+          <div class="prio-pick" data-p="3"><i></i>3 보통</div>
+          <div class="prio-pick" data-p="4"><i></i>4 낮음</div>
+        </div>
+      </div>
+      <div class="field">
         <label>진행 단계</label>
         <div class="stagebar" id="stagebar">
           <div class="stage-pick" data-s="wait">대기</div>
@@ -539,6 +585,9 @@ let filter = 'all';
 let query = '';
 let editId = null;
 let pickStage = 'wait';
+let pickPrio = 0;
+let sortMode = 'new';
+let SERIAL = {};
 
 const $ = s=>document.querySelector(s);
 const area = $('#viewArea');
@@ -556,11 +605,18 @@ function visible(){
   return DATA.filter(r=>{
     if(filter!=='all' && r.stage!==filter) return false;
     if(query){
-      const q=query.toLowerCase();
-      if(!(( r.job||'').toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q))) return false;
+      const q=query.toLowerCase().trim();
+      const num = q.match(/^#?(\d+)$/);
+      const hit = (r.job||'').toLowerCase().includes(q) || (r.work||'').toLowerCase().includes(q)
+        || (num && SERIAL[String(r.id)]===+num[1]);
+      if(!hit) return false;
     }
     return true;
   }).sort((a,b)=>{
+    if(sortMode==='prio'){
+      const pa = prioOf(a)||9, pb = prioOf(b)||9;
+      if(pa!==pb) return pa-pb;
+    }
     // 최신 등록이 위로 — id(J+타임스탬프) 내림차순, tmp는 항상 최상단
     const av=String(a.id), bv=String(b.id);
     const at=av.startsWith('tmp'), bt=bv.startsWith('tmp');
@@ -587,13 +643,36 @@ function renderSummary(){
     </div>`).join('');
 }
 
+/* ── 연번 — 등록 순서 (맨 처음 등록한 건이 1번, 새로 등록할수록 커짐) ── */
+function idCmp(a,b){
+  const av=String(a.id), bv=String(b.id);
+  const at=av.startsWith('tmp'), bt=bv.startsWith('tmp');
+  if(at&&!bt) return 1;
+  if(bt&&!at) return -1;
+  return av.localeCompare(bv);
+}
+function buildSerial(){
+  SERIAL = {};
+  DATA.slice().sort(idCmp).forEach((r,i)=>{ SERIAL[String(r.id)] = i+1; });
+}
+/* ── 우선순위 — 작업내용 칸 첫 줄 '── 우선순위 N ──' 로 저장 (Apps Script 수정 불필요) ── */
+const PRIO = {1:'긴급',2:'높음',3:'보통',4:'낮음'};
+const PRIO_RE = /^── 우선순위 ([1-4]) ──[ \t]*\r?\n?/;
+function prioOf(r){ const m = String(r.work||'').match(PRIO_RE); return m ? +m[1] : 0; }
+function snChip(r){
+  const n = SERIAL[String(r.id)] || '·', p = prioOf(r);
+  const d = String(n).length;
+  const tip = `연번 ${n}` + (p ? ` · 우선순위 ${p} ${PRIO[p]}` : ' · 우선순위 없음');
+  return `<span class="sn${d>=4?' d4':d===3?' d3':''}" data-p="${p}" title="${tip}">${n}</span>`;
+}
+
 /* ── 작업내용 첨부 ──
    시트의 기존 '작업내용' 칸 하나에 함께 저장 (Apps Script 수정 불필요)
    형식:  본문 텍스트 … ⏎⏎── 첨부 ──⏎이름 | 링크⏎이름 | 링크 */
 const ATT_MARK = '── 첨부 ──';
 function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function splitWork(w){
-  w = String(w||'');
+  w = String(w||'').replace(PRIO_RE,'');
   let text = w, att = '';
   if(w.startsWith(ATT_MARK)){ text=''; att=w.slice(ATT_MARK.length); }
   else { const i = w.lastIndexOf('\n'+ATT_MARK); if(i>=0){ text=w.slice(0,i); att=w.slice(i+1+ATT_MARK.length); } }
@@ -621,10 +700,11 @@ function parseAtts(s){
   }).filter(a=>a.name);
 }
 function attLine(a){ return a.url ? `${a.name} | ${a.url}` : a.name; }
-function joinWork(text, attsRaw){
+function joinWork(text, attsRaw, prio){
   const list = parseAtts(attsRaw);
-  if(!list.length) return text;
-  return (text ? text+'\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
+  let body = !list.length ? text : (text ? text+'\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
+  if(prio) body = `── 우선순위 ${prio} ──` + (body ? '\n'+body : '');
+  return body;
 }
 function attType(a){
   const n = a.name.toLowerCase(), u = (a.url||'').toLowerCase();
@@ -802,7 +882,7 @@ function renderTable(rows){
       const urgent = (r.stage==='wait'||r.stage==='prog') && dl!==null && dl<=2;
       const total = (Number(r.mat)||0)+(Number(r.fee)||0);
       return `<tr data-id="${r.id}">
-        <td class="cust">${r.job||'—'}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</td>
+        <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${r.job||'—'}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
         <td class="due ${urgent?'urgent':''}"><span class="d1">${shortDate(r.start)}</span><span class="arr">→</span><span class="d2">${shortDate(r.due)}</span>${urgent?`<span class="dd"> · D${dl<=0?'':'-'+dl}</span>`:''}</td>
         <td class="c-st">${stPick(r)}</td>
         <td class="c-docs${(r.docs||[]).length?'':' none'}"><div class="docs">${docChips(r)}</div></td>
@@ -825,10 +905,10 @@ function renderBoard(rows){
       </div>
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
-          <div class="c-top"><span class="c-cust">${r.job||'—'}</span><span class="c-due">${shortDate(r.due)}</span></div>
+          <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${r.job||'—'}</span></span><span class="c-due">${shortDate(r.due)}</span></div>
           <div style="margin-top:6px">${stPick(r)}</div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
-          ${r.work?`<div class="c-work">${workCell(r)}</div>`:''}
+          ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div class="c-work">${workCell(r)}</div>`:''}
           <div class="c-docs">${docChips(r)}</div>
         </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
       </div>
@@ -846,9 +926,9 @@ let calSel = ymd(new Date());
 
 function calItem(r){
   return `<div class="cal-item" data-id="${r.id}">
-    <div class="ci-top">${stPick(r)}<span class="ci-job">${r.job||'—'}</span></div>
+    <div class="ci-top">${snChip(r)}${stPick(r)}<span class="ci-job">${r.job||'—'}</span></div>
     ${(r.docs||[]).length?`<div class="docs">${docChips(r)}</div>`:''}
-    ${r.work?`<div>${workCell(r)}</div>`:''}
+    ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div>${workCell(r)}</div>`:''}
   </div>`;
 }
 function renderCalendar(rows){
@@ -917,6 +997,7 @@ function renderCalendar(rows){
 }
 
 function render(){
+  buildSerial();
   renderSummary();
   const rows = visible();
   if(view==='table') renderTable(rows);
@@ -925,6 +1006,10 @@ function render(){
 }
 
 /* ── modal logic ── */
+function setPrioPicker(p){
+  pickPrio = +p||0;
+  document.querySelectorAll('.prio-pick').forEach(x=>x.classList.toggle('sel', +x.dataset.p===pickPrio));
+}
 function setStagePicker(s){
   pickStage = s;
   document.querySelectorAll('.stage-pick').forEach(p=>p.classList.toggle('sel',p.dataset.s===s));
@@ -936,6 +1021,7 @@ function openAdd(){
   $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
   $('#f_work').value='';$('#f_atts').value='';$('#f_material').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
   setStagePicker('wait');
+  setPrioPicker(0);
   $('#delBtn').style.visibility='hidden';
   $('#overlay').classList.add('show');
 }
@@ -943,7 +1029,7 @@ function openEdit(id){
   if(!isAdmin()) return;   // 보기 모드에선 등록 내용 수정 불가 (○ 완료 체크는 가능)
   const r=DATA.find(x=>String(x.id)===String(id)); if(!r)return;
   editId=id;
-  $('#modalTitle').textContent='작업 수정';
+  $('#modalTitle').textContent=`작업 수정 · #${SERIAL[String(r.id)]||''}`;
   $('#f_cust').value=r.job;$('#f_start').value=r.start;$('#f_due').value=r.due;
   const sw=splitWork(r.work);
   $('#f_work').value=sw.text;
@@ -952,6 +1038,7 @@ function openEdit(id){
   $('#f_docs').value=(r.docs||[]).map(docLine).join('\n');
   $('#f_mat').value=r.mat||'';$('#f_fee').value=r.fee||'';
   setStagePicker(r.stage);
+  setPrioPicker(prioOf(r));
   $('#delBtn').style.visibility='visible';
   $('#overlay').classList.add('show');
 }
@@ -961,7 +1048,7 @@ function save(){
     job:$('#f_cust').value.trim(),
     start:$('#f_start').value,
     due:$('#f_due').value,
-    work:joinWork($('#f_work').value.trim(), $('#f_atts').value),
+    work:joinWork($('#f_work').value.trim(), $('#f_atts').value, pickPrio),
     material:$('#f_material').value.trim(),
     docs:normDocs($('#f_docs').value),
     mat:+$('#f_mat').value||0,
@@ -1064,6 +1151,16 @@ $('#delBtn').onclick=del;
 $('#exportBtn').onclick=exportSnapshot;
 $('#overlay').onclick=e=>{ if(e.target===$('#overlay')) closeModal(); };
 document.querySelectorAll('.stage-pick').forEach(p=>p.onclick=()=>setStagePicker(p.dataset.s));
+document.querySelectorAll('.prio-pick').forEach(p=>p.onclick=()=>setPrioPicker(p.dataset.p));
+$('#sorts').querySelectorAll('.view-tab').forEach(t=>t.onclick=()=>{
+  sortMode=t.dataset.sort;
+  $('#sorts').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x===t));
+  try{ localStorage.setItem('wf-sort', sortMode); }catch(e){}
+  render();
+});
+(()=>{ let s='new'; try{ s=localStorage.getItem('wf-sort')||'new'; }catch(e){}
+  sortMode = s==='prio'?'prio':'new';
+  $('#sorts').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x.dataset.sort===sortMode)); })();
 $('#themeBtn').onclick=()=>{
   const b=document.documentElement;
   const isLight = b.dataset.theme==='light';
