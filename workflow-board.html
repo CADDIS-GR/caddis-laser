@@ -207,6 +207,15 @@
   .work{color:var(--ink-soft);font-size:13px;max-width:260px;line-height:1.45}
   .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
 
+  /* ── 상태 변경 이력 ── */
+  .hist{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:4px;white-space:nowrap}
+  .sp-hist{flex-basis:100%;border-top:1px solid var(--line);margin-top:4px;padding-top:8px;
+    font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);line-height:1.8}
+  .sp-hist b{display:inline-block;min-width:34px;font-family:var(--sans);font-weight:600}
+  .sp-hist .none{color:var(--ink-faint)}
+  .stage-pop{flex-wrap:wrap;max-width:340px}
+  td.c-st{white-space:nowrap}
+
   /* ── 오늘 작업 지시 공지판 ── */
   .notice{background:var(--panel);border:1px solid var(--line-soft);border-left:4px solid var(--accent);
     border-radius:var(--r-xl);padding:20px 24px 22px;margin-bottom:var(--sp-xxl);box-shadow:var(--shadow-sm)}
@@ -770,7 +779,37 @@ function buildSerial(){
 /* ── 우선순위 — 작업내용 칸 첫 줄 '── 우선순위 N ──' 로 저장 (Apps Script 수정 불필요) ── */
 const PRIO = {1:'긴급',2:'높음',3:'보통',4:'낮음'};
 const PRIO_RE = /^── 우선순위 ([1-4]) ──[ \t]*\r?\n?/;
-function prioOf(r){ const m = String(r.work||'').match(PRIO_RE); return m ? +m[1] : 0; }
+/* ── 상태 변경 이력 — 작업내용 칸 '── 이력 ── 진행 2026-10-08 09:12 · 완료 …' 한 줄로 저장 ── */
+const HIST_RE = /^── 이력 ── ([^\n]*)\r?\n?/;
+const LBL2S = {'대기':'wait','진행':'prog','완료':'done','납품':'ship'};
+function metaOf(w){
+  w = String(w||''); let prio=0, hist={}, m;
+  for(let k=0;k<3;k++){
+    if((m=w.match(PRIO_RE))){ prio=+m[1]; w=w.slice(m[0].length); continue; }
+    if((m=w.match(HIST_RE))){
+      m[1].replace(/(대기|진행|완료|납품) (\d{4}-\d{2}-\d{2} \d{2}:\d{2})/g,(a,l,t)=>{ hist[LBL2S[l]]=t; return a; });
+      w=w.slice(m[0].length); continue;
+    }
+    break;
+  }
+  return {prio, hist, rest:w};
+}
+function prioOf(r){ return metaOf(r.work).prio; }
+function histOf(r){ return metaOf(r.work).hist; }
+function nowStamp(){ const n=new Date(); return `${n.getFullYear()}-${pad2(n.getMonth()+1)}-${pad2(n.getDate())} ${pad2(n.getHours())}:${pad2(n.getMinutes())}`; }
+function buildWork(prio, hist, rest){
+  const hs = STAGE_ORDER.filter(k=>hist[k]).map(k=>`${STAGES[k].label} ${hist[k]}`).join(' · ');
+  return (prio?`── 우선순위 ${prio} ──\n`:'') + (hs?`── 이력 ── ${hs}\n`:'') + (rest||'');
+}
+function stampWork(work, stage){
+  const m = metaOf(work); m.hist[stage] = nowStamp();
+  return buildWork(m.prio, m.hist, m.rest).replace(/\n$/,'');
+}
+function shortStamp(t){ return t ? t.slice(5).replace('-','/') : ''; }   // '10/08 09:12'
+function histLine(r){
+  const t = histOf(r)[r.stage];
+  return t ? `<span class="hist" title="${STAGES[r.stage].label} 처리 시각">${STAGES[r.stage].label} ${shortStamp(t)}</span>` : '';
+}
 function snChip(r){
   const n = SERIAL[String(r.id)] || '·', p = prioOf(r);
   const d = String(n).length;
@@ -784,7 +823,7 @@ function snChip(r){
 const ATT_MARK = '── 첨부 ──';
 function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function splitWork(w){
-  w = String(w||'').replace(PRIO_RE,'');
+  w = metaOf(w).rest;
   let text = w, att = '';
   if(w.startsWith(ATT_MARK)){ text=''; att=w.slice(ATT_MARK.length); }
   else { const i = w.lastIndexOf('\n'+ATT_MARK); if(i>=0){ text=w.slice(0,i); att=w.slice(i+1+ATT_MARK.length); } }
@@ -812,11 +851,10 @@ function parseAtts(s){
   }).filter(a=>a.name);
 }
 function attLine(a){ return a.url ? `${a.name} | ${a.url}` : a.name; }
-function joinWork(text, attsRaw, prio){
+function joinWork(text, attsRaw, prio, hist){
   const list = parseAtts(attsRaw);
-  let body = !list.length ? text : (text ? text+'\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
-  if(prio) body = `── 우선순위 ${prio} ──` + (body ? '\n'+body : '');
-  return body;
+  const body = !list.length ? text : (text ? text+'\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
+  return buildWork(prio, hist||{}, body).replace(/\n$/,'');
 }
 function attType(a){
   const n = a.name.toLowerCase(), u = (a.url||'').toLowerCase();
@@ -961,7 +999,9 @@ function openStagePop(badge){
   const pop = document.createElement('div');
   pop.id='stagePop'; pop.className='stage-pop'; pop.dataset.rid=String(rid);
   pop.innerHTML = STAGE_ORDER.map(s=>
-    `<button class="st sp-opt${s===r.stage?' cur':''}" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</button>`).join('');
+    `<button class="st sp-opt${s===r.stage?' cur':''}" data-s="${s}"><span class="dot"></span>${STAGES[s].label}</button>`).join('')
+    + (()=>{ const h=histOf(r);
+        return `<div class="sp-hist">${STAGE_ORDER.map(k=>`<div><b>${STAGES[k].label}</b>${h[k]?h[k].slice(2).replace(/-/g,'/'):'<span class="none">기록 없음</span>'}</div>`).join('')}</div>`; })();
   document.body.appendChild(pop);
   const b = badge.getBoundingClientRect();
   const left = Math.min(b.left + scrollX, scrollX + document.documentElement.clientWidth - pop.offsetWidth - 8);
@@ -977,6 +1017,7 @@ function setStage(rid, s){
   const r = DATA.find(x=>String(x.id)===String(rid)); if(!r || r.stage===s) return;
   if(String(r.id).startsWith('tmp')) return;   // 시트 id 발급 전엔 저장 불가
   r.stage = s;
+  r.work = stampWork(r.work, s);
   if(USE_SHEETS) sheetPost('update', sheetObj(r));
   render();
 }
@@ -996,7 +1037,7 @@ function renderTable(rows){
       return `<tr data-id="${r.id}">
         <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${r.job||'—'}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
         <td class="due ${urgent?'urgent':''}"><span class="d1">${shortDate(r.start)}</span><span class="arr">→</span><span class="d2">${shortDate(r.due)}</span>${urgent?`<span class="dd"> · D${dl<=0?'':'-'+dl}</span>`:''}</td>
-        <td class="c-st">${stPick(r)}</td>
+        <td class="c-st">${stPick(r)}${histLine(r)}</td>
         <td class="c-docs${(r.docs||[]).length?'':' none'}"><div class="docs">${docChips(r)}</div></td>
         <td class="work c-mat" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
         <td class="wk">${workCell(r)}</td>
@@ -1017,7 +1058,7 @@ function renderBoard(rows){
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
           <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${r.job||'—'}</span></span><span class="c-due">${shortDate(r.due)}</span></div>
-          <div style="margin-top:6px">${stPick(r)}</div>
+          <div style="margin-top:6px">${stPick(r)}${histLine(r)}</div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
           ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div class="c-work">${workCell(r)}</div>`:''}
           <div class="c-docs">${docChips(r)}</div>
@@ -1159,7 +1200,12 @@ function save(){
     job:$('#f_cust').value.trim(),
     start:$('#f_start').value,
     due:$('#f_due').value,
-    work:joinWork($('#f_work').value.trim(), $('#f_atts').value, pickPrio),
+    work:(()=>{
+      const prev = editId ? DATA.find(x=>String(x.id)===String(editId)) : null;
+      const hist = prev ? histOf(prev) : {};
+      if(!prev || prev.stage!==pickStage) hist[pickStage] = nowStamp();   // 새 등록 또는 단계 변경 시각 기록
+      return joinWork($('#f_work').value.trim(), $('#f_atts').value, pickPrio, hist);
+    })(),
     material:$('#f_material').value.trim(),
     docs:normDocs($('#f_docs').value),
     mat:+$('#f_mat').value||0,
