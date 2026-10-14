@@ -536,8 +536,8 @@
         <input id="f_cust" placeholder="예: DN8-OTR 브라켓">
       </div>
       <div class="row2">
-        <div class="field"><label>시작일</label><input id="f_start" type="date"></div>
-        <div class="field"><label>납기일</label><input id="f_due" type="date"></div>
+        <div class="field"><label>접수일</label><input id="f_start" type="date"></div>
+        <div class="field" style="display:none"><label>납기일</label><input id="f_due" type="date"></div>
       </div>
       <div class="field">
         <label>작업내용</label>
@@ -1028,15 +1028,13 @@ function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
   area.innerHTML = `<div class="panel"><div class="table-scroll"><table>
     <thead><tr>
-      <th>건명</th><th>납기</th><th>상태</th><th>작업지시서</th><th class="c-mat">사용자재</th><th class="wk">작업내용</th>
+      <th>건명</th><th>접수일</th><th>상태</th><th>작업지시서</th><th class="c-mat">사용자재</th><th class="wk">작업내용</th>
     </tr></thead>
     <tbody>${rows.map(r=>{
-      const dl = daysLeft(r.due);
-      const urgent = (r.stage==='wait'||r.stage==='prog') && dl!==null && dl<=2;
       const total = (Number(r.mat)||0)+(Number(r.fee)||0);
       return `<tr data-id="${r.id}">
         <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${r.job||'—'}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
-        <td class="due ${urgent?'urgent':''}"><span class="d1">${shortDate(r.start)}</span><span class="arr">→</span><span class="d2">${shortDate(r.due)}</span>${urgent?`<span class="dd"> · D${dl<=0?'':'-'+dl}</span>`:''}</td>
+        <td class="due"><span class="d0">${shortDate(r.start)}</span></td>
         <td class="c-st">${stPick(r)}${histLine(r)}</td>
         <td class="c-docs${(r.docs||[]).length?'':' none'}"><div class="docs">${docChips(r)}</div></td>
         <td class="work c-mat" style="font-size:12px;color:var(--ink-soft)">${r.material||'<span style="color:var(--ink-faint)">—</span>'}</td>
@@ -1057,7 +1055,7 @@ function renderBoard(rows){
       </div>
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
-          <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${r.job||'—'}</span></span><span class="c-due">${shortDate(r.due)}</span></div>
+          <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${r.job||'—'}</span></span><span class="c-due" title="접수일">${shortDate(r.start)}</span></div>
           <div style="margin-top:6px">${stPick(r)}${histLine(r)}</div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${r.material}</div>`:''}
           ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div class="c-work">${workCell(r)}</div>`:''}
@@ -1170,7 +1168,7 @@ function openAdd(){
   if(!isAdmin()) return;
   editId=null;
   $('#modalTitle').textContent='작업 추가';
-  $('#f_cust').value='';$('#f_start').value='';$('#f_due').value='';
+  $('#f_cust').value='';$('#f_start').value=ymd(new Date());$('#f_due').value='';
   $('#f_work').value='';$('#f_atts').value='';$('#f_material').value='';$('#f_docs').value='';$('#f_mat').value='';$('#f_fee').value='';
   setStagePicker('wait');
   setPrioPicker(0);
