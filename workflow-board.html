@@ -464,6 +464,18 @@
   .lg-vbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line-soft);background:var(--panel)}
   .lg-vjob{font-size:15px;min-width:0}
   .lg-viewer iframe{flex:1;width:100%;border:none;background:#fff}
+  .lg-memos{grid-column:1/-1;display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+  .lg-memo{flex:0 0 auto;position:relative;width:150px;height:93px;border:1px solid var(--line-soft);border-radius:var(--r-md);
+    background:#fffef8;padding:0;overflow:hidden;cursor:pointer}
+  .lg-memo canvas{width:100%;height:100%;display:block}
+  .lg-memo span{position:absolute;right:4px;bottom:4px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.65);color:#fff;padding:1px 6px;border-radius:var(--r-full)}
+  .lg-memo.add{background:var(--panel-2);border-style:dashed;color:var(--ink-soft);font-family:var(--sans);font-size:13px;font-weight:700}
+  .lg-pen{width:34px;height:34px;border-radius:50%;border:3px solid var(--line-soft);background:var(--pc);cursor:pointer;padding:0}
+  .lg-pen.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--panel)}
+  .lg-padstage{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;min-height:0}
+  #lgPadCv{touch-action:none;border-radius:var(--r-lg);box-shadow:var(--shadow);cursor:crosshair}
+  .lg-padstage canvas{border-radius:var(--r-lg);box-shadow:var(--shadow)}
+  .lg-padhint{text-align:center;font-size:12px;color:var(--ink-faint);padding:0 16px 12px}
   @media(max-width:620px){ .lg-body{grid-template-columns:1fr} }
 
   /* ── responsive ── */
@@ -1295,6 +1307,8 @@ function renderLogi(rows){
         <div class="lg-title">${snChip(r)}<span class="lg-job">${esc(r.job||'—')}</span><span class="lg-date">접수 ${shortDate(r.start)}</span></div>
         ${thumb}
         <div class="lg-checks">${LOGI.map(x=>lgCheck(r,x,lg)).join('')}</div>
+        <div class="lg-memos">${memoFor(r).map(m=>`<button class="lg-memo" data-memoview="${m.id}" title="메모 크게 보기"><canvas data-memocv="${m.id}"></canvas><span>${shortStamp(memoTime(m))}</span></button>`).join('')}
+          <button class="lg-memo add" data-memonew="${r.id}">✎ 펜슬 메모</button></div>
       </div>
       <div class="lg-foot">${lgDots(lg)}<span style="flex:1"></span><button class="btn lg-ship" data-lgship="${r.id}">출고 끝 · 납품 처리</button></div>
     </article>`;
@@ -1326,7 +1340,128 @@ function renderLogi(rows){
     if(!b.dataset.armed){ b.dataset.armed='1'; b.textContent='한 번 더 누르면 납품 처리'; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent='출고 끝 · 납품 처리'; } }, 2500); return; }
     setStage(b.dataset.lgship, 'ship');
   });
+  area.querySelectorAll('[data-memonew]').forEach(b=>b.onclick=()=>openMemoPad(b.dataset.memonew));
+  area.querySelectorAll('[data-memoview]').forEach(b=>b.onclick=()=>openMemoView(b.dataset.memoview));
+  area.querySelectorAll('canvas[data-memocv]').forEach(cv=>{
+    const m = MEMOS.find(x=>String(x.id)===cv.dataset.memocv); if(!m) return;
+    cv.width = 300; cv.height = Math.round(300*MEMO_H/MEMO_W);
+    drawMemo(cv.getContext('2d'), memoStrokes(m), cv.width/MEMO_W, true);
+  });
 }
+
+/* ── 펜슬 메모 — 시트에 '__메모__' 줄로 저장 (공지와 같은 방식 · Apps Script 수정 불필요)
+   material: 'for:<건 id>' · work: {"v":1,"t":"시각","s":[[색,[x,y,필압,…]],…]} (1000×620 좌표) ── */
+const MEMO_JOB = '__메모__';
+const MEMO_W = 1000, MEMO_H = 620;
+const MEMO_COLORS = ['#111111','#e11d48','#1456f0'];
+let MEMOS = [];
+function memoFor(r){ return MEMOS.filter(m=>String(m.material||'')===`for:${r.id}`).sort(idCmp); }
+function memoData(m){ try{ return JSON.parse(m.work)||{}; }catch(e){ return {}; } }
+function memoStrokes(m){ return memoData(m).s||[]; }
+function memoTime(m){ return memoData(m).t||''; }
+function drawMemo(g, strokes, sc, paper){
+  const w = MEMO_W*sc, h = MEMO_H*sc;
+  g.fillStyle = '#fffef8'; g.fillRect(0,0,w,h);
+  if(paper){ g.strokeStyle='#ebe6d6'; g.lineWidth=Math.max(1,sc); for(let y=56*sc;y<h;y+=48*sc){ g.beginPath(); g.moveTo(20*sc,y); g.lineTo(w-20*sc,y); g.stroke(); } }
+  g.lineCap='round'; g.lineJoin='round';
+  strokes.forEach(([c,p])=>{
+    g.strokeStyle = g.fillStyle = MEMO_COLORS[c]||MEMO_COLORS[0];
+    if(p.length<=3){ g.beginPath(); g.arc(p[0]*sc,p[1]*sc,2.4*sc,0,7); g.fill(); return; }
+    for(let i=3;i<p.length;i+=3){
+      g.lineWidth = (1.4 + p[i+2]/9*3.6)*sc;
+      g.beginPath(); g.moveTo(p[i-3]*sc,p[i-2]*sc); g.lineTo(p[i]*sc,p[i+1]*sc); g.stroke();
+    }
+  });
+}
+function simplifyPts(p, tol){
+  if(p.length<=6) return p;
+  const out=[p[0],p[1],p[2]];
+  for(let i=3;i<p.length-3;i+=3){
+    const dx=p[i]-out[out.length-3], dy=p[i+1]-out[out.length-2];
+    if(dx*dx+dy*dy>=tol*tol) out.push(p[i],p[i+1],p[i+2]);
+  }
+  out.push(p[p.length-3],p[p.length-2],p[p.length-1]);
+  return out;
+}
+let pad = null;
+function openMemoPad(rid){
+  const r = DATA.find(x=>String(x.id)===String(rid)); if(!r) return;
+  closeMemo();
+  pad = {rid, color:0, strokes:[], cur:null, penSeen:false};
+  const v = document.createElement('div');
+  v.id='lgMemo'; v.className='lg-viewer';
+  v.innerHTML = `<div class="lg-vbar">${snChip(r)}<b class="lg-vjob">✎ ${esc(r.job||'')}</b><span style="flex:1"></span>
+      ${MEMO_COLORS.map((c,i)=>`<button class="lg-pen${i===0?' on':''}" data-pen="${i}" style="--pc:${c}" aria-label="펜 색 ${i+1}"></button>`).join('')}
+      <button class="btn btn-ghost btn-sm" data-pundo>되돌리기</button><button class="btn btn-ghost btn-sm" data-pclear>지우기</button>
+      <button class="btn btn-ghost btn-sm" data-pclose>취소</button><button class="btn btn-primary btn-sm" data-psave>저장</button></div>
+    <div class="lg-padstage"><canvas id="lgPadCv"></canvas></div>
+    <div class="lg-padhint">애플펜슬로 쓰세요 · 펜슬로 쓰기 시작하면 손바닥이 닿아도 선이 그어지지 않습니다</div>`;
+  document.body.appendChild(v);
+  const stage = v.querySelector('.lg-padstage'), cv = v.querySelector('#lgPadCv');
+  const w = Math.min(stage.clientWidth-24, (stage.clientHeight-24)*MEMO_W/MEMO_H);
+  const dpr = window.devicePixelRatio||1;
+  cv.style.width = w+'px'; cv.style.height = (w*MEMO_H/MEMO_W)+'px';
+  cv.width = Math.round(w*dpr); cv.height = Math.round(w*MEMO_H/MEMO_W*dpr);
+  pad.cv = cv; pad.sc = cv.width/MEMO_W;
+  redrawPad();
+  const pt = e=>{ const b=cv.getBoundingClientRect();
+    return [Math.round((e.clientX-b.left)/b.width*MEMO_W), Math.round((e.clientY-b.top)/b.height*MEMO_H), Math.round((e.pressure||0.5)*9)]; };
+  cv.addEventListener('pointerdown', e=>{
+    if(e.pointerType==='pen') pad.penSeen = true;
+    if(pad.penSeen && e.pointerType==='touch') return;   // 손바닥 무시
+    e.preventDefault(); try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+    pad.cur = [pad.color, pt(e)]; pad.strokes.push(pad.cur); redrawPad();
+  });
+  cv.addEventListener('pointermove', e=>{
+    if(!pad || !pad.cur) return;
+    (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach(ev=>pad.cur[1].push(...pt(ev)));
+    redrawPad();
+  });
+  const end = ()=>{ if(pad) pad.cur = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  v.querySelectorAll('[data-pen]').forEach(b=>b.onclick=()=>{ pad.color=+b.dataset.pen; v.querySelectorAll('[data-pen]').forEach(x=>x.classList.toggle('on',x===b)); });
+  v.querySelector('[data-pundo]').onclick=()=>{ pad.strokes.pop(); redrawPad(); };
+  v.querySelector('[data-pclear]').onclick=()=>{ pad.strokes=[]; redrawPad(); };
+  v.querySelector('[data-pclose]').onclick=closeMemo;
+  v.querySelector('[data-psave]').onclick=saveMemo;
+}
+function redrawPad(){ drawMemo(pad.cv.getContext('2d'), pad.strokes, pad.sc, true); }
+function saveMemo(){
+  if(!pad.strokes.length){ closeMemo(); return; }
+  let tol = 2, work;
+  do { work = JSON.stringify({v:1, t:nowStamp(), s:pad.strokes.map(([c,p])=>[c, simplifyPts(p,tol)])}); tol *= 2; }
+  while(work.length > 45000 && tol <= 32);   // 시트 한 칸(5만 자) 안에 들어가게
+  const obj = {job:MEMO_JOB, start:'', due:'', work, material:`for:${pad.rid}`, docs:[], mat:0, fee:0, stage:'wait'};
+  const temp = Object.assign({id:'tmp'+Date.now()}, obj);
+  MEMOS.push(temp);
+  if(USE_SHEETS){ const out = sheetObj(obj); delete out.id; sheetPost('add', out).then(res=>{ if(res&&res.id){ temp.id=res.id; render(); } }); }
+  closeMemo(); render();
+}
+function openMemoView(mid){
+  const m = MEMOS.find(x=>String(x.id)===String(mid)); if(!m) return;
+  const r = DATA.find(x=>`for:${x.id}`===String(m.material||''));
+  closeMemo();
+  const v = document.createElement('div');
+  v.id='lgMemo'; v.className='lg-viewer';
+  v.innerHTML = `<div class="lg-vbar">${r?snChip(r):''}<b class="lg-vjob">✎ 메모 · ${shortStamp(memoTime(m))}</b><span style="flex:1"></span>
+      <button class="btn btn-ghost btn-sm" data-mdel>메모 지우기</button><button class="btn btn-primary btn-sm" data-mclose>닫기</button></div>
+    <div class="lg-padstage"><canvas></canvas></div>`;
+  document.body.appendChild(v);
+  const stage = v.querySelector('.lg-padstage'), cv = v.querySelector('canvas');
+  const w = Math.min(stage.clientWidth-24, (stage.clientHeight-24)*MEMO_W/MEMO_H), dpr = window.devicePixelRatio||1;
+  cv.style.width = w+'px'; cv.style.height = (w*MEMO_H/MEMO_W)+'px';
+  cv.width = Math.round(w*dpr); cv.height = Math.round(w*MEMO_H/MEMO_W*dpr);
+  drawMemo(cv.getContext('2d'), memoStrokes(m), cv.width/MEMO_W, true);
+  v.querySelector('[data-mclose]').onclick=closeMemo;
+  const del = v.querySelector('[data-mdel]');
+  del.onclick=()=>{
+    if(!del.dataset.armed){ del.dataset.armed='1'; del.textContent='한 번 더 누르면 지움'; setTimeout(()=>{ if(del.isConnected){ delete del.dataset.armed; del.textContent='메모 지우기'; } }, 2500); return; }
+    if(String(m.id).startsWith('tmp')) return;   // 시트 id 발급 전엔 지울 수 없음
+    if(USE_SHEETS) sheetPost('delete', {id:m.id});
+    MEMOS = MEMOS.filter(x=>x!==m); closeMemo(); render();
+  };
+}
+function closeMemo(){ const v=document.getElementById('lgMemo'); if(v) v.remove(); pad = null; }
 function setLogi(r, k, on){
   if(String(r.id).startsWith('tmp')) return;   // 시트 id 발급 전엔 저장 불가
   const m = metaOf(r.work);
@@ -1557,7 +1692,7 @@ $('#themeBtn').onclick=()=>{
   const saved = localStorage.getItem('wf-theme');
   if(saved){ document.documentElement.dataset.theme=saved; $('#themeBtn').textContent=saved==='light'?'◑':'◐'; }
 })();
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeNotice(); closeStagePop(); closeDrawing(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeNotice(); closeStagePop(); closeDrawing(); closeMemo(); } });
 
 /* ── 초기 로딩 ── */
 async function init(){
@@ -1568,7 +1703,8 @@ async function init(){
       const all = rows.map(r=>Object.assign(r,{docs:normDocs(r.docs)}));
       const ns = all.filter(r=>String(r.job||'').trim()===NOTICE_JOB);
       NOTICE = ns.length ? ns[ns.length-1] : null;
-      DATA = all.filter(r=>String(r.job||'').trim()!==NOTICE_JOB);
+      MEMOS = all.filter(r=>String(r.job||'').trim()===MEMO_JOB);
+      DATA = all.filter(r=>{ const j=String(r.job||'').trim(); return j!==NOTICE_JOB && j!==MEMO_JOB; });
       setBanner('live');
     }
     else { setBanner('error'); }   // 실패 시 샘플 유지
