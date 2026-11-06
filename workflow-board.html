@@ -280,6 +280,14 @@
   .cust-sub{display:none;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-faint);
     margin-top:3px;letter-spacing:0;word-break:break-all}
 
+  /* ── 건명 대수 배지 — (x10, x10) / (x13) / (33대분) 자동 감지 ── */
+  .qty-chip{display:inline-flex;align-items:center;gap:3px;padding:1.5px 8px;margin-left:6px;border-radius:var(--r-full);
+    font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.2px;line-height:1.5;vertical-align:middle;
+    color:var(--brand-coral);background:rgba(255,85,48,.12);border:1px solid rgba(255,85,48,.4);white-space:nowrap;flex:0 0 auto}
+  .qty-chip[data-c]{padding:0 5px;margin-left:4px;font-size:9.5px;border:none;background:rgba(255,85,48,.16)}
+  [data-theme="light"] .qty-chip{color:#c2371a;background:#fff0ea;border-color:#ffc9b8}
+  [data-theme="light"] .qty-chip[data-c]{background:#ffe4d9;border-color:transparent}
+
   /* ── 작업내용 (확장) — 여러 줄 텍스트 + 첨부 링크 ── */
   th.wk,td.wk{width:40%;min-width:360px}
   .wk-text{white-space:pre-line;word-break:break-word;color:var(--ink-soft);font-size:13px;line-height:1.55;
@@ -975,6 +983,32 @@ function snChip(r){
    형식:  본문 텍스트 … ⏎⏎── 첨부 ──⏎이름 | 링크⏎이름 | 링크 */
 const ATT_MARK = '── 첨부 ──';
 function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ── 건명 내 대수 표기 자동 감지 — (x10, x10) / (x13) / (x52) / (33대분) ──
+   건명 끝의 괄호/대괄호 안 대수를 분리해 본문(text)과 배지 라벨(label)로 나눈다. */
+const QTY_RE = /\s*[\(\[]\s*([xX×]\s*\d+(?:[\s,]+(?:[xX×]\s*)?\d+)*|\d+\s*대분?)\s*[\)\]]\s*$/;
+function qtyOf(job){
+  const s = String(job||'');
+  const m = s.match(QTY_RE);
+  if(!m) return null;
+  const label = m[1].split(/[\s,]+/).map(p=>{
+    p = p.trim();
+    return /대분/.test(p) ? p : p.replace(/^[xX×]/,'x');   // ×10, X10 → x10 정규화
+  }).join(', ');
+  const text = s.replace(QTY_RE,'').trim();
+  return { text: text || s.trim(), label };
+}
+function jobText(job){ const q = qtyOf(job); return q ? q.text : String(job||''); }   // 배지 분리된 건명 본문
+function jobHtml(job){
+  const q = qtyOf(job);
+  if(!q) return esc(job)||'—';
+  return esc(q.text) + '<span class="qty-chip" title="대수 ' + q.label + '">🎯 ' + q.label + '</span>';
+}
+function calJobHtml(job){   // 달력 칸용 소형 배지
+  const q = qtyOf(job);
+  if(!q) return esc(job)||'—';
+  return '<span class="qty-chip" data-c title="대수 ' + q.label + '">🎯 ' + q.label + '</span>' + esc(q.text);
+}
 function splitWork(w){
   w = metaOf(w).rest;
   let text = w, att = '';
@@ -1186,7 +1220,7 @@ function renderTable(rows){
     <tbody>${rows.map(r=>{
       const total = (Number(r.mat)||0)+(Number(r.fee)||0);
       return `<tr data-id="${r.id}">
-        <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${esc(r.job)||'—'}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
+        <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${jobHtml(r.job)}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
         <td class="due"><span class="d0">${shortDate(r.start)}</span></td>
         <td class="c-st">${stPick(r)}${histLine(r)}${destChip(r)}</td>
         <td class="c-docs${(r.docs||[]).length?'':' none'}"><div class="docs">${docChips(r)}</div></td>
@@ -1208,7 +1242,7 @@ function renderBoard(rows){
       </div>
       <div class="col-body">${items.map(r=>`
         <div class="card" data-id="${r.id}">
-          <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${esc(r.job)||'—'}</span></span><span class="c-due" title="접수일">${shortDate(r.start)}</span></div>
+          <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${jobHtml(r.job)}</span></span><span class="c-due" title="접수일">${shortDate(r.start)}</span></div>
           <div style="margin-top:6px">${stPick(r)}${histLine(r)}${destChip(r)}</div>
           ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${esc(r.material)}</div>`:''}
           ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div class="c-work">${workCell(r)}</div>`:''}
@@ -1229,7 +1263,7 @@ let calSel = ymd(new Date());
 
 function calItem(r){
   return `<div class="cal-item" data-id="${r.id}">
-    <div class="ci-top">${snChip(r)}${stPick(r)}<span class="ci-job">${esc(r.job)||'—'}</span></div>
+    <div class="ci-top">${snChip(r)}${stPick(r)}<span class="ci-job">${jobHtml(r.job)}</span></div>
     ${(r.docs||[]).length?`<div class="docs">${docChips(r)}</div>`:''}
     ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div>${workCell(r)}</div>`:''}
   </div>`;
@@ -1255,7 +1289,7 @@ function renderCalendar(rows){
     if(key===calSel) cls.push('sel');
     cells += `<div class="${cls.join(' ')}" data-day="${key}">
       <span class="cal-dn">${d.getDate()}</span>
-      ${list.slice(0,3).map(r=>`<span class="cal-ev" data-s="${r.stage}">${esc(r.job)||'—'}</span>`).join('')}
+      ${list.slice(0,3).map(r=>`<span class="cal-ev" data-s="${r.stage}">${calJobHtml(r.job)}</span>`).join('')}
       ${list.length>3?`<span class="cal-more">+${list.length-3}</span>`:''}
       ${list.length?`<span class="cal-dots">${list.map(r=>`<i data-s="${r.stage}"></i>`).join('')}</span>`:''}
     </div>`;
@@ -1332,7 +1366,7 @@ function renderLogi(rows){
   const list = pool.filter(r=>destOf(r) && (logiDest==='all' || destOf(r)===logiDest));
   const bar = `<div class="lg-bar">${['all',...DESTS].map(d=>`<span class="chip lg-f${logiDest===d?' on':''}" data-lgf="${d}">${d==='all'?'전체':d+'행'}<span class="n">${cnt(d)}</span></span>`).join('')}
     <span class="lg-hint">납품 전 건 · 납품 처리하면 카드가 빠집니다</span></div>`;
-  const warn = noDest.length ? `<div class="lg-warn">⚠ 착지 미정 ${noDest.length}건 ${noDest.map(r=>`<button class="chip" data-lgdest="${r.id}">${snChip(r)} ${esc(String(r.job||'').slice(0,18))}</button>`).join('')}
+  const warn = noDest.length ? `<div class="lg-warn">⚠ 착지 미정 ${noDest.length}건 ${noDest.map(r=>`<button class="chip" data-lgdest="${r.id}">${snChip(r)} ${esc(jobText(r.job).slice(0,18))}</button>`).join('')}
     ${isAdmin()?'':'<span class="lg-hint">관리자 모드에서 착지를 정할 수 있습니다</span>'}</div>` : '';
   const cards = list.map(r=>{
     const lg = logiOf(r), d = destOf(r), dw = drawingsOf(r), id = dw.length ? driveId(dw[0].url) : '';
@@ -1341,7 +1375,7 @@ function renderLogi(rows){
     return `<article class="lgc" data-id="${r.id}">
       <div class="lg-band" data-d="${d}"><span class="lg-to"><small>착지</small>${d}</span>${stBadge(r.stage)}</div>
       <div class="lg-body">
-        <div class="lg-title">${snChip(r)}<span class="lg-job">${esc(r.job||'—')}</span><span class="lg-date">접수 ${shortDate(r.start)}</span></div>
+        <div class="lg-title">${snChip(r)}<span class="lg-job">${jobHtml(r.job)}</span><span class="lg-date">접수 ${shortDate(r.start)}</span></div>
         ${thumb}
         <div class="lg-checks">${LOGI.map(x=>lgCheck(r,x,lg)).join('')}</div>
         <div class="lg-memos">${memoFor(r).map(m=>`<button class="lg-memo" data-memoview="${m.id}" title="메모 크게 보기"><canvas data-memocv="${m.id}"></canvas><span>${shortStamp(memoTime(m))}</span></button>`).join('')}
@@ -1427,7 +1461,7 @@ function openMemoPad(rid){
   pad = {rid, color:0, strokes:[], cur:null, penSeen:false};
   const v = document.createElement('div');
   v.id='lgMemo'; v.className='lg-viewer';
-  v.innerHTML = `<div class="lg-vbar">${snChip(r)}<b class="lg-vjob">✎ ${esc(r.job||'')}</b><span style="flex:1"></span>
+  v.innerHTML = `<div class="lg-vbar">${snChip(r)}<b class="lg-vjob">✎ ${jobHtml(r.job)}</b><span style="flex:1"></span>
       ${MEMO_COLORS.map((c,i)=>`<button class="lg-pen${i===0?' on':''}" data-pen="${i}" style="--pc:${c}" aria-label="펜 색 ${i+1}"></button>`).join('')}
       <button class="btn btn-ghost btn-sm" data-pundo>되돌리기</button><button class="btn btn-ghost btn-sm" data-pclear>지우기</button>
       <button class="btn btn-ghost btn-sm" data-pclose>취소</button><button class="btn btn-primary btn-sm" data-psave>저장</button></div>
@@ -1516,7 +1550,7 @@ function openDrawing(rid, i){
   closeDrawing();
   const v = document.createElement('div');
   v.id='lgViewer'; v.className='lg-viewer';
-  v.innerHTML = `<div class="lg-vbar">${snChip(r)}<b class="lg-vjob">${esc(r.job||'')}</b>${destChip(r)}
+  v.innerHTML = `<div class="lg-vbar">${snChip(r)}<b class="lg-vjob">${jobHtml(r.job)}</b>${destChip(r)}
       <span style="flex:1"></span>
       ${dw.length>1?dw.map((d,j)=>`<button class="chip${j===i?' on':''}" data-vi="${j}">${esc(d.name)}</button>`).join(''):''}
       ${dw[i].url?`<a class="btn btn-ghost btn-sm" href="${esc(dw[i].url)}" target="_blank" rel="noopener">새 창 ↗</a>`:''}
