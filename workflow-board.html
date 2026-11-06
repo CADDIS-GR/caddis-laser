@@ -149,7 +149,7 @@
   .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r-xl);
     overflow:hidden;box-shadow:var(--shadow-sm)}
   .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-xl)}
-  table{width:100%;border-collapse:collapse;font-size:14px;min-width:980px}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:860px}
   thead th{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
     color:var(--ink-soft);text-align:left;padding:11px 14px;
     border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
@@ -205,7 +205,6 @@
   .doc-cnt{font-family:var(--mono);font-size:11px;color:var(--ink-faint);align-self:center;margin-left:2px}
   .doc-cnt.full{color:var(--doc-ok);font-weight:600}
   .work{color:var(--ink-soft);font-size:13px;max-width:260px;line-height:1.45}
-  .num{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;white-space:nowrap}
 
   /* ── 보관함 / 저장 실패 알림 ── */
   .achip{font-size:12px;font-weight:500;color:var(--ink-soft);background:var(--panel);border:1px dashed var(--line-soft);
@@ -262,7 +261,12 @@
   .jl{display:flex;align-items:flex-start;gap:9px;min-width:0}
   .jl .sn{margin-top:-3px}
   .jl-t{min-width:0;word-break:keep-all}
-  .cust{min-width:300px}   /* 건명 칸 폭 */
+  .cust{min-width:240px}   /* 건명 칸 폭 — 자재 칸은 뱃지로 줄여 여백 확보 */
+  th.c-cust{width:34%}
+  th.c-due,td.due{width:74px}
+  th.c-sth,td.c-st{width:126px}
+  th.c-doch,td.c-docs{width:132px}
+  th.c-mat,td.c-mat{width:112px}
   .legend{display:inline-flex;align-items:center;gap:10px;font-size:11px;color:var(--ink-faint);flex-wrap:wrap}
   .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
   .tool-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -288,8 +292,45 @@
   [data-theme="light"] .qty-chip{color:#c2371a;background:#fff0ea;border-color:#ffc9b8}
   [data-theme="light"] .qty-chip[data-c]{background:#ffe4d9;border-color:transparent}
 
+  /* ── 자재 두께 원클릭 필터 바 ── */
+  .mat-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:-2px 0 var(--sp-md)}
+  .mat-filter-bar .mh{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-faint);margin-right:2px;white-space:nowrap}
+  .mat-f{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--panel);
+    border:1px solid var(--line-soft);padding:5px 12px;border-radius:var(--r-full);cursor:pointer;
+    transition:.15s;white-space:nowrap;line-height:1.4}
+  .mat-f:hover:not(.on){border-color:#22d3ee;color:var(--ink)}
+  .mat-f.on{background:rgba(34,211,238,.16);color:#67e8f9;border-color:rgba(34,211,238,.55)}
+  .mat-f .n{font-size:10.5px;opacity:.7;margin-left:5px}
+  [data-theme="light"] .mat-f.on{background:#e2f8fd;color:#0e7490;border-color:#7dd3e8}
+
+  /* ── 자재 뱃지 (표·보드·달력) ── */
+  .mat-wrap{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+  .mat-chip{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10.5px;font-weight:700;
+    padding:1.5px 7px;border-radius:var(--r-sm);white-space:nowrap;line-height:1.6;letter-spacing:.02em;
+    color:#67e8f9;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.32)}
+  .mat-chip.nm{color:var(--ink-soft);background:var(--panel-2);border-color:var(--line-soft);font-weight:600}
+  .mat-chip.der{border-style:dashed;opacity:.78}
+  .mat-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);word-break:break-all}
+  [data-theme="light"] .mat-chip{color:#0e7490;background:#e6f9fc;border-color:#a5e8f2}
+  [data-theme="light"] .mat-chip.nm{color:#5f5f5f;background:#f2f3f5;border-color:#e5e7eb}
+
+  /* ── 진행 중 타이머 · 종료 예정 카운트다운 ── */
+  .prog{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:6px;
+    padding:5px 9px 6px;border-radius:var(--r-md);max-width:186px;white-space:normal;
+    background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.32);
+    font-family:var(--mono);font-size:10.5px;line-height:1.5;color:#67e8f9}
+  .prog .prog-t{font-weight:700;font-size:11px;letter-spacing:-.2px;word-break:keep-all}
+  .prog .prog-s{color:var(--ink-soft);font-size:10px;word-break:keep-all}
+  .prog .prog-bar{display:block;width:100%;height:3px;border-radius:2px;background:rgba(127,127,127,.28);overflow:hidden}
+  .prog .prog-bar i{display:block;height:100%;background:currentColor;border-radius:2px;transition:width .6s}
+  .prog.over{background:rgba(250,204,21,.10);border-color:rgba(250,204,21,.45);color:var(--p2)}
+  .prog.over .prog-s{color:var(--p2);opacity:.85}
+  [data-theme="light"] .prog{color:#0e7490;background:#e9f9fd;border-color:#a5e8f2}
+  [data-theme="light"] .prog.over{color:#a16207;background:#fffbeb;border-color:#fcd34d}
+
   /* ── 작업내용 (확장) — 여러 줄 텍스트 + 첨부 링크 ── */
-  th.wk,td.wk{width:40%;min-width:360px}
+  th.wk,td.wk{width:auto;min-width:280px}
   .wk-text{white-space:pre-line;word-break:break-word;color:var(--ink-soft);font-size:13px;line-height:1.55;
     display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
   .wk-text.open{display:block;-webkit-line-clamp:unset}
@@ -333,6 +374,9 @@
   .card .c-due{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
   .card .c-work{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5}
   .card .c-docs{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+  .card .c-mat-row{margin-top:5px}
+  .card .c-mat-row:empty{display:none}
+  .card .prog{margin-top:7px}
 
   /* ── CALENDAR ── */
   .cal{padding:14px 14px 16px;margin-bottom:var(--sp-md)}
@@ -505,7 +549,7 @@
     th.c-mat,td.c-mat{display:none}
     .cust-sub{display:block}
     .cust{min-width:220px;word-break:keep-all}
-    th.wk,td.wk{width:auto;min-width:240px}
+    th.wk,td.wk{width:auto;min-width:220px}
     thead th,tbody td{padding:12px 10px}
     .doc{white-space:nowrap}
   }
@@ -543,13 +587,20 @@
     tbody tr:last-child{border-bottom:none}
     tbody td{display:block;padding:0;border:none;min-width:0}
     td.cust{order:1;min-width:0;font-size:15px}
-    td.c-st{order:2;justify-self:end}
-    td.due{order:3;grid-column:1/-1}
+    td.c-st{order:2;grid-column:1/-1;justify-self:start;width:auto;
+      display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+    td.c-st .hist{margin-top:0}
+    td.c-st .prog{max-width:100%;flex:1 1 100%}
+    td.c-mat{display:none}
+    td.due{order:3;grid-column:1/-1;width:auto}
     td.wk{order:4;grid-column:1/-1;min-width:0;width:auto}
-    td.c-docs{order:5;grid-column:1/-1}
+    td.c-docs{order:5;grid-column:1/-1;width:auto}
     td.c-docs.none{display:none}
-    td.num{order:6;grid-column:1/-1;text-align:left}
-    td.num::before{content:"정산  ";font-family:var(--sans);font-size:11px;color:var(--ink-faint)}
+    /* 자재 두께 필터 — 폰에서는 한 줄 가로 스크롤 */
+    .mat-filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      padding-bottom:3px;margin-bottom:12px;scrollbar-width:none}
+    .mat-filter-bar::-webkit-scrollbar{display:none}
+    .mat-filter-bar .mh{position:sticky;left:0;background:var(--bg);padding-right:4px;z-index:1}
     .due .arr{display:inline}
     .due .d1,.due .d2,.due .dd{display:inline}
     .due .d1{color:inherit}
@@ -621,6 +672,8 @@
       <input class="search" id="search" placeholder="건명·내용·연번 검색">
     </div>
   </div>
+
+  <div class="mat-filter-bar" id="matBar"></div>
 
   <div id="viewArea"></div>
 
@@ -782,6 +835,12 @@ function isArchived(r){
 function visible(){
   return DATA.filter(r=>{
     if(filter!=='all' && r.stage!==filter) return false;
+    if(matFilter!=='all'){                       // 두께 필터
+      const th = matInfo(r).th;
+      if(matFilter==='none'){ if(th.length) return false; }
+      else if(matFilter==='etc'){ if(!th.length || th.some(t=>MAT_MAIN.includes(t))) return false; }
+      else if(!th.includes(matFilter)) return false;
+    }
     if(!query && isArchived(r)!==archiveMode) return false;   // 검색할 때는 보관함 건도 함께
     if(query){
       const q=query.toLowerCase().trim();
@@ -816,6 +875,7 @@ function renderSummary(){
     c.innerHTML = `${lbl}<span class="n">${n}</span>`;
   });
   renderNotice();
+  renderMatBar();
 }
 
 /* ── 오늘 작업 지시 — 시트의 '__공지__' 행 1줄에 저장 (Apps Script 수정 불필요) ── */
@@ -881,7 +941,7 @@ function jumpTo(id){
   const sel = `[data-id="${id}"]`;
   if(view==='calendar' || !area.querySelector(sel)){
     if(view==='calendar'){ view='table'; $('#views').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x.dataset.v==='table')); }
-    filter='all'; query=''; $('#search').value='';
+    filter='all'; query=''; matFilter='all'; $('#search').value='';
     document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.dataset.f==='all'));
     const t = DATA.find(x=>String(x.id)===String(id));
     archiveMode = !!(t && isArchived(t)); $('#archBtn').classList.toggle('on', archiveMode);
@@ -976,6 +1036,142 @@ function snChip(r){
   const d = String(n).length;
   const tip = `연번 ${n}` + (p ? ` · 우선순위 ${p} ${PRIO[p]}` : ' · 우선순위 없음');
   return `<span class="sn${d>=4?' d4':d===3?' d3':''}" data-p="${p}" title="${tip}">${n}</span>`;
+}
+
+/* ───────── 자재(두께) 감지 — 사용자재 칸 · 건명 · 작업내용에서 1.6T / 9T / 12T 같은 두께와 GI·SUS 재질 추출
+   '2006-09-12T07:00:00Z' 같은 날짜값의 T는 두께로 보지 않는다. ───────── */
+const ISO_DT_RE = /\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2})?(?:\.\d+)?Z?/g;
+const TH_RE = /(\d+(?:\.\d+)?)\s*[Tt](?![A-Za-z0-9가-힣])/g;
+const MATNM_RE = /\b(SUS\d*|STS\d*|SS400|SPHC|SPCC|EGI|HGI|GI|HR|AL\d*|PO)\b/g;
+function thNorm(v){
+  const f = parseFloat(v);
+  if(!isFinite(f) || f<=0 || f>40) return '';
+  return (Math.round(f*100)/100) + 'T';
+}
+function thOf(src, bare){
+  const s = String(src||'').replace(ISO_DT_RE,' ');
+  const out = []; let m;
+  TH_RE.lastIndex = 0;
+  while((m = TH_RE.exec(s))){ const t = thNorm(m[1]); if(t && !out.includes(t)) out.push(t); }
+  if(!out.length && bare && /^[\d.,\s]+$/.test(s.trim())){   // '1.6, 6, 9, 12' 처럼 T 없이 적은 경우
+    s.split(/[,\s]+/).forEach(x=>{ const t = thNorm(x); if(t && !out.includes(t)) out.push(t); });
+  }
+  return out;
+}
+function matInfo(r){
+  const raw = String(r.material||'').trim();
+  const th = [], nm = [];
+  let rest = raw.replace(ISO_DT_RE,' ');
+  rest = rest.replace(TH_RE, (a,v)=>{ const t = thNorm(v); if(t && !th.includes(t)) th.push(t); return ' '; });
+  rest = rest.replace(MATNM_RE, a=>{ if(!nm.includes(a)) nm.push(a); return ' '; });
+  let note = rest.replace(/[\s,;:·\/|()\[\]\-–—]+/g,' ').trim();
+  if(note.length > 16) note = '';
+  if(!th.length && /^[\d.,\s]+$/.test(raw)){   // T 없이 숫자만 적은 목록
+    raw.split(/[,\s]+/).forEach(x=>{ const t = thNorm(x); if(t && !th.includes(t)) th.push(t); });
+    note = '';
+  }
+  let der = false;
+  if(!th.length){   // 자재 칸이 비었으면 건명·작업내용에서 찾아 보여줌 (점선 글씨)
+    const d = thOf(String(r.job||'') + ' ' + metaOf(r.work).rest);
+    if(d.length){ d.forEach(t=>th.push(t)); der = true; }
+  }
+  return {th, nm, note, der};
+}
+function matChips(r, dash){
+  const m = matInfo(r);
+  if(!m.th.length && !m.nm.length && !m.note) return dash ? '<span class="mat-note">—</span>' : '';
+  return '<div class="mat-wrap">'
+    + m.th.map(t=>`<span class="mat-chip${m.der?' der':''}"${m.der?' title="건명·작업내용에서 감지"':''}>${esc(t)}</span>`).join('')
+    + m.nm.map(n=>`<span class="mat-chip nm" title="재질">${esc(n)}</span>`).join('')
+    + (m.note?`<span class="mat-note">${esc(m.note)}</span>`:'')
+    + '</div>';
+}
+/* ── 두께 원클릭 필터 — 실제 데이터에서 많은 두께를 칩으로, 나머지는 기타/미기재 ── */
+let matFilter = 'all';
+let MAT_MAIN = [];
+function matStats(){
+  // 칩 종류는 전체 데이터(보관함 포함)에서 빈도 높은 두께로 고정 — 보관함 전환에도 칩이 흔들리지 않게
+  const all = new Map();
+  DATA.forEach(r=>matInfo(r).th.forEach(t=>all.set(t,(all.get(t)||0)+1)));
+  MAT_MAIN = [...all.keys()].filter(t=>all.get(t)>=3).sort((a,b)=>parseFloat(a)-parseFloat(b));
+  // 숫자는 지금 화면 범위(보관함 포함/제외)의 건수
+  const scope = DATA.filter(r=>isArchived(r)===archiveMode);
+  const cnt = new Map();
+  let none = 0, etc = 0;
+  scope.forEach(r=>{
+    const th = matInfo(r).th;
+    if(!th.length){ none++; return; }
+    th.forEach(t=>cnt.set(t,(cnt.get(t)||0)+1));
+    if(MAT_MAIN.length && !th.some(t=>MAT_MAIN.includes(t))) etc++;
+  });
+  return {total:scope.length, cnt, none, etc};
+}
+function renderMatBar(){
+  const el = $('#matBar'); if(!el) return;
+  const st = matStats();
+  const ck = (k,lbl,n)=>`<button type="button" class="mat-f${matFilter===k?' on':''}" data-mf="${k}">${lbl}<span class="n">${n}</span></button>`;
+  el.innerHTML = '<span class="mh">두께</span>' + ck('all','전체',st.total)
+    + MAT_MAIN.map(t=>ck(t,t,st.cnt.get(t)||0)).join('')
+    + (st.etc ? ck('etc','기타',st.etc) : '')
+    + (st.none ? ck('none','미기재',st.none) : '');
+}
+
+/* ───────── 야간·주말 무인가공 타이머 — 진행 중(prog) 건의 경과시간 / 종료 예정 카운트다운
+   가공 소요시간은 작업내용·건명의 '11시간' '11h' 표기에서 읽는다 (시트에 그대로 적으면 됨) ───────── */
+const DUR_RE = /(\d+(?:\.\d+)?)\s*(?:시간|hrs?|hours?|h)(?![A-Za-z가-힣])/i;
+function parseStamp(s){
+  const m = String(s||'').match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  return m ? new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5]) : null;
+}
+function progDur(r){
+  const s = jobText(r.job) + '\n' + metaOf(r.work).rest;
+  const m = s.match(DUR_RE);
+  return m ? Math.round(parseFloat(m[1])*60) : 0;
+}
+function hhmm(d){ return pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function durText(ms){
+  const m = Math.max(0, Math.round(ms/60000));
+  const d = Math.floor(m/1440), h = Math.floor((m%1440)/60), mi = m%60;
+  if(d) return `${d}일 ${h}시간`;
+  if(h) return mi ? `${h}시간 ${mi}분` : `${h}시간`;
+  return mi ? `${mi}분` : '방금';
+}
+function progView(st, dur, now){
+  now = now || Date.now();
+  const start = st.getTime(), el = now - start;
+  if(dur > 0){
+    const end = start + dur*60000;
+    const pct = Math.max(0, Math.min(100, el/(dur*60000)*100));
+    const ed = new Date(end), td = new Date(now);
+    const dayTxt = ed.toDateString()===td.toDateString() ? '' : `${ed.getMonth()+1}/${ed.getDate()} `;
+    if(now < end) return {main:`⏳ ${durText(dur*60000)} 가공 중`, sub:`종료 예정 ${dayTxt}${hhmm(ed)} · ${durText(end-now)} 남음`, pct, over:false};
+    return {main:'⚠ 종료 예정 지남', sub:`예정 ${dayTxt}${hhmm(ed)} · ${durText(Math.max(60000, el-dur*60000))} 초과`, pct:100, over:true};
+  }
+  if(el < 60000) return {main:'⏱️ 방금 시작', sub:`시작 ${hhmm(st)}`, pct:0, over:false};
+  return {main:`⏱️ 진행 ${durText(el)}째`, sub:`시작 ${hhmm(st)}`, pct:0, over:false};
+}
+function progBadge(r){
+  if(r.stage!=='prog') return '';
+  const h = histOf(r);
+  const st = parseStamp(h.prog || h.wait || h.ship || h.done);
+  if(!st) return '';
+  const dur = progDur(r), v = progView(st, dur);
+  return `<div class="prog${v.over?' over':''}" data-pst="${st.getTime()}" data-pdur="${dur}">`
+    + `<span class="prog-t">${v.main}</span><span class="prog-s">${v.sub}</span>`
+    + (dur ? `<span class="prog-bar"><i style="width:${Math.round(v.pct)}%"></i></span>` : '')
+    + '</div>';
+}
+function updateProg(){
+  document.querySelectorAll('.prog[data-pst]').forEach(el=>{
+    const st = new Date(+el.dataset.pst || 0);
+    if(isNaN(st.getTime())) return;
+    const v = progView(st, +el.dataset.pdur || 0);
+    const t = el.querySelector('.prog-t'), s = el.querySelector('.prog-s'), b = el.querySelector('.prog-bar i');
+    if(t) t.textContent = v.main;
+    if(s) s.textContent = v.sub;
+    if(b) b.style.width = Math.round(v.pct)+'%';
+    el.classList.toggle('over', v.over);
+  });
 }
 
 /* ── 작업내용 첨부 ──
@@ -1215,19 +1411,17 @@ function renderTable(rows){
   if(!rows.length){ area.innerHTML='<div class="panel"><div class="empty">표시할 작업이 없습니다.</div></div>'; return; }
   area.innerHTML = `<div class="panel"><div class="table-scroll"><table>
     <thead><tr>
-      <th>건명</th><th>접수일</th><th>상태</th><th>작업지시서</th><th class="c-mat">사용자재</th><th class="wk">작업내용</th>
+      <th class="c-cust">건명</th><th class="c-due">접수일</th><th class="c-sth">상태</th><th class="c-doch">작업지시서</th><th class="c-mat">자재</th><th class="wk">작업내용</th>
     </tr></thead>
-    <tbody>${rows.map(r=>{
-      const total = (Number(r.mat)||0)+(Number(r.fee)||0);
-      return `<tr data-id="${r.id}">
-        <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${jobHtml(r.job)}${r.material?`<div class="cust-sub">${esc(r.material)}</div>`:''}</div></div></td>
+    <tbody>${rows.map(r=>`
+      <tr data-id="${r.id}">
+        <td class="cust"><div class="jl">${snChip(r)}<div class="jl-t">${jobHtml(r.job)}<div class="cust-sub">${matChips(r)}</div></div></div></td>
         <td class="due"><span class="d0">${shortDate(r.start)}</span></td>
-        <td class="c-st">${stPick(r)}${histLine(r)}${destChip(r)}</td>
+        <td class="c-st">${stPick(r)}${histLine(r)}${progBadge(r)}${destChip(r)}</td>
         <td class="c-docs${(r.docs||[]).length?'':' none'}"><div class="docs">${docChips(r)}</div></td>
-        <td class="work c-mat" style="font-size:12px;color:var(--ink-soft)">${esc(r.material)||'<span style="color:var(--ink-faint)">—</span>'}</td>
+        <td class="c-mat">${matChips(r,true)}</td>
         <td class="wk">${workCell(r)}</td>
-      </tr>`;
-    }).join('')}</tbody></table></div></div>`;
+      </tr>`).join('')}</tbody></table></div></div>`;
   area.querySelectorAll('tr[data-id]').forEach(tr=>tr.onclick=()=>openEdit(tr.dataset.id));
   wireDocChips();
 }
@@ -1244,7 +1438,8 @@ function renderBoard(rows){
         <div class="card" data-id="${r.id}">
           <div class="c-top"><span class="c-cust jl">${snChip(r)}<span class="jl-t">${jobHtml(r.job)}</span></span><span class="c-due" title="접수일">${shortDate(r.start)}</span></div>
           <div style="margin-top:6px">${stPick(r)}${histLine(r)}${destChip(r)}</div>
-          ${r.material?`<div style="font-size:11px;color:var(--ink-faint);margin-top:4px;font-family:var(--mono)">${esc(r.material)}</div>`:''}
+          ${progBadge(r)}
+          <div class="c-mat-row">${matChips(r)}</div>
           ${splitWork(r.work).text||splitWork(r.work).atts.length?`<div class="c-work">${workCell(r)}</div>`:''}
           <div class="c-docs">${docChips(r)}</div>
         </div>`).join('') || '<div class="empty" style="padding:24px 8px;font-size:11px">—</div>'}
@@ -1776,6 +1971,14 @@ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
   render();
 });
 $('#search').oninput=e=>{query=e.target.value;render();};
+/* 두께 필터 칩 — 같은 칩을 다시 누르면 전체로 */
+$('#matBar').onclick=e=>{
+  const b = e.target.closest('[data-mf]'); if(!b) return;
+  const k = b.dataset.mf;
+  matFilter = (k!=='all' && matFilter===k) ? 'all' : k;   // 켜진 칩을 다시 누르면 해제
+  render();
+};
+setInterval(updateProg, 30000);   // 진행 중 타이머·남은 시간 30초마다 갱신
 $('#archBtn').onclick=()=>{ archiveMode=!archiveMode; $('#archBtn').classList.toggle('on',archiveMode); render(); };
 $('#addBtn').onclick=openAdd;
 /* ── 보기 / 관리자 모드 — 직접 끌 때까지 유지 ── */
