@@ -654,7 +654,6 @@
         <button class="view-tab active" data-v="table">표</button>
         <button class="view-tab" data-v="board">보드</button>
         <button class="view-tab" data-v="calendar">달력</button>
-        <button class="view-tab" data-v="logi">물류</button>
       </div>
       <div class="views" id="sorts">
         <button class="view-tab active" data-sort="new">최신순</button>
@@ -1759,12 +1758,12 @@ function openDrawing(rid, i){
 function closeDrawing(){ const v=document.getElementById('lgViewer'); if(v) v.remove(); }
 
 function render(){
+  if(view==='logi'){ view='table'; $('#views').querySelectorAll('.view-tab').forEach(x=>x.classList.toggle('active',x.dataset.v==='table')); } // 물류 탭 제거: 잔여 상태 폴백
   buildSerial();
   renderSummary();
   const rows = visible();
   if(view==='table') renderTable(rows);
   else if(view==='board') renderBoard(rows);
-  else if(view==='logi') renderLogi(rows);
   else renderCalendar(rows);
 }
 
