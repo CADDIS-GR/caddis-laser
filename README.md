@@ -115,7 +115,7 @@ https://drive.google.com/drive/folders/1gM-LJ32RAoxyLVje9O-umkyf58p-zHcD
 
 ### 진행 단계
 ```
-대기(wait) → 진행(prog) → 완료(done) → 납품(ship)
+대기(wait) → 진행(prog) → 완료(done) → 출고(ship)
 ```
 
 ### 구글시트

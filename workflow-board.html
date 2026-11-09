@@ -666,8 +666,8 @@
       <span class="chip" data-f="wait">대기</span>
       <span class="chip" data-f="prog">진행</span>
       <span class="chip" data-f="done">완료</span>
-      <span class="chip" data-f="ship">납품</span>
-      <span class="achip" id="archBtn" title="납품 후 30일 지난 건">보관함</span>
+      <span class="chip" data-f="ship">출고</span>
+      <span class="achip" id="archBtn" title="출고 후 30일 지난 건">보관함</span>
       <input class="search" id="search" placeholder="건명·내용·연번 검색">
     </div>
   </div>
@@ -740,7 +740,7 @@
           <div class="stage-pick" data-s="wait">대기</div>
           <div class="stage-pick" data-s="prog">진행</div>
           <div class="stage-pick" data-s="done">완료</div>
-          <div class="stage-pick" data-s="ship">납품</div>
+          <div class="stage-pick" data-s="ship">출고</div>
         </div>
       </div>
     </div>
@@ -784,7 +784,7 @@ const STAGES = {
   wait:{label:'대기', color:'var(--st-wait)'},
   prog:{label:'진행', color:'var(--st-prog)'},
   done:{label:'완료', color:'var(--st-done)'},
-  ship:{label:'납품', color:'var(--st-ship)'}
+  ship:{label:'출고', color:'var(--st-ship)'}
 };
 const STAGE_ORDER = ['wait','prog','done','ship'];
 
@@ -807,7 +807,7 @@ let sortMode = 'new';
 let SERIAL = {};
 let NOTICE = null;
 let archiveMode = false;
-const ARCHIVE_DAYS = 30;   // 납품 후 이 일수가 지나면 보관함으로
+const ARCHIVE_DAYS = 30;   // 출고 후 이 일수가 지나면 보관함으로
 const NOTICE_JOB = '__공지__';
 
 const $ = s=>document.querySelector(s);
@@ -822,7 +822,7 @@ function daysLeft(due){
   return Math.round((d-today)/86400000);
 }
 
-/* ── 보관함 — 납품 후 ARCHIVE_DAYS 일 지난 건 (납품 시각 기록이 없으면 접수일 기준) ── */
+/* ── 보관함 — 출고 후 ARCHIVE_DAYS 일 지난 건 (출고 시각 기록이 없으면 접수일 기준) ── */
 function isArchived(r){
   if(r.stage!=='ship') return false;
   const t = histOf(r).ship || r.start;
@@ -975,7 +975,7 @@ const PRIO = {1:'긴급',2:'높음',3:'보통',4:'낮음'};
 const PRIO_RE = /^── 우선순위 ([1-4]) ──[ \t]*\r?\n?/;
 /* ── 상태 변경 이력 — 작업내용 칸 '── 이력 ── 진행 2026-10-08 09:12 · 완료 …' 한 줄로 저장 ── */
 const HIST_RE = /^── 이력 ── ([^\n]*)\r?\n?/;
-const LBL2S = {'대기':'wait','진행':'prog','완료':'done','납품':'ship'};
+const LBL2S = {'대기':'wait','진행':'prog','완료':'done','납품':'ship','출고':'ship'};
 /* ── 착지 — 작업내용 칸 '── 착지 ── 5공장' 한 줄로 저장 ── */
 const DESTS = ['1공장','5공장'];
 const DEST_RE = /^── 착지 ── (1공장|5공장)[ \t]*\r?\n?/;
@@ -996,7 +996,7 @@ function metaOf(w){
   for(let k=0;k<5;k++){
     if((m=w.match(PRIO_RE))){ prio=+m[1]; w=w.slice(m[0].length); continue; }
     if((m=w.match(HIST_RE))){
-      m[1].replace(/(대기|진행|완료|납품) (\d{4}-\d{2}-\d{2} \d{2}:\d{2})/g,(a,l,t)=>{ hist[LBL2S[l]]=t; return a; });
+      m[1].replace(/(대기|진행|완료|납품|출고) (\d{4}-\d{2}-\d{2} \d{2}:\d{2})/g,(a,l,t)=>{ hist[LBL2S[l]]=t; return a; });
       w=w.slice(m[0].length); continue;
     }
     if((m=w.match(DEST_RE))){ dest=m[1]; w=w.slice(m[0].length); continue; }
@@ -1316,7 +1316,7 @@ function sheetObj(r){
   return {id:r.id, job:r.job, start:r.start, due:r.due, work:r.work, material:r.material,
     docs:docsOut(r.docs), mat:r.mat, fee:r.fee, stage:r.stage};
 }
-/* 완료·납품 단계는 지시서 전부 완료로 표시 (시트 값은 그대로) */
+/* 완료·출고 단계는 지시서 전부 완료로 표시 (시트 값은 그대로) */
 function stageDone(r){ return r.stage==='done' || r.stage==='ship'; }
 function docDone(r, d){ return stageDone(r) || !!d.done; }
 /* 참고용 지시서(체크 대상 아님) — 이름이 정확히 일치할 때만 */
@@ -1559,7 +1559,7 @@ function renderLogi(rows){
   const cnt = d=>pool.filter(r=>destOf(r) && (d==='all' || destOf(r)===d)).length;
   const list = pool.filter(r=>destOf(r) && (logiDest==='all' || destOf(r)===logiDest));
   const bar = `<div class="lg-bar">${['all',...DESTS].map(d=>`<span class="chip lg-f${logiDest===d?' on':''}" data-lgf="${d}">${d==='all'?'전체':d+'행'}<span class="n">${cnt(d)}</span></span>`).join('')}
-    <span class="lg-hint">납품 전 건 · 납품 처리하면 카드가 빠집니다</span></div>`;
+    <span class="lg-hint">출고 전 건 · 출고 처리하면 카드가 빠집니다</span></div>`;
   const warn = noDest.length ? `<div class="lg-warn">⚠ 착지 미정 ${noDest.length}건 ${noDest.map(r=>`<button class="chip" data-lgdest="${r.id}">${snChip(r)} ${esc(jobText(r.job).slice(0,18))}</button>`).join('')}
     ${isAdmin()?'':'<span class="lg-hint">관리자 모드에서 착지를 정할 수 있습니다</span>'}</div>` : '';
   const cards = list.map(r=>{
@@ -1575,7 +1575,7 @@ function renderLogi(rows){
         <div class="lg-memos">${memoFor(r).map(m=>`<button class="lg-memo" data-memoview="${m.id}" title="메모 크게 보기"><canvas data-memocv="${m.id}"></canvas><span>${shortStamp(memoTime(m))}</span></button>`).join('')}
           <button class="lg-memo add" data-memonew="${r.id}">✎ 펜슬 메모</button></div>
       </div>
-      <div class="lg-foot">${lgDots(lg)}<span style="flex:1"></span><button class="btn lg-ship" data-lgship="${r.id}">출고 끝 · 납품 처리</button></div>
+      <div class="lg-foot">${lgDots(lg)}<span style="flex:1"></span><button class="btn lg-ship" data-lgship="${r.id}">출고 처리</button></div>
     </article>`;
   }).join('');
   area.innerHTML = bar + warn + (list.length ? `<div class="lg-grid">${cards}</div>` : '<div class="panel"><div class="empty">표시할 건이 없습니다.</div></div>');
@@ -1602,7 +1602,7 @@ function renderLogi(rows){
     setLogi(r, b.dataset.lgundo, false);
   });
   area.querySelectorAll('[data-lgship]').forEach(b=>b.onclick=()=>{
-    if(!b.dataset.armed){ b.dataset.armed='1'; b.textContent='한 번 더 누르면 납품 처리'; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent='출고 끝 · 납품 처리'; } }, 2500); return; }
+    if(!b.dataset.armed){ b.dataset.armed='1'; b.textContent='한 번 더 누르면 출고 처리'; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent='출고 처리'; } }, 2500); return; }
     setStage(b.dataset.lgship, 'ship');
   });
   area.querySelectorAll('[data-memonew]').forEach(b=>b.onclick=()=>openMemoPad(b.dataset.memonew));
