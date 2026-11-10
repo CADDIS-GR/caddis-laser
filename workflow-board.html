@@ -266,6 +266,12 @@
   .sn[data-p="2"]{background:var(--p2);border-color:var(--p2);color:#111827;box-shadow:0 1px 3px rgba(245,158,11,.35)}
   .sn[data-p="3"]{background:var(--p3);border-color:var(--p3);color:#fff;box-shadow:0 1px 3px rgba(59,130,246,.35)}
   .sn[data-p="4"]{background:var(--p4);border-color:var(--p4);color:#fff;box-shadow:0 1px 3px rgba(168,85,247,.35)}
+  /* 완료·출고 건 연번 배지 오버라인 */
+  .sn[data-s="done"], .sn[data-s="ship"]{
+    text-decoration:overline;
+    -webkit-text-decoration-line:overline;
+    text-decoration-thickness:2px;
+  }
   .jl{display:flex;align-items:flex-start;gap:9px;min-width:0}
   .jl .sn{margin-top:-3px}
   .jl-t{min-width:0;word-break:keep-all}
@@ -1051,8 +1057,9 @@ function histLine(r){
 function snChip(r){
   const n = SERIAL[String(r.id)] || '·', p = prioOf(r);
   const d = String(n).length;
-  const tip = `연번 ${n}` + (p ? ` · 우선순위 ${p} ${PRIO[p]}` : ' · 우선순위 없음');
-  return `<span class="sn${d>=4?' d4':d===3?' d3':''}" data-p="${p}" title="${tip}">${n}</span>`;
+  const s = r.stage || '';
+  const tip = `연번 ${n}` + (p ? ` · 우선순위 ${p} ${PRIO[p]}` : ' · 우선순위 없음') + (s ? ` · ${STAGES[s]?STAGES[s].label:s}` : '');
+  return `<span class="sn${d>=4?' d4':d===3?' d3':''}" data-p="${p}" data-s="${s}" title="${tip}">${n}</span>`;
 }
 
 /* ───────── 자재(두께) 감지 — 사용자재 칸 · 건명 · 작업내용에서 1.6T / 9T / 12T 같은 두께와 GI·SUS 재질 추출
