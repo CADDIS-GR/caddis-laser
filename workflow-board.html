@@ -385,7 +385,7 @@
   #matPopover .mp-tab.on{background:rgba(34,211,238,.2);border-color:#22d3ee;color:#22d3ee;box-shadow:0 0 0 1px rgba(34,211,238,.3)}
   [data-theme="light"] #matPopover .mp-tab.on{background:#e0f7fa;border-color:#00acc1;color:#00838f}
   #matPopover .mp-highlight{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);
-    border-radius:8px;padding:10px 12px;margin-bottom:8px;font-family:var(--mono);font-size:12px;
+    border-radius:8px;padding:11px 13px;margin-bottom:8px;font-family:var(--mono);font-size:13.5px;font-weight:600;
     line-height:1.6;color:var(--ink);word-break:break-word;white-space:pre-wrap}
   #matPopover .mp-highlight strong{display:block;margin-bottom:4px;font-family:var(--sans);font-size:11.5px;
     color:#22d3ee;letter-spacing:-.2px}
@@ -1282,8 +1282,13 @@ function renderMatPopoverContent(r, activeTh){
     return true;
   });
 
+  const cleanLine = l => {
+    return l.replace(new RegExp('^\\s*' + activeTh.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '\\s*[:\\-–—]\\s*', 'i'), '').trim();
+  };
+
   if(matched.length){
-    let html = `<div class="mp-highlight"><strong>📌 ${esc(activeTh)} 자재 플랜</strong>${matched.map(esc).join('\n')}</div>`;
+    const content = matched.map(cleanLine).map(esc).join('\n');
+    let html = `<div class="mp-highlight"><strong>📌 ${esc(activeTh)} 자재 플랜</strong>${content}</div>`;
     if(generalLines.length){
       html += `<div class="mp-extra">${generalLines.map(esc).join('\n')}</div>`;
     }
