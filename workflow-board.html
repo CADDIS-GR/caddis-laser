@@ -338,16 +338,64 @@
   .mat-f .n{font-size:10.5px;opacity:.7;margin-left:5px}
   [data-theme="light"] .mat-f.on{background:#e2f8fd;color:#0e7490;border-color:#7dd3e8}
 
-  /* ── 자재 뱃지 (표·보드·달력) ── */
+  /* ── 자재 뱃지 (표·보드·달력) — 클릭 시 자재 써머리 팝오버 ── */
   .mat-wrap{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
   .mat-chip{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10.5px;font-weight:700;
     padding:1.5px 7px;border-radius:var(--r-sm);white-space:nowrap;line-height:1.6;letter-spacing:.02em;
-    color:#67e8f9;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.32)}
-  .mat-chip.nm{color:var(--ink-soft);background:var(--panel-2);border-color:var(--line-soft);font-weight:600}
+    color:#67e8f9;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.32);
+    box-sizing:border-box}
+  button.mat-chip{cursor:pointer;outline:none;border:1px solid rgba(34,211,238,.4);
+    transition:transform .12s, box-shadow .12s, border-color .12s, background .12s}
+  button.mat-chip:hover{transform:translateY(-1px);border-color:#22d3ee;background:rgba(34,211,238,.24);
+    box-shadow:0 2px 5px rgba(34,211,238,.25)}
+  button.mat-chip:active{transform:translateY(0) scale(.96)}
+  .mat-chip.nm{color:var(--ink-soft);background:var(--panel-2);border-color:var(--line-soft);font-weight:600;cursor:default}
   .mat-chip.der{border-style:dashed;opacity:.78}
   .mat-note{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);word-break:break-all}
   [data-theme="light"] .mat-chip{color:#0e7490;background:#e6f9fc;border-color:#a5e8f2}
+  [data-theme="light"] button.mat-chip{background:#e6f9fc;color:#0e7490;border-color:#a5e8f2}
+  [data-theme="light"] button.mat-chip:hover{border-color:#0891b2;background:#d3f3f9;box-shadow:0 2px 5px rgba(14,116,144,.2)}
   [data-theme="light"] .mat-chip.nm{color:#5f5f5f;background:#f2f3f5;border-color:#e5e7eb}
+
+  /* ── 자재 써머리 팝오버 (말풍선 카드) ── */
+  #matBackdrop{position:fixed;inset:0;z-index:9998;display:none;background:rgba(0,0,0,.35);backdrop-filter:blur(2px)}
+  #matBackdrop.show{display:block}
+  #matPopover{position:fixed;z-index:9999;display:none;max-width:340px;width:calc(100vw - 32px);
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    box-shadow:0 16px 36px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.35);padding:14px;
+    font-family:var(--sans),-apple-system,BlinkMacSystemFont,"Pretendard",sans-serif;color:var(--ink);
+    animation:matPopIn .14s cubic-bezier(.16,1,.3,1)}
+  @keyframes matPopIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+  #matPopover.show{display:block}
+  #matPopover .mp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding-bottom:10px;border-bottom:1px solid var(--line-soft);margin-bottom:10px}
+  #matPopover .mp-title-wrap{display:flex;align-items:center;gap:6px;min-width:0}
+  #matPopover .mp-sn{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;
+    border-radius:999px;background:var(--panel-2);border:1px solid var(--line-soft);color:var(--ink);white-space:nowrap}
+  #matPopover .mp-title{font-size:12.5px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  #matPopover .mp-close{background:none;border:none;color:var(--ink-faint);cursor:pointer;
+    font-size:18px;line-height:1;padding:2px 6px;border-radius:4px;transition:.12s}
+  #matPopover .mp-close:hover{color:var(--ink);background:var(--panel-2)}
+  #matPopover .mp-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+  #matPopover .mp-tab{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;
+    border-radius:6px;cursor:pointer;background:var(--panel-2);border:1px solid var(--line-soft);
+    color:var(--ink-soft);transition:.12s}
+  #matPopover .mp-tab:hover{border-color:#22d3ee;color:var(--ink)}
+  #matPopover .mp-tab.on{background:rgba(34,211,238,.2);border-color:#22d3ee;color:#22d3ee;box-shadow:0 0 0 1px rgba(34,211,238,.3)}
+  [data-theme="light"] #matPopover .mp-tab.on{background:#e0f7fa;border-color:#00acc1;color:#00838f}
+  #matPopover .mp-highlight{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.28);
+    border-radius:8px;padding:10px 12px;margin-bottom:8px;font-family:var(--mono);font-size:12px;
+    line-height:1.6;color:var(--ink);word-break:break-word;white-space:pre-wrap}
+  #matPopover .mp-highlight strong{display:block;margin-bottom:4px;font-family:var(--sans);font-size:11.5px;
+    color:#22d3ee;letter-spacing:-.2px}
+  [data-theme="light"] #matPopover .mp-highlight{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+  [data-theme="light"] #matPopover .mp-highlight strong{color:#15803d}
+  #matPopover .mp-extra{font-family:var(--mono);font-size:11px;color:var(--ink-soft);line-height:1.55;
+    padding:8px 10px;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:6px;white-space:pre-wrap;word-break:break-word}
+  #matPopover .mp-empty{font-size:12px;color:var(--ink-faint);line-height:1.5;padding:12px 6px;text-align:center}
+  #matPopover .mp-tip{font-size:11px;color:#f59e0b;margin-top:6px;padding:6px 8px;
+    background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:6px;line-height:1.45;word-break:keep-all}
 
   /* ── 진행 중 타이머 · 종료 예정 카운트다운 ── */
   .prog{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:6px;
@@ -820,6 +868,20 @@
   </div>
 </div>
 
+<!-- 자재 써머리 말풍선 팝오버 -->
+<div id="matBackdrop" onclick="closeMatPopover()"></div>
+<div id="matPopover" role="dialog" aria-modal="true">
+  <div class="mp-head">
+    <div class="mp-title-wrap">
+      <span class="mp-sn" id="mpSn"></span>
+      <span class="mp-title" id="mpTitle"></span>
+    </div>
+    <button type="button" class="mp-close" onclick="closeMatPopover()" aria-label="닫기">×</button>
+  </div>
+  <div class="mp-tabs" id="mpTabs"></div>
+  <div class="mp-body" id="mpBody"></div>
+</div>
+
 <script>
 /* ───────── 1단계 프로토타입: 데이터는 화면 안 샘플 (브라우저 메모리) ─────────
    2단계에서 이 SAMPLE 배열 대신 구글시트 Apps Script 연동으로 교체합니다. */
@@ -1124,11 +1186,119 @@ function matInfo(r){
 function matChips(r, dash){
   const m = matInfo(r);
   if(!m.th.length && !m.nm.length && !m.note) return dash ? '<span class="mat-note">—</span>' : '';
+  const rid = esc(String(r.id));
   return '<div class="mat-wrap">'
-    + m.th.map(t=>`<span class="mat-chip${m.der?' der':''}"${m.der?' title="건명·작업내용에서 감지"':''}>${esc(t)}</span>`).join('')
+    + m.th.map(t=>`<button type="button" class="mat-chip th${m.der?' der':''}" onclick="event.stopPropagation();openMatSummary(this,'${rid}','${esc(t)}')" title="${esc(t)} 자재 써머리 보기">${esc(t)}</button>`).join('')
     + m.nm.map(n=>`<span class="mat-chip nm" title="재질">${esc(n)}</span>`).join('')
     + (m.note?`<span class="mat-note">${esc(m.note)}</span>`:'')
     + '</div>';
+}
+
+/* ── 자재 써머리 팝오버 (말풍선 카드) ── */
+let currentMatJob = null;
+let currentMatTh = null;
+
+function closeMatPopover(){
+  const pop = $('#matPopover');
+  const bg = $('#matBackdrop');
+  if(pop) pop.classList.remove('show');
+  if(bg) bg.classList.remove('show');
+  currentMatJob = null;
+  currentMatTh = null;
+}
+
+function openMatSummary(btn, id, targetTh){
+  const r = DATA.find(x => String(x.id) === String(id));
+  if(!r) return;
+  currentMatJob = r;
+  currentMatTh = targetTh;
+  renderMatPopoverContent(r, targetTh);
+
+  const pop = $('#matPopover');
+  const bg = $('#matBackdrop');
+  if(!pop) return;
+
+  pop.classList.add('show');
+  if(bg) bg.classList.add('show');
+
+  const rect = btn.getBoundingClientRect();
+  const popW = Math.min(340, window.innerWidth - 32);
+  const vh = window.innerHeight;
+  const vw = window.innerWidth;
+
+  if(vw <= 640){
+    pop.style.left = '16px';
+    pop.style.right = '16px';
+    pop.style.width = 'auto';
+    const topPos = Math.max(20, Math.min(vh - 280, rect.bottom + 8));
+    pop.style.top = topPos + 'px';
+  } else {
+    pop.style.width = popW + 'px';
+    let left = rect.left;
+    if(left + popW > vw - 16) left = Math.max(16, rect.right - popW);
+    let top = rect.bottom + 6;
+    if(top + 220 > vh - 16 && rect.top - 230 > 16){
+      top = Math.max(16, rect.top - 220);
+    }
+    pop.style.left = left + 'px';
+    pop.style.right = 'auto';
+    pop.style.top = top + 'px';
+  }
+}
+
+function renderMatPopoverContent(r, activeTh){
+  const sn = SERIAL[String(r.id)] || '';
+  const m = matInfo(r);
+  const rest = metaOf(r.work).rest.trim();
+  const lines = rest.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+
+  $('#mpSn').textContent = sn ? `${sn}번` : '작업';
+  $('#mpTitle').textContent = r.job || '건명 미기재';
+
+  const tabsEl = $('#mpTabs');
+  if(m.th.length > 1){
+    tabsEl.style.display = 'flex';
+    tabsEl.innerHTML = m.th.map(t => {
+      const on = (t === activeTh) ? ' on' : '';
+      return `<button type="button" class="mp-tab${on}" onclick="event.stopPropagation();switchMatTab('${esc(t)}')">${esc(t)}</button>`;
+    }).join('');
+  } else {
+    tabsEl.style.display = 'none';
+  }
+
+  const bodyEl = $('#mpBody');
+  const norm = activeTh.toUpperCase().replace(/\s+/g,'');
+  const matched = lines.filter(l => {
+    const up = l.toUpperCase().replace(/\s+/g,'');
+    return up.includes(norm);
+  });
+
+  const otherTh = m.th.filter(x => x.toUpperCase() !== norm);
+  const generalLines = lines.filter(l => {
+    const up = l.toUpperCase().replace(/\s+/g,'');
+    if(up.includes(norm)) return false;
+    if(otherTh.some(ot => up.includes(ot.toUpperCase().replace(/\s+/g,'')))) return false;
+    return true;
+  });
+
+  if(matched.length){
+    let html = `<div class="mp-highlight"><strong>📌 ${esc(activeTh)} 자재 플랜</strong>${matched.map(esc).join('\n')}</div>`;
+    if(generalLines.length){
+      html += `<div class="mp-extra">${generalLines.map(esc).join('\n')}</div>`;
+    }
+    bodyEl.innerHTML = html;
+  } else if(lines.length){
+    bodyEl.innerHTML = `<div class="mp-highlight"><strong>${esc(activeTh)}</strong> 개별 요약은 없으나, 전체 작업내용이 있습니다:\n${lines.map(esc).join('\n')}</div>`;
+  } else {
+    bodyEl.innerHTML = `<div class="mp-empty">등록된 자재 써머리가 없습니다.</div>
+      <div class="mp-tip">💡 피서에게 <strong>"${sn ? sn + '번 ' : ''}자재 써머리 해줘"</strong>라고 요청하시면 등록됩니다.</div>`;
+  }
+}
+
+function switchMatTab(t){
+  if(!currentMatJob) return;
+  currentMatTh = t;
+  renderMatPopoverContent(currentMatJob, t);
 }
 /* ── 두께 원클릭 필터 — 실제 데이터에서 많은 두께를 칩으로, 나머지는 기타/미기재 ── */
 let matFilter = 'all';
@@ -2070,7 +2240,8 @@ $('#themeBtn').onclick=()=>{
   const saved = localStorage.getItem('wf-theme');
   if(saved){ document.documentElement.dataset.theme=saved; $('#themeBtn').textContent=saved==='light'?'◑':'◐'; }
 })();
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeNotice(); closeStagePop(); closeDrawing(); closeMemo(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeNotice(); closeStagePop(); closeDrawing(); closeMemo(); closeMatPopover(); } });
+window.addEventListener('resize', closeMatPopover);
 
 /* ── 초기 로딩 ── */
 async function init(){
