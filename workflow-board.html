@@ -1283,7 +1283,7 @@ function renderMatPopoverContent(r, activeTh){
   });
 
   const cleanLine = l => {
-    return l.replace(new RegExp('^\\s*' + activeTh.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '\\s*[:\\-–—]\\s*', 'i'), '').trim();
+    return l.replace(new RegExp('^\\s*' + activeTh.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '(?:\\s*\\([^)]*\\))?\\s*[:\\-–—]\\s*', 'i'), '').trim();
   };
 
   if(matched.length){
