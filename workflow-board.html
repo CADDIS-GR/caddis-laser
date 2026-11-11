@@ -1249,8 +1249,9 @@ function openMatSummary(btn, id, targetTh){
 function renderMatPopoverContent(r, activeTh){
   const sn = SERIAL[String(r.id)] || '';
   const m = matInfo(r);
-  const rest = metaOf(r.work).rest.trim();
-  const lines = rest.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const sw = splitWork(r.work);
+  const src = (sw.mat || sw.text).trim();
+  const lines = src.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
 
   $('#mpSn').textContent = sn ? `${sn}번` : '작업';
   $('#mpTitle').textContent = r.job || '건명 미기재';
@@ -1388,10 +1389,11 @@ function updateProg(){
   });
 }
 
-/* ── 작업내용 첨부 ──
+/* ── 작업내용 첨부 및 자재 써머리 ──
    시트의 기존 '작업내용' 칸 하나에 함께 저장 (Apps Script 수정 불필요)
-   형식:  본문 텍스트 … ⏎⏎── 첨부 ──⏎이름 | 링크⏎이름 | 링크 */
+   형식:  본문 텍스트 … ⏎⏎── 자재 ──⏎자재 써머리 … ⏎⏎── 첨부 ──⏎이름 | 링크⏎이름 | 링크 */
 const ATT_MARK = '── 첨부 ──';
+const MAT_MARK = '── 자재 ──';
 function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ── 건명 내 대수 표기 자동 감지 — (x10, x10) / (x13) / (x52) / (33대분) ──
@@ -1421,10 +1423,37 @@ function calJobHtml(job){   // 달력 칸용 소형 배지
 }
 function splitWork(w){
   w = metaOf(w).rest;
-  let text = w, att = '';
-  if(w.startsWith(ATT_MARK)){ text=''; att=w.slice(ATT_MARK.length); }
-  else { const i = w.lastIndexOf('\n'+ATT_MARK); if(i>=0){ text=w.slice(0,i); att=w.slice(i+1+ATT_MARK.length); } }
-  return {text:text.trim(), atts:parseAtts(att)};
+  let text = w, att = '', mat = '';
+
+  const attMatch = text.match(/(?:^|\r?\n)── 첨부 ──\r?\n?/);
+  const matMatch = text.match(/(?:^|\r?\n)── (?:자재|자재써머리) ──\r?\n?/);
+
+  if(!attMatch && !matMatch){
+    return {text: text.trim(), atts: parseAtts(''), mat: ''};
+  }
+
+  const blocks = [];
+  if(attMatch){
+    const s = attMatch.index + (attMatch[0].startsWith('\n') || attMatch[0].startsWith('\r') ? attMatch[0].indexOf('──') : 0);
+    blocks.push({type: 'att', start: s});
+  }
+  if(matMatch){
+    const s = matMatch.index + (matMatch[0].startsWith('\n') || matMatch[0].startsWith('\r') ? matMatch[0].indexOf('──') : 0);
+    blocks.push({type: 'mat', start: s});
+  }
+
+  blocks.sort((a,b) => a.start - b.start);
+  text = w.slice(0, blocks[0].start).trim();
+
+  for(let i=0; i<blocks.length; i++){
+    const b = blocks[i];
+    const end = (i + 1 < blocks.length) ? blocks[i+1].start : w.length;
+    const content = w.slice(b.start, end).replace(/^[^\n]*\r?\n?/, '').trim();
+    if(b.type === 'att') att = content;
+    else if(b.type === 'mat') mat = content;
+  }
+
+  return {text: text.trim(), atts: parseAtts(att), mat: mat.trim()};
 }
 function autoName(u){
   try{
@@ -1450,7 +1479,13 @@ function parseAtts(s){
 function attLine(a){ return a.url ? `${a.name} | ${a.url}` : a.name; }
 function joinWork(text, attsRaw, prio, hist, ex){
   const list = parseAtts(attsRaw);
-  const body = !list.length ? text : (text ? text+'\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
+  let body = text;
+  if(ex && ex.mat){
+    body = (body ? body + '\n\n' : '') + MAT_MARK + '\n' + ex.mat;
+  }
+  if(list.length){
+    body = (body ? body + '\n\n' : '') + ATT_MARK + '\n' + list.map(attLine).join('\n');
+  }
   return buildWork(prio, hist||{}, body, ex).replace(/\n$/,'');
 }
 function attType(a){
@@ -2036,8 +2071,9 @@ function save(){
       const prev = editId ? DATA.find(x=>String(x.id)===String(editId)) : null;
       const hist = prev ? histOf(prev) : {};
       if(!prev || prev.stage!==pickStage) hist[pickStage] = nowStamp();   // 새 등록 또는 단계 변경 시각 기록
+      const prevMat = prev ? splitWork(prev.work).mat : '';
       return joinWork($('#f_work').value.trim(), $('#f_atts').value, pickPrio, hist,
-        {dest:pickDest, lg: prev ? logiOf(prev) : {}});   // 물류 체크는 모달에서 안 건드림 — 그대로 유지
+        {dest:pickDest, lg: prev ? logiOf(prev) : {}, mat: prevMat});   // 물류 체크·자재 써머리는 모달에서 유지
     })(),
     material:$('#f_material').value.trim(),
     docs:normDocs($('#f_docs').value),
