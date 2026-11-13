@@ -1269,16 +1269,19 @@ function renderMatPopoverContent(r, activeTh){
 
   const bodyEl = $('#mpBody');
   const norm = activeTh.toUpperCase().replace(/\s+/g,'');
+  const thRegex = new RegExp('(?:^|[^0-9A-Z])' + norm.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '(?:[^0-9A-Z]|$)', 'i');
   const matched = lines.filter(l => {
-    const up = l.toUpperCase().replace(/\s+/g,'');
-    return up.includes(norm);
+    return thRegex.test(l.toUpperCase().replace(/\s+/g,''));
   });
 
   const otherTh = m.th.filter(x => x.toUpperCase() !== norm);
   const generalLines = lines.filter(l => {
     const up = l.toUpperCase().replace(/\s+/g,'');
-    if(up.includes(norm)) return false;
-    if(otherTh.some(ot => up.includes(ot.toUpperCase().replace(/\s+/g,'')))) return false;
+    if(thRegex.test(up)) return false;
+    if(otherTh.some(ot => {
+      const oRegex = new RegExp('(?:^|[^0-9A-Z])' + ot.toUpperCase().replace(/\s+/g,'').replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '(?:[^0-9A-Z]|$)', 'i');
+      return oRegex.test(up);
+    })) return false;
     return true;
   });
 
